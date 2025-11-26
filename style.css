@@ -1,0 +1,153 @@
+@import url('https://fonts.googleapis.com/css2?family=Zen+Old+Mincho:wght@400;700&display=swap');
+
+:root {
+    --bg-color: #f4f1ea;       /* 和紙のような生成り色 */
+    --text-color: #333333;     /* 墨色 */
+    --accent-color: #1d3a4e;   /* 深い鉄紺色 */
+    --link-color: #5d7d9a;     /* 落ち着いた青 */
+    --font-main: 'Zen Old Mincho', 'Times New Roman', serif;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: var(--font-main);
+    line-height: 2.0; /* ゆったりとした行間 */
+    margin: 0;
+    padding: 0;
+    letter-spacing: 0.05em;
+}
+
+a {
+    color: var(--link-color);
+    text-decoration: none;
+    transition: opacity 0.3s;
+}
+
+a:hover {
+    opacity: 0.7;
+}
+
+/* レイアウト */
+.container {
+    max-width: 700px; /* 文学的な読みやすさを重視して幅を狭める */
+    margin: 0 auto;
+    padding: 60px 20px;
+}
+
+/* ヘッダー */
+header {
+    text-align: center;
+    margin-bottom: 80px;
+    padding-bottom: 40px;
+    border-bottom: 1px solid #ccc;
+}
+
+h1.site-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--accent-color);
+    margin-bottom: 10px;
+    letter-spacing: 0.2em;
+}
+
+.subtitle {
+    font-size: 0.9rem;
+    color: #666;
+}
+
+/* コンテンツ共通 */
+h2 {
+    font-size: 1.4rem;
+    border-left: 4px solid var(--accent-color);
+    padding-left: 15px;
+    margin-top: 60px;
+    margin-bottom: 30px;
+    color: var(--accent-color);
+}
+
+p {
+    margin-bottom: 20px;
+    text-align: justify;
+}
+
+/* 作品リスト */
+.work-list {
+    list-style: none;
+    padding: 0;
+}
+
+.work-item {
+    margin-bottom: 40px;
+}
+
+.work-date {
+    font-size: 0.85rem;
+    color: #888;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.work-title {
+    font-size: 1.2rem;
+    font-weight: bold;
+    display: block;
+    color: var(--text-color);
+}
+
+/* ボタン類 */
+.btn-area {
+    margin-top: 60px;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.btn {
+    display: inline-block;
+    padding: 12px 30px;
+    border: 1px solid var(--accent-color);
+    color: var(--accent-color);
+    border-radius: 2px;
+    font-size: 0.9rem;
+}
+
+.btn:hover {
+    background-color: var(--accent-color);
+    color: #fff;
+}
+
+.btn-share {
+    background-color: #000;
+    color: #fff;
+    border: 1px solid #000;
+}
+
+.btn-share:hover {
+    background-color: #333;
+    opacity: 1;
+}
+
+/* フッター */
+footer {
+    text-align: center;
+    margin-top: 100px;
+    font-size: 0.8rem;
+    color: #888;
+}
+
+/* レスポンシブ */
+@media (max-width: 600px) {
+    .container {
+        padding: 40px 20px;
+    }
+    h1.site-title {
+        font-size: 2rem;
+    }
+}
