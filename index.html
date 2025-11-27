@@ -226,32 +226,139 @@ document.addEventListener("DOMContentLoaded", () => {
         targets.forEach(el => observer.observe(el));
     }
     
-    // --- 【修正・追加した処理】 ---
+    // --- 【修正・追加した処理：泡の動的生成とスクロール制御】 ---
     
     let lastScrollY = 0;
-    const profileBubbles = document.getElementById('bubbles-background'); 
+    const worksSection = document.getElementById('works');
+    const profileSection = document.getElementById('profile');
     const worksBubbles = document.getElementById('works-bubbles-background'); 
+    const profileBubbles = document.getElementById('bubbles-background'); 
+    
+    const BUBBLE_COUNT = 30; // 常に各セクションに存在する泡の目標数
+    const BUBBLE_SPEED_MULTIPLIER = 1.5; // スクロール速度の1.5倍
+    const BUBBLE_SIZE_MIN = 40; // 最小直径 (px)
+    const BUBBLE_SIZE_MAX = 100; // 最大直径 (px)
+    const GENERATE_THRESHOLD = 50; // 50pxスクロールごとに新しい泡をチェック
+
+    let lastGenerateScroll = 0; // 最後に泡を生成したスクロール位置
+
+    function getRandom(min, max) {
+        return Math.random() * (max - min) + min;
+    }
+    
+    /**
+     * 新しい泡要素を生成し、ランダムな位置とサイズでDOMに追加する
+     */
+    function createBubble(container, sectionHeight, initialY) {
+        const bubble = document.createElement('div');
+        bubble.classList.add('bubble');
+        
+        const size = getRandom(BUBBLE_SIZE_MIN, BUBBLE_SIZE_MAX);
+        const x = getRandom(0, 100); // 0%から100%
+        
+        bubble.style.width = `${size}px`;
+        bubble.style.height = `${size}px`;
+        bubble.style.left = `${x}%`;
+        // initialY を基準に、セクションの高さの範囲内でランダムに配置
+        bubble.style.top = `${initialY - getRandom(0, sectionHeight)}px`; 
+        
+        // ランダムな時間差でフェードイン
+        setTimeout(() => {
+            bubble.style.opacity = getRandom(0.4, 1);
+        }, getRandom(0, 500));
+        
+        container.appendChild(bubble);
+    }
+    
+    /**
+     * 指定されたコンテナ内に泡を初期生成・配置する関数
+     */
+    function initializeBubbles(container, section) {
+        if (!container || !section) return;
+        container.innerHTML = '';
+        
+        // 泡の初期配置範囲 (セクションの高さの2倍)
+        const containerHeight = section.offsetHeight * 2; 
+
+        for (let i = 0; i < BUBBLE_COUNT; i++) {
+            // 初期配置では、セクションの上端を基準に画面全体に広がるように配置
+            createBubble(container, containerHeight, section.offsetHeight * 1.5); 
+        }
+    }
+    
+    /**
+     * 画面外の上部に出た古い泡を削除する (安全策)
+     */
+    function removeOldBubbles(container) {
+        if (!container) return;
+
+        const bubbles = container.querySelectorAll('.bubble');
+        if (bubbles.length > BUBBLE_COUNT * 2) { 
+            // 制限数を超えたら、最も古い泡を削除
+            for (let i = 0; i < bubbles.length - BUBBLE_COUNT; i++) {
+                // 既にopacityを0にしてから削除することで、フェードアウト効果を持たせることも可能だが、今回は単純に削除
+                bubbles[i].remove(); 
+            }
+        }
+    }
     
     // スクロール時の背景移動処理
     function handleBubbleScroll() {
         const currentScrollY = window.scrollY;
         
-        // 【修正】worksセクション開始位置に関わらず、現在のスクロール量に応じて移動距離を計算
-        const moveY = -(currentScrollY * 1.5); 
-        
-        // worksセクションの泡を動かす
-        if (worksBubbles) {
-            worksBubbles.style.transform = `translateY(${moveY}px)`;
-        }
-        
-        // profileセクションの泡を動かす
-        if (profileBubbles) {
-            profileBubbles.style.transform = `translateY(${moveY}px)`;
-        }
+        // スクロールダウン時のみ処理を実行（ユーザー要望）
+        if (currentScrollY > lastScrollY) {
+            
+            // ドキュメントトップからのスクロール距離を基準に移動量を計算
+            const moveY = -(currentScrollY * BUBBLE_SPEED_MULTIPLIER); 
+            
+            // Worksセクションの泡を動かす
+            if (worksBubbles) {
+                // 【修正点】worksStartOffsetのチェックを削除し、常に動かす
+                worksBubbles.style.transform = `translateY(${moveY}px)`;
+            }
+            
+            // Profileセクションの泡を動かす
+            if (profileBubbles) {
+                profileBubbles.style.transform = `translateY(${moveY}px)`;
+            }
+            
+            // --- 【新規】ランダム生成のロジック ---
+            const scrollDistanceSinceLastGenerate = currentScrollY - lastGenerateScroll;
+
+            if (scrollDistanceSinceLastGenerate >= GENERATE_THRESHOLD) {
+                
+                // Worksセクション内での生成判定
+                if (currentScrollY >= worksSection.offsetTop && currentScrollY < profileSection.offsetTop) {
+                     // 画面中央より少し下に新しい泡をランダムに生成
+                     // (画面下端 + 100px) を基準に、画面の高さ分(window.innerHeight)を生成範囲とする
+                     createBubble(worksBubbles, worksSection.offsetHeight * 0.5, currentScrollY + window.innerHeight * 1.5); 
+                } 
+                
+                // Profileセクション内での生成判定
+                if (currentScrollY >= profileSection.offsetTop) {
+                    createBubble(profileBubbles, profileSection.offsetHeight * 0.5, currentScrollY + window.innerHeight * 1.5); 
+                }
+                
+                // 画面外に出た泡の削除 (安全策として、泡の総数でチェック)
+                removeOldBubbles(worksBubbles);
+                removeOldBubbles(profileBubbles);
+
+                lastGenerateScroll = currentScrollY;
+            }
+        } 
 
         lastScrollY = currentScrollY;
     }
 
+    // ページのロード後に初期化関数を実行
+    window.addEventListener('load', () => {
+        // worksBubblesとprofileBubblesの親セクションの高さが確定してから実行
+        initializeBubbles(worksBubbles, worksSection);
+        initializeBubbles(profileBubbles, profileSection);
+        handleBubbleScroll();
+    });
+    
     // スクロールイベントを登録
     window.addEventListener('scroll', handleBubbleScroll);
     
@@ -289,8 +396,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
     
-    // 初回実行
-    handleBubbleScroll();
 });
 </script>
 
