@@ -86,17 +86,15 @@ a:not(.btn):hover {
     color: var(--text-color-dark);
 }
 
-/* 修正: プロフィールセクションの背景をグラデーションに変更 */
 #profile {
-    /* 上部から600pxかけて作品紹介の色からプロフィール（深海）の色へゆっくりグラデーション */
+    /* 浅い海の色から深い海の色へのグラデーションをセクションの背景に適用 */
     background: linear-gradient(
         to bottom, 
-        var(--bg-color-works) 0%,          /* 浅い海の色 (#c0d6d1) から開始 */
-        var(--bg-color-profile) 600px,     /* 600pxかけて深海の色 (#0f267f) に移行 */
-        var(--bg-color-profile) 100%       /* それ以降は深海の色で単色塗りつぶしを維持 */
+        var(--bg-color-works), /* #c0d6d1 (作品紹介の色) から開始 */
+        var(--bg-color-profile) 80% /* #0f267f (プロフィール/深海の色) に80%の地点で到達 */
     );
-    
     color: var(--text-color-light); /* プロフィールセクションの文字色を明るく */
+    padding-top: 40px;
 }
 
 /* 深海セクション内の文字色、リンク色調整 */
@@ -248,14 +246,7 @@ p { margin-bottom: 20px; text-align: justify; }
     height: auto;
 }
 
-/* 修正: グラデーションセパレーターを削除
-.gradient-separator {
-    height: 100px; 
-    background: linear-gradient(to bottom, var(--bg-color-works) 0%, var(--bg-color-profile) 100%);
-    width: 100%;
-}
-*/
-
+/* グラデーションセパレーターは削除しました */
 
 /* 作品リスト */
 .work-list { 
@@ -554,13 +545,12 @@ footer {
     
     .nav-links a { margin-left: 20px; }
     
-    /* レスポンシブ時、グラデーションの長さを調整 */
+    /* レスポンシブ時のグラデーション調整（必要であれば） */
     #profile {
-         background: linear-gradient(
+        background: linear-gradient(
             to bottom, 
-            var(--bg-color-works) 0%,          
-            var(--bg-color-profile) 800px,     /* スマホなどで縦長になるためグラデーションを長く取る */
-            var(--bg-color-profile) 100%       
+            var(--bg-color-works), 
+            var(--bg-color-profile) 70% /* 縦長になるため、少し早めに完了させても良い */
         );
     }
 }
