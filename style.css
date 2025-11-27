@@ -160,7 +160,7 @@ a:not(.btn):hover {
 .scroll-indicator {
     position: absolute;
     left: 30px;
-    bottom: 15opx;
+    bottom: 150px;
     font-size: 1.2rem;
     color: var(--accent-color);
     transform: rotate(90deg);
