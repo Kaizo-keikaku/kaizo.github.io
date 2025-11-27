@@ -19,6 +19,9 @@ body {
     padding: 0;
     letter-spacing: 0.05em;
     overflow-x: hidden; 
+    /* 初期状態ではサイト本体コンテンツは隠しておく */
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
 }
 
 /* ポップアップ表示時に背景をスクロールさせないためのクラス */
@@ -38,7 +41,7 @@ body::before {
     height: 100%;
     pointer-events: none;
     z-index: 9999;
-    opacity: 0.05; /* ザラつきの濃さ */
+    opacity: 0.05;
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
 }
 
@@ -57,31 +60,7 @@ body::before {
     transform: translateY(0);
 }
 
-/* --------------------------------------------------------
-   演出：サイトタイトル（揺らぎアニメーション）
-   -------------------------------------------------------- */
-@keyframes title-drift {
-    0% { transform: translate(0, 5px); opacity: 0; }
-    25% { transform: translate(1px, -1px); opacity: 1; }
-    50% { transform: translate(-0.5px, 1px); }
-    75% { transform: translate(0.5px, -0.5px); }
-    100% { transform: translate(0, 0); opacity: 1; }
-}
-
-h1.site-title {
-    font-size: 2.5rem;
-    font-weight: 700;
-    color: var(--accent-color);
-    margin-bottom: 10px;
-    letter-spacing: 0.2em;
-    /* アニメーション適用 */
-    animation: title-drift 3.5s ease-out 0.5s forwards; /* 3.5秒かけて揺らぎ、0.5秒後に開始、終了状態を維持 */
-}
-
-/* --------------------------------------------------------
-   レイアウト・共通スタイル（既存）
-   -------------------------------------------------------- */
-
+/* リンク */
 a {
     color: var(--link-color);
     text-decoration: none;
@@ -97,12 +76,14 @@ a:not(.btn):hover {
     transition: all 0.4s ease;
 }
 
+/* レイアウト */
 .container {
     max-width: 700px;
     margin: 0 auto;
     padding: 60px 20px;
 }
 
+/* ヘッダー */
 header {
     text-align: center;
     margin-bottom: 80px;
@@ -110,8 +91,17 @@ header {
     border-bottom: 1px solid #ccc;
 }
 
+h1.site-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--accent-color);
+    margin-bottom: 10px;
+    letter-spacing: 0.2em;
+}
+
 .subtitle { font-size: 0.9rem; color: #666; }
 
+/* 見出し・本文 */
 h2 {
     font-size: 1.4rem;
     border-left: 4px solid var(--accent-color);
@@ -123,10 +113,12 @@ h2 {
 
 p { margin-bottom: 20px; text-align: justify; }
 
+/* 作品リスト */
 .work-list { list-style: none; padding: 0; }
 .work-item { margin-bottom: 40px; }
 .work-date { font-size: 0.85rem; color: #888; display: block; margin-bottom: 5px; }
 
+/* 作品タイトル（トリガー） */
 .work-trigger {
     font-size: 1.2rem;
     font-weight: bold;
@@ -139,6 +131,7 @@ p { margin-bottom: 20px; text-align: justify; }
     opacity: 1;
 }
 
+/* ボタン類 */
 .btn-area {
     margin-top: 60px;
     text-align: center;
@@ -168,37 +161,115 @@ p { margin-bottom: 20px; text-align: justify; }
 
 footer { text-align: center; margin-top: 100px; font-size: 0.8rem; color: #888; }
 
-/* ポップアップ（モーダル）設定は変更なし */
+/* --------------------------------------------------------
+   ポップアップ（モーダル）設定
+   -------------------------------------------------------- */
 .modal-overlay {
     position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%; z-index: 1000;
-    opacity: 0; visibility: hidden; transition: opacity 0.6s ease, visibility 0.6s ease;
-    background-color: var(--modal-bg, #fff); color: var(--modal-text, #333);
-    overflow-y: auto; display: flex; justify-content: center; align-items: flex-start;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1000;
+    
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.6s ease, visibility 0.6s ease;
+
+    background-color: var(--modal-bg, #fff);
+    color: var(--modal-text, #333);
+    
+    overflow-y: auto;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
 }
 
-.modal-overlay.active { opacity: 1; visibility: visible; }
+.modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
 
 .modal-content {
-    width: 100%; max-width: 800px; padding: 80px 20px 100px; position: relative;
+    width: 100%;
+    max-width: 800px;
+    padding: 80px 20px 100px;
+    position: relative;
     transform: translateY(20px);
     transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.modal-overlay.active .modal-content { transform: translateY(0); }
+.modal-overlay.active .modal-content {
+    transform: translateY(0);
+}
 
 .close-modal-btn {
-    position: fixed; top: 20px; right: 30px; font-size: 3rem; font-weight: 100;
-    cursor: pointer; background: none; border: none; line-height: 1; z-index: 1100;
-    font-family: var(--font-main); color: inherit; opacity: 0.7; transition: opacity 0.3s;
+    position: fixed;
+    top: 20px;
+    right: 30px;
+    font-size: 3rem;
+    font-weight: 100;
+    cursor: pointer;
+    background: none;
+    border: none;
+    line-height: 1;
+    z-index: 1100;
+    font-family: var(--font-main);
+    color: inherit;
+    opacity: 0.7;
+    transition: opacity 0.3s;
 }
 
 .close-modal-btn:hover { opacity: 1; }
 
-.modal-overlay a { color: inherit; text-decoration: underline; }
+.modal-overlay a {
+    color: inherit;
+    text-decoration: underline;
+}
 
 @media (max-width: 600px) {
     .container { padding: 40px 20px; }
     h1.site-title { font-size: 2rem; }
     .close-modal-btn { top: 15px; right: 15px; font-size: 2.5rem; }
+}
+
+/* --------------------------------------------------------
+   新規：オープニングアニメーション用スタイル
+   -------------------------------------------------------- */
+#opening-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--bg-color); /* サイト本体の背景色に合わせる */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 99999; /* 最前面に表示 */
+    transition: opacity 0.5s ease-out; /* フェードアウト用 */
+}
+
+#opening-text {
+    font-family: var(--font-main);
+    font-size: 3rem; /* タイピング文字サイズ */
+    font-weight: 700;
+    color: var(--accent-color); /* サイトのメインタイトル色に合わせる */
+    white-space: nowrap; /* テキストが途中で改行されないように */
+    overflow: hidden; /* カーソルを点滅させるために必要 */
+    border-right: 0.1em solid var(--accent-color); /* 点滅するカーソル */
+    animation: typing-cursor 0.75s step-end infinite;
+    max-width: 90vw; /* 画面幅に合わせて調整 */
+}
+
+@keyframes typing-cursor {
+    from, to { border-color: transparent }
+    50% { border-color: var(--accent-color); }
+}
+
+/* モバイル向け調整 */
+@media (max-width: 768px) {
+    #opening-text {
+        font-size: 2rem;
+    }
 }
