@@ -236,12 +236,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const oceanContainer = document.getElementById('unified-ocean-container');
     const unifiedBubbles = document.getElementById('unified-bubbles-background');
     
-    // 【修正】泡の密度調整: 泡の目標数を30から10に減らす
+    // 泡の密度調整
     const BUBBLE_COUNT = 10; 
     const BUBBLE_SPEED_MULTIPLIER = 1.5; 
     const BUBBLE_SIZE_MIN = 10; 
     const BUBBLE_SIZE_MAX = 25; 
-    // 【修正】生成頻度調整: 50pxから80pxに増やし、生成頻度を落とす
+    // 生成頻度調整
     const GENERATE_THRESHOLD = 80; 
 
     let lastGenerateScroll = 0; // 最後に泡を生成したスクロール位置
@@ -252,9 +252,11 @@ document.addEventListener("DOMContentLoaded", () => {
     
     /**
      * 新しい泡要素を生成し、ランダムな位置とサイズでDOMに追加する
+     * @param {HTMLElement} container - 泡を追加するDOMコンテナ
      * @param {number} initialY - ドキュメントトップからの絶対生成位置 (px)
+     * @param {number} offsetCompensation - 泡のコンテナがスクロールによって移動した距離 (px) (正の値)
      */
-    function createBubble(container, initialY) {
+    function createBubble(container, initialY, offsetCompensation = 0) { 
         if (!container || !worksSection || !profileSection) return;
         
         const bubble = document.createElement('div');
@@ -269,7 +271,10 @@ document.addEventListener("DOMContentLoaded", () => {
         
         // 泡の'top'位置は、ドキュメント絶対位置からコンテナの開始位置を引いた相対位置
         const containerTop = oceanContainer.offsetTop; 
-        const relativeTop = initialY - containerTop;
+        
+        // 【修正ロジック】現在のスクロールによるコンテナの移動量(offsetCompensation)を相殺して、
+        // 画面上の正確な位置に配置する
+        let relativeTop = initialY - containerTop + offsetCompensation;
         
         // ランダムなオフセットを適用
         bubble.style.top = `${relativeTop - getRandom(0, size * 2)}px`; 
@@ -279,7 +284,6 @@ document.addEventListener("DOMContentLoaded", () => {
         if (initialY < worksEndAbsolute) {
              bubble.classList.add('bubble-works-color');
         } else {
-             // 【修正済み】profileエリアでも生成され、深海の色が適用される
              bubble.classList.add('bubble-profile-color');
         }
         
@@ -307,7 +311,8 @@ document.addEventListener("DOMContentLoaded", () => {
         for (let i = 0; i < BUBBLE_COUNT * 2; i++) { 
             // ドキュメントトップからの絶対初期位置
             const initialY = containerTop + getRandom(0, initialRange);
-            createBubble(container, initialY); 
+            // 初期生成時は補正は不要（0）
+            createBubble(container, initialY, 0); 
         }
     }
     
@@ -333,7 +338,7 @@ document.addEventListener("DOMContentLoaded", () => {
     function handleBubbleScroll() {
         const currentScrollY = window.scrollY;
         
-        // 【重要修正】スクロールダウン時のみ泡の移動と生成処理を実行
+        // 【重要】スクロールダウン時のみ泡の移動と生成処理を実行
         if (currentScrollY >= lastScrollY) {
             
             // ドキュメントトップからのスクロール距離を基準に移動量を計算
@@ -353,8 +358,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 // 画面下端 + 50px あたりを基準に生成位置を設定
                 const generationY = currentScrollY + window.innerHeight + 50; 
                 
-                // 泡を生成
-                createBubble(unifiedBubbles, generationY); 
+                // 泡を生成（補正値として-moveY (正の値) を渡す）
+                createBubble(unifiedBubbles, generationY, -moveY); 
                 
                 // 画面外に出た泡の削除
                 removeOldBubbles(unifiedBubbles, moveY);
@@ -362,7 +367,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 lastGenerateScroll = currentScrollY;
             }
         } 
-        // 上にスクロールした場合は、moveYの計算もtransformも実行されないため、泡のコンテナは動かない
+        // 上にスクロールした場合は、このifブロックがスキップされ、泡のコンテナのtransformが更新されないため、泡は固定される
 
         lastScrollY = currentScrollY;
     }
