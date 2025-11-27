@@ -24,7 +24,7 @@ body {
     margin: 0;
     padding: 0;
     font-family: var(--font-main);
-    background: var(--bg-color-home); /* <body>のデフォルトはコンセプトと同じ */
+    background: var(--bg-color-home); 
     color: var(--text-color-dark);
     line-height: 2;
     overflow-x: hidden;
@@ -58,7 +58,7 @@ body::before {
 
 /* リンク */
 a {
-    color: var(--link-color-dark); /* デフォルトのリンク色 */
+    color: var(--link-color-dark); 
     text-decoration: none;
     transition: 0.3s;
 }
@@ -87,12 +87,8 @@ a:not(.btn):hover {
 }
 
 #profile {
-    /* 浅い海の色から深い海の色へのグラデーションをセクションの背景に適用 */
-    background: linear-gradient(
-        to bottom, 
-        var(--bg-color-works), /* #c0d6d1 (作品紹介の色) から開始 */
-        var(--bg-color-profile) 80% /* #0f267f (プロフィール/深海の色) に80%の地点で到達 */
-    );
+    /* 変更: 背景色をグラデーションに変更 */
+    background: linear-gradient(to bottom, var(--bg-color-works), var(--bg-color-profile)); 
     color: var(--text-color-light); /* プロフィールセクションの文字色を明るく */
     padding-top: 40px;
 }
@@ -103,7 +99,7 @@ a:not(.btn):hover {
 }
 
 #profile .section-title {
-    border-left-color: var(--text-color-light); /* 区切り線の色も変更 */
+    border-left-color: var(--text-color-light); 
     color: var(--text-color-light);
 }
 
@@ -178,7 +174,7 @@ a:not(.btn):hover {
     align-items: center;
     position: relative;
     text-align: center;
-    background-color: var(--bg-color-home); /* 明示的に背景色を指定 */
+    background-color: var(--bg-color-home); 
 }
 
 .concept-content {
@@ -246,7 +242,8 @@ p { margin-bottom: 20px; text-align: justify; }
     height: auto;
 }
 
-/* グラデーションセパレーターは削除しました */
+/* グラデーションセパレーターは削除 */
+
 
 /* 作品リスト */
 .work-list { 
@@ -300,7 +297,7 @@ p { margin-bottom: 20px; text-align: justify; }
 .work-trigger {
     font-size: 1.5rem;
     font-weight: bold;
-    color: var(--text-color-dark); /* 浅い海セクションなので濃い色 */
+    color: var(--text-color-dark); 
     border-bottom: 1px solid transparent;
     display: inline-block;
     line-height: 1.4;
@@ -336,7 +333,7 @@ p { margin-bottom: 20px; text-align: justify; }
 
 .member-name {
     font-size: 1.2rem;
-    color: var(--link-color-light); /* 深海セクションなので明るい色 */
+    color: var(--link-color-light); 
     margin: 0 0 10px 0;
 }
 
@@ -367,8 +364,8 @@ p { margin-bottom: 20px; text-align: justify; }
 .btn {
     padding: 12px 30px;
     border: 1px solid;
-    color: var(--text-color-dark); /* デフォルトのボタン文字色 */
-    border-color: var(--accent-color); /* デフォルトのボタン枠線色 */
+    color: var(--text-color-dark); 
+    border-color: var(--accent-color); 
     transition: .3s;
     display: inline-block;
     font-size: 1rem;
@@ -383,7 +380,7 @@ p { margin-bottom: 20px; text-align: justify; }
 
 #profile .btn:hover {
     background: var(--text-color-light);
-    color: var(--bg-color-profile); /* ホバー時、文字色を深海の色に */
+    color: var(--bg-color-profile); 
     transform: translateY(-2px);
     opacity: 1; 
 }
@@ -544,15 +541,6 @@ footer {
     }
     
     .nav-links a { margin-left: 20px; }
-    
-    /* レスポンシブ時のグラデーション調整（必要であれば） */
-    #profile {
-        background: linear-gradient(
-            to bottom, 
-            var(--bg-color-works), 
-            var(--bg-color-profile) 70% /* 縦長になるため、少し早めに完了させても良い */
-        );
-    }
 }
 
 @media (max-width: 768px) {
