@@ -324,16 +324,13 @@ p { margin-bottom: 20px; text-align: justify; }
 .layout-right .work-info { order: 1; }
 
 .work-media {
-    /* 修正前: flex: 0 0 300px; (幅を300pxに固定) */
-    /* 修正後: flexの指定を削除または調整し、画像の高さを基準にする */
-    flex: 0 0 auto; /* 必要に応じて自動調整 */
+    flex: 0 0 300px; 
 }
 
 .work-media img {
     display: block;
-    /* 以下の2行を修正/追加 */
-    width: auto; /* 幅は自動調整 */
-    height: 300px; /* ★高さを300pxに固定★ */
+    width: 100%;
+    height: auto;
     object-fit: cover;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
     transition: 0.3s ease-in-out;
@@ -585,15 +582,8 @@ footer {
     
     .work-media {
         flex: none;
-        width: auto; /* 幅を自動調整 */
-        height: 300px; /* 高さを維持 */
+        width: 60%; 
         margin: 0 auto;
-    }
-    
-    .work-media img {
-        height: 300px; /* 縦300pxを維持 */
-        width: auto; /* 幅は自動調整 */
-        max-width: 100%; /* 親要素の幅を超えないようにする */
     }
     
     .layout-left .work-media,
@@ -624,13 +614,6 @@ footer {
     }
     
     .work-media {
-        /* スマホ向けに画像コンテナの幅を調整（画像は縦300pxを維持し、幅は自動調整） */
-        width: auto; 
-    }
-    
-    .work-media img {
-        height: 300px;
-        max-width: 90vw; /* 画面幅の90%を上限とする（念のため）*/
-        width: auto;
+        width: 70%;
     }
 }
