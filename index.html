@@ -394,6 +394,43 @@ document.addEventListener("DOMContentLoaded", () => {
     window.addEventListener('scroll', handleBubbleScroll);
     
     // --- 【既存の処理】 ---
+    
+    // --- ナビゲーションリンクのスクロール修正 (追加) ---
+    const navScrollLinks = document.querySelectorAll(".nav-links a, .nav-title");
+    // CSSの変数 --header-height: 60px; に基づく
+    const HEADER_HEIGHT = 60; 
+
+    navScrollLinks.forEach(link => {
+        link.addEventListener("click", e => {
+            e.preventDefault();
+
+            const targetId = link.getAttribute('href').substring(1);
+            const targetElement = document.getElementById(targetId);
+
+            if (targetElement) {
+                // ドキュメントトップからのターゲット要素の絶対位置を取得
+                const elementPosition = targetElement.offsetTop;
+                let offsetPosition;
+
+                if (targetId === 'home') {
+                    // #homeはページトップへ
+                    offsetPosition = 0;
+                } else {
+                    // #works, #profile の場合、ヘッダーの高さ分上にオフセット
+                    offsetPosition = elementPosition - HEADER_HEIGHT;
+                }
+
+                window.scrollTo({
+                    top: offsetPosition,
+                    behavior: "smooth"
+                });
+                
+                // オプション: URLハッシュを手動で更新 (履歴を汚さないためにpushStateを使用)
+                history.pushState(null, null, link.getAttribute('href'));
+            }
+        });
+    });
+
 
     // モーダル制御
     const triggers = document.querySelectorAll(".work-trigger, .work-image-trigger");
