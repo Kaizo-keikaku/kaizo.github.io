@@ -105,21 +105,20 @@ a:not(.btn):hover {
     inset: 0;
     z-index: 1; /* コンテンツの下、背景色の上 */
     
-    /* 泡の模様をCSSグラデーションで作成（白色の透明度を低くして海中の泡を表現） */
-    background-image: radial-gradient(circle at 10% 10%, rgba(255, 255, 255, 0.2) 1px, transparent 1%),
-                      radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.1) 1.5px, transparent 1%),
-                      radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.15) 2px, transparent 1%),
-                      radial-gradient(circle at 30% 70%, rgba(255, 255, 255, 0.25) 0.5px, transparent 1%),
-                      radial-gradient(circle at 70% 80%, rgba(255, 255, 255, 0.1) 1px, transparent 1%);
+    /* 泡の模様をCSSグラデーションで作成（白色の透明度を上げて明るくする） */
+    background-image: radial-gradient(circle at 10% 10%, rgba(255, 255, 255, 0.5) 1px, transparent 1%), /* 変更 */
+                      radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.3) 1.5px, transparent 1%), /* 変更 */
+                      radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.4) 2px, transparent 1%), /* 変更 */
+                      radial-gradient(circle at 30% 70%, rgba(255, 255, 255, 0.6) 0.5px, transparent 1%), /* 変更 */
+                      radial-gradient(circle at 70% 80%, rgba(255, 255, 255, 0.3) 1px, transparent 1%); /* 変更 */
     
-    /* 泡のサイズと繰り返し設定 */
-    background-size: 200px 200px, 300px 300px, 250px 250px, 150px 150px, 400px 400px; 
+    /* 泡のサイズと繰り返し設定 (全体的に2倍に拡大) */
+    background-size: 400px 400px, 600px 600px, 500px 500px, 300px 300px, 800px 800px; /* 変更 */
     background-repeat: repeat;
     background-position: 0 0;
     
-    /* スクロール移動はJavaScriptで行うため、一旦トランジションは設定しない */
-    /* opacityを調整して、浅い海（works）では少し薄い泡にする */
-    opacity: 0.6; 
+    /* opacityを調整して、浅い海（works）でも目立つようにする */
+    opacity: 0.8; /* 変更 */
     
     /* 泡の初期位置をセクション全体に広げる */
     width: 100%;
@@ -150,13 +149,14 @@ a:not(.btn):hover {
     width: 100%;
     height: 200%; /* セクションの2倍の高さで、下半分に余裕を持たせてスクロール移動に対応 */
     
+    /* プロフィールセクションの泡のサイズも2倍に変更 */
     background-image: radial-gradient(circle at 10% 10%, rgba(255, 255, 255, 0.3) 1px, transparent 1%),
                       radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.2) 1.5px, transparent 1%),
                       radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.25) 2px, transparent 1%),
                       radial-gradient(circle at 30% 70%, rgba(255, 255, 255, 0.4) 0.5px, transparent 1%),
                       radial-gradient(circle at 70% 80%, rgba(255, 255, 255, 0.2) 1px, transparent 1%);
     
-    background-size: 200px 200px, 300px 300px, 250px 250px, 150px 150px, 400px 400px; 
+    background-size: 400px 400px, 600px 600px, 500px 500px, 300px 300px, 800px 800px; /* 変更 */
     background-repeat: repeat;
     background-position: 0 0;
     
@@ -384,41 +384,6 @@ p { margin-bottom: 20px; text-align: justify; }
     font-size: 1rem;
     line-height: 1.7;
     color: var(--text-color-dark);
-}
-
-/* プロフィール */
-#profile {
-    padding-top: 40px;
-}
-
-.member-list {
-    margin-top: 40px;
-}
-
-.member-item {
-    margin-bottom: 30px;
-    padding-left: 20px;
-    border-left: 3px solid #ddd;
-}
-
-.member-name {
-    font-size: 1.2rem;
-    color: var(--link-color-light); 
-    margin: 0 0 10px 0;
-}
-
-.member-description {
-    font-size: 0.95rem;
-    line-height: 1.7;
-}
-
-.sns-title {
-    font-size: 1.1rem;
-    margin-top: 50px;
-    margin-bottom: 20px;
-    color: var(--text-color-light);
-    border-bottom: 1px solid #aaa;
-    padding-bottom: 5px;
 }
 
 /* ボタン */
