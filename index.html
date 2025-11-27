@@ -10,54 +10,110 @@
     <meta property="og:url" content="https://kaizo-keikaku.github.io/">
     <meta property="og:type" content="website">
     <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text x=%2250%%22 y=%2250%%22 style=%22dominant-baseline:central;text-anchor:middle;font-size:90px;%22>🌊</text></svg>">
 </head>
 
 <body>
 
-    <!-- オープニングアニメーション -->
     <div id="opening-overlay">
         <div id="opening-text"></div>
     </div>
 
-    <div class="container site-content">
-        <header class="fade-up">
-            <h1 class="site-title">海象計画</h1>
-            <span class="subtitle">Walrus Project</span>
-        </header>
+    <nav id="nav-bar">
+        <div class="container nav-content">
+            <a href="#home" class="nav-title">海象計画</a>
+            <div class="nav-links">
+                <a href="#works">Works</a>
+                <a href="#profile">Profile</a>
+            </div>
+        </div>
+    </nav>
 
-        <section>
-            <p class="fade-up">
-                言葉の海を泳ぐ、緩やかな計画。<br>
-                ここは文学同人サークル「海象計画」のウェブサイトです。<br>
-                静かな波音のように、日々の思索と物語を記録しています。
+    <section id="home" class="first-view">
+        <div class="concept-content fade-up">
+            <h1 class="site-title">海象計画</h1>
+            <p class="subtitle">Walrus Project</p>
+            <p class="concept-text">
+                静謐な海を漂うような、言葉の記録。<br>
+                言葉の海を泳ぐ、緩やかな計画。
             </p>
+        </div>
+        <div class="scroll-indicator">scroll &rarr;</div>
+    </section>
+
+    <div class="container site-content">
+
+        <section id="works">
+            <h2 class="section-title fade-up">作品一覧 (Works)</h2>
+
+            <ul class="work-list">
+                <li class="work-item fade-up layout-left">
+                    <div class="work-media">
+                                                <a class="work-image-trigger" data-target="modal-work01">
+                            <img src="https://via.placeholder.com/300x400?text=Work+01+Cover" alt="『海辺の冬支度』表紙" loading="lazy">
+                        </a>
+                    </div>
+                    <div class="work-info">
+                        <span class="work-date">2024.11.26</span>
+                        <a class="work-trigger" data-target="modal-work01">『海辺の冬支度』</a>
+                        <p class="description">文芸フリマにて頒布した短編集。静かな波音と生活の記録。</p>
+                        <a href="#" class="btn btn-small">詳細・購入</a>
+                    </div>
+                </li>
+
+                <li class="work-item fade-up layout-right">
+                    <div class="work-media">
+                                                <a class="work-image-trigger" data-target="modal-work02">
+                            <img src="https://via.placeholder.com/300x400?text=Work+02+Cover" alt="『漂流する活字』表紙" loading="lazy">
+                        </a>
+                    </div>
+                    <div class="work-info">
+                        <span class="work-date">2024.05.20</span>
+                        <a class="work-trigger" data-target="modal-work02">『漂流する活字』</a>
+                        <p class="description">初期作品のアンソロジー。現在は頒布を終了しています。</p>
+                    </div>
+                </li>
+            </ul>
+        </section>
+        
+        <div class="hr-separator fade-up"></div>
+
+        <section id="profile">
+            <h2 class="section-title fade-up">海象計画について (Profile)</h2>
+            <p class="fade-up">
+                文学同人サークル「海象計画」は、言葉と静けさの探求をテーマに活動しています。
+            </p>
+
+            <div class="member-list">
+                <div class="member-item fade-up">
+                    <h3 class="member-name">催花亮太 (Saika Ryota)</h3>
+                    <p class="member-description">
+                        主に散文や詩を執筆。海と冬の情景を愛し、孤独と記憶をテーマに据えることが多い。
+                        静かな筆致で、日常に潜む微かな機微を捉えることを信条としている。
+                    </p>
+                </div>
+                <div class="member-item fade-up">
+                    <h3 class="member-name">榎田ブショネ (Enokida Bushone)</h3>
+                    <p class="member-description">
+                        物語や批評を担当。『白痴ゅうむ』のような、人間の内面の葛藤や不理解への苛立ちをグロテスクに描く作風が特徴的。
+                        現実の輪郭を曖昧にするような、実験的な表現を追求している。
+                    </p>
+                </div>
+            </div>
+
+            <h3 class="fade-up sns-title">各種SNS</h3>
             <div class="btn-area fade-up">
                 <a href="https://x.com/katsupan_hanto" target="_blank" class="btn">
-                    X (Profile) を見る
+                    X (Twitter)
+                </a>
+                <a href="#" target="_blank" class="btn">
+                    Note
                 </a>
             </div>
         </section>
 
-        <section>
-            <h2 class="fade-up">最新の作品</h2>
-
-            <ul class="work-list">
-                <li class="work-item fade-up">
-                    <span class="work-date">2024.11.26</span>
-                    <a class="work-trigger" data-target="modal-work01">『海辺の冬支度』</a>
-                    <p>文芸フリマにて頒布した短編集。静かな波音と生活の記録。</p>
-                </li>
-
-                <li class="work-item fade-up">
-                    <span class="work-date">2024.05.20</span>
-                    <a class="work-trigger" data-target="modal-work02">『漂流する活字』</a>
-                    <p>初期作品のアンソロジー。現在在庫切れ。</p>
-                </li>
-            </ul>
-        </section>
-
         <div class="btn-area fade-up">
-            <a href="https://twitter.com/intent/tweet?text=海象計画%20公式サイト&url=https://kaizo-keikaku.github.io/" target="_blank" class="btn btn-share">
+            <a href="https://twitter.com/intent/tweet?text=文学同人サークル%20海象計画%20公式サイト&url=https://kaizo-keikaku.github.io/" target="_blank" class="btn btn-share">
                 X で共有する
             </a>
         </div>
@@ -67,17 +123,16 @@
         </footer>
     </div>
 
-    <!-- モーダル1 -->
     <div id="modal-work01" class="modal-overlay" style="--modal-bg: #1d3a4e; --modal-text: #f4f1ea;">
         <button class="close-modal-btn">×</button>
         <div class="modal-content">
             <span class="work-date">2024.11.26 発行</span>
             <h2 style="border-left-color: #fff; margin-top:0;">海辺の冬支度</h2>
-            <p>
+            <p class="modal-spec">
                 <strong>仕様：</strong> 文庫サイズ / 120ページ / 800円<br>
                 <strong>著者：</strong> 海象計画
             </p>
-            <p style="margin-top: 40px;">
+            <p class="modal-text">
                 【あらすじ】<br>
                 古い灯台の近くに住む男と、言葉を失った少女のひと冬の物語。<br>
                 厳しい寒さの中で交わされる、温かいスープと断片的な記憶。
@@ -88,16 +143,15 @@
         </div>
     </div>
 
-    <!-- モーダル2 -->
     <div id="modal-work02" class="modal-overlay" style="--modal-bg: #3e2b2b; --modal-text: #e6e0d5;">
         <button class="close-modal-btn">×</button>
         <div class="modal-content">
             <span class="work-date">2024.05.20 発行</span>
             <h2 style="border-left-color: #e6e0d5; margin-top:0;">漂流する活字</h2>
-            <p>
+            <p class="modal-spec">
                 <strong>仕様：</strong> A5サイズ / 40ページ / 頒布終了<br>
             </p>
-            <p style="margin-top: 40px;">
+            <p class="modal-text">
                 【概要】<br>
                 初期の習作を集めたアンソロジー。<br>
                 今はもう手に入らない、断片的な思考の記録。
@@ -134,8 +188,11 @@ document.addEventListener("DOMContentLoaded", () => {
         } else {
             setTimeout(() => {
                 openingOverlay.classList.add("fade-out");
+                // フェードアウト完了後、bodyにno-scrollクラスを追加
+                document.body.classList.add("no-scroll");
                 setTimeout(() => {
                     openingOverlay.style.display = "none";
+                    document.body.classList.remove("no-scroll"); // スクロール禁止を解除
                     startScrollFadeIn();
                 }, 700);
             }, 1000);
@@ -155,13 +212,13 @@ document.addEventListener("DOMContentLoaded", () => {
                     observer.unobserve(entry.target);
                 }
             });
-        });
+        }, { rootMargin: '0px 0px -100px 0px' }); // ビューポートの下端から100px手前で発火
 
         targets.forEach(el => observer.observe(el));
     }
 
     // モーダル制御
-    const triggers = document.querySelectorAll(".work-trigger");
+    const triggers = document.querySelectorAll(".work-trigger, .work-image-trigger");
     const closeBtns = document.querySelectorAll(".close-modal-btn");
 
     triggers.forEach(trigger => {
@@ -178,6 +235,18 @@ document.addEventListener("DOMContentLoaded", () => {
             btn.closest(".modal-overlay").classList.remove("active");
             document.body.classList.remove("no-scroll");
         });
+    });
+
+    // ナビゲーションの固定
+    const nav = document.getElementById('nav-bar');
+    const firstView = document.getElementById('home');
+
+    window.addEventListener('scroll', () => {
+        if (window.scrollY >= firstView.offsetHeight) {
+            nav.classList.add('fixed');
+        } else {
+            nav.classList.remove('fixed');
+        }
     });
 
 });
