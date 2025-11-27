@@ -6,38 +6,43 @@
     <title>海象計画</title>
     <meta name="description" content="文学同人サークル「海象計画」の公式サイト。">
     <link rel="stylesheet" href="style.css">
-    </head>
+    <meta property="og:title" content="海象計画">
+    <meta property="og:description" content="静謐な海を漂うような、言葉の記録。">
+    <meta property="og:url" content="https://kaizo-keikaku.github.io/">
+    <meta property="og:type" content="website">
+</head>
 <body>
 
     <div class="container">
-        <header>
+        <header class="fade-up">
             <h1 class="site-title">海象計画</h1>
             <span class="subtitle">Walrus Project</span>
         </header>
 
         <section>
-            <p>
+            <p class="fade-up">
                 言葉の海を泳ぐ、緩やかな計画。<br>
-                ここは文学同人サークル「海象計画」のウェブサイトです。
+                ここは文学同人サークル「海象計画」のウェブサイトです。<br>
+                静かな波音のように、日々の思索と物語を記録しています。
             </p>
-            <div class="btn-area">
+            <div class="btn-area fade-up">
                 <a href="https://x.com/katsupan_hanto" target="_blank" class="btn">
-                    X (Profile)
+                    X (Profile) を見る
                 </a>
             </div>
         </section>
 
         <section>
-            <h2>最新の作品</h2>
+            <h2 class="fade-up">最新の作品</h2>
             <ul class="work-list">
                 
-                <li class="work-item">
+                <li class="work-item fade-up">
                     <span class="work-date">2024.11.26</span>
                     <a class="work-trigger" data-target="modal-work01">『海辺の冬支度』</a>
                     <p>文芸フリマにて頒布した短編集。静かな波音と生活の記録。</p>
                 </li>
 
-                <li class="work-item">
+                <li class="work-item fade-up">
                     <span class="work-date">2024.05.20</span>
                     <a class="work-trigger" data-target="modal-work02">『漂流する活字』</a>
                     <p>初期作品のアンソロジー。現在在庫切れ。</p>
@@ -46,13 +51,13 @@
             </ul>
         </section>
 
-        <div class="btn-area">
+        <div class="btn-area fade-up">
             <a href="https://twitter.com/intent/tweet?text=海象計画%20公式サイト&url=https://kaizo-keikaku.github.io/" target="_blank" class="btn btn-share">
                 X で共有する
             </a>
         </div>
 
-        <footer>
+        <footer class="fade-up">
             &copy; 2024 Kaizo Keikaku
         </footer>
     </div>
@@ -62,7 +67,9 @@
         <button class="close-modal-btn">×</button>
         <div class="modal-content">
             <span class="work-date">2024.11.26 発行</span>
-            <h2 style="border-left-color: #fff; margin-top:0;">海辺の冬支度</h2> <p>
+            <h2 style="border-left-color: #fff; margin-top:0;">海辺の冬支度</h2>
+            
+            <p>
                 <strong>仕様：</strong> 文庫サイズ / 120ページ / 800円<br>
                 <strong>著者：</strong> 海象計画
             </p>
@@ -72,8 +79,7 @@
                 厳しい寒さの中で交わされる、温かいスープと断片的な記憶。
             </p>
             <p>
-                暗い海のような背景色に、白い文字が浮かびます。<br>
-                作品の雰囲気に合わせて、このエリアの色を自由に変えてください。
+                （ここに試し読みテキストなどを入れると、没入感が高まります）
             </p>
             <div class="btn-area">
                 <a href="#" class="btn" style="border-color:currentColor; color:currentColor;">BOOTHで購入</a>
@@ -101,44 +107,46 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            
+            // 1. スクロール連動フェードイン
+            const fadeElements = document.querySelectorAll('.fade-up');
+            const scrollObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        scrollObserver.unobserve(entry.target);
+                    }
+                });
+            }, {
+                rootMargin: '0px 0px -50px 0px',
+                threshold: 0.1
+            });
+            fadeElements.forEach(el => scrollObserver.observe(el));
+
+            // 2. ポップアップ制御
             const triggers = document.querySelectorAll('.work-trigger');
             const closeBtns = document.querySelectorAll('.close-modal-btn');
             const body = document.body;
 
-            // 開く処理
             triggers.forEach(trigger => {
                 trigger.addEventListener('click', (e) => {
-                    e.preventDefault(); // リンク遷移を無効化
+                    e.preventDefault();
                     const targetId = trigger.getAttribute('data-target');
                     const targetModal = document.getElementById(targetId);
-                    
                     if (targetModal) {
                         targetModal.classList.add('active');
-                        body.classList.add('no-scroll'); // 背景固定
+                        body.classList.add('no-scroll');
                     }
                 });
             });
 
-            // 閉じる処理（×ボタン）
             closeBtns.forEach(btn => {
                 btn.addEventListener('click', () => {
                     const modal = btn.closest('.modal-overlay');
                     modal.classList.remove('active');
-                    body.classList.remove('no-scroll'); // 背景固定解除
+                    body.classList.remove('no-scroll');
                 });
             });
-
-            // 背景クリックでも閉じたい場合（任意）
-            /*
-            document.querySelectorAll('.modal-overlay').forEach(modal => {
-                modal.addEventListener('click', (e) => {
-                    if (e.target === modal) {
-                        modal.classList.remove('active');
-                        body.classList.remove('no-scroll');
-                    }
-                });
-            });
-            */
         });
     </script>
 </body>
