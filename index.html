@@ -4,13 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>海象計画</title>
-    <meta name="description" content="文学同人サークル「海象計画」の公式サイトです。">
+    <meta name="description" content="文学同人サークル「海象計画」の公式サイト。">
     <link rel="stylesheet" href="style.css">
-    <meta property="og:title" content="海象計画">
-    <meta property="og:description" content="静謐な海を漂うような、言葉の記録。">
-    <meta property="og:url" content="https://kaizo-keikaku.github.io/">
-    <meta property="og:type" content="website">
-</head>
+    </head>
 <body>
 
     <div class="container">
@@ -21,13 +17,12 @@
 
         <section>
             <p>
-                言葉の海、その下を揺蕩う巨大な計画<br>
-                ここは文学同人サークル「海象計画」のウェブサイトです。<br>
-                既刊情報や活動記録を掲載しています。
+                言葉の海を泳ぐ、緩やかな計画。<br>
+                ここは文学同人サークル「海象計画」のウェブサイトです。
             </p>
             <div class="btn-area">
                 <a href="https://x.com/katsupan_hanto" target="_blank" class="btn">
-                    X (Profile) を見る
+                    X (Profile)
                 </a>
             </div>
         </section>
@@ -35,21 +30,24 @@
         <section>
             <h2>最新の作品</h2>
             <ul class="work-list">
+                
                 <li class="work-item">
                     <span class="work-date">2024.11.26</span>
-                    <a href="work.html" class="work-title">海象</a>
-                    <p>文学作品集</p>
+                    <a class="work-trigger" data-target="modal-work01">『海辺の冬支度』</a>
+                    <p>文芸フリマにて頒布した短編集。静かな波音と生活の記録。</p>
                 </li>
+
                 <li class="work-item">
                     <span class="work-date">2024.05.20</span>
-                    <a href="#" class="work-title">出血</a>
-                    <p>詩集</p>
+                    <a class="work-trigger" data-target="modal-work02">『漂流する活字』</a>
+                    <p>初期作品のアンソロジー。現在在庫切れ。</p>
                 </li>
+
             </ul>
         </section>
 
         <div class="btn-area">
-            <a href="https://twitter.com/intent/tweet?text=海象計画%20公式サイト&url=https://kaizo.github.io/" target="_blank" class="btn btn-share">
+            <a href="https://twitter.com/intent/tweet?text=海象計画%20公式サイト&url=https://kaizo-keikaku.github.io/" target="_blank" class="btn btn-share">
                 X で共有する
             </a>
         </div>
@@ -59,5 +57,89 @@
         </footer>
     </div>
 
+
+    <div id="modal-work01" class="modal-overlay" style="--modal-bg: #1d3a4e; --modal-text: #f4f1ea;">
+        <button class="close-modal-btn">×</button>
+        <div class="modal-content">
+            <span class="work-date">2024.11.26 発行</span>
+            <h2 style="border-left-color: #fff; margin-top:0;">海辺の冬支度</h2> <p>
+                <strong>仕様：</strong> 文庫サイズ / 120ページ / 800円<br>
+                <strong>著者：</strong> 海象計画
+            </p>
+            <p style="margin-top: 40px;">
+                【あらすじ】<br>
+                古い灯台の近くに住む男と、言葉を失った少女のひと冬の物語。<br>
+                厳しい寒さの中で交わされる、温かいスープと断片的な記憶。
+            </p>
+            <p>
+                暗い海のような背景色に、白い文字が浮かびます。<br>
+                作品の雰囲気に合わせて、このエリアの色を自由に変えてください。
+            </p>
+            <div class="btn-area">
+                <a href="#" class="btn" style="border-color:currentColor; color:currentColor;">BOOTHで購入</a>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-work02" class="modal-overlay" style="--modal-bg: #3e2b2b; --modal-text: #e6e0d5;">
+        <button class="close-modal-btn">×</button>
+        <div class="modal-content">
+            <span class="work-date">2024.05.20 発行</span>
+            <h2 style="border-left-color: #e6e0d5; margin-top:0;">漂流する活字</h2>
+            
+            <p>
+                <strong>仕様：</strong> A5サイズ / 40ページ / 頒布終了<br>
+            </p>
+            <p style="margin-top: 40px;">
+                【概要】<br>
+                初期の習作を集めたアンソロジー。<br>
+                今はもう手に入らない、断片的な思考の記録。
+            </p>
+        </div>
+    </div>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const triggers = document.querySelectorAll('.work-trigger');
+            const closeBtns = document.querySelectorAll('.close-modal-btn');
+            const body = document.body;
+
+            // 開く処理
+            triggers.forEach(trigger => {
+                trigger.addEventListener('click', (e) => {
+                    e.preventDefault(); // リンク遷移を無効化
+                    const targetId = trigger.getAttribute('data-target');
+                    const targetModal = document.getElementById(targetId);
+                    
+                    if (targetModal) {
+                        targetModal.classList.add('active');
+                        body.classList.add('no-scroll'); // 背景固定
+                    }
+                });
+            });
+
+            // 閉じる処理（×ボタン）
+            closeBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const modal = btn.closest('.modal-overlay');
+                    modal.classList.remove('active');
+                    body.classList.remove('no-scroll'); // 背景固定解除
+                });
+            });
+
+            // 背景クリックでも閉じたい場合（任意）
+            /*
+            document.querySelectorAll('.modal-overlay').forEach(modal => {
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) {
+                        modal.classList.remove('active');
+                        body.classList.remove('no-scroll');
+                    }
+                });
+            });
+            */
+        });
+    </script>
 </body>
 </html>
