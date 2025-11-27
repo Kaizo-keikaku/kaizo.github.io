@@ -232,28 +232,28 @@ document.addEventListener("DOMContentLoaded", () => {
     
     let lastScrollY = 0;
     const worksSection = document.getElementById('works');
-    const profileSection = document.getElementById('profile');
     const oceanContainer = document.getElementById('unified-ocean-container');
     const unifiedBubbles = document.getElementById('unified-bubbles-background');
     
-    const BUBBLE_COUNT = 30; // 常に存在する泡の目標数
-    const BUBBLE_SPEED_MULTIPLIER = 1.5; // スクロール速度の1.5倍
-    const BUBBLE_SIZE_MIN = 10; // 【修正】最小直径 (px) - 10pxに縮小
-    const BUBBLE_SIZE_MAX = 25; // 【修正】最大直径 (px) - 25pxに縮小
-    const GENERATE_THRESHOLD = 50; // 50pxスクロールごとに新しい泡をチェック
+    // 【修正3: 泡の密度調整】
+    const BUBBLE_COUNT = 10; // 常に存在する泡の目標数 (30 -> 10)
+    const BUBBLE_SPEED_MULTIPLIER = 1.5; 
+    const BUBBLE_SIZE_MIN = 10; // 最小直径 (px)
+    const BUBBLE_SIZE_MAX = 25; // 最大直径 (px)
+    const GENERATE_THRESHOLD = 100; // 100pxスクロールごとに新しい泡をチェック (50 -> 100)
 
     let lastGenerateScroll = 0; // 最後に泡を生成したスクロール位置
-
+    let currentBubbleTransformY = 0; // 【新規】現在の泡コンテナのtransform値を保持
+    
     function getRandom(min, max) {
         return Math.random() * (max - min) + min;
     }
     
     /**
      * 新しい泡要素を生成し、ランダムな位置とサイズでDOMに追加する
-     * @param {number} initialY - ドキュメントトップからの絶対生成位置 (px)
      */
     function createBubble(container, initialY) {
-        if (!container || !worksSection || !profileSection) return;
+        if (!container || !worksSection) return;
         
         const bubble = document.createElement('div');
         bubble.classList.add('bubble');
@@ -272,7 +272,7 @@ document.addEventListener("DOMContentLoaded", () => {
         // ランダムなオフセットを適用
         bubble.style.top = `${relativeTop - getRandom(0, size * 2)}px`; 
         
-        // 泡の色を決定するクラスを追加 (WorksとProfileの境界で泡の色が変わるように)
+        // 泡の色を決定するクラスを追加 (worksセクションとprofileセクションの境界で泡の色が変わるように)
         const worksEndAbsolute = worksSection.offsetTop + worksSection.offsetHeight;
         if (initialY < worksEndAbsolute) {
              bubble.classList.add('bubble-works-color');
@@ -310,16 +310,17 @@ document.addEventListener("DOMContentLoaded", () => {
     /**
      * 画面外の上部に出た古い泡を削除する
      */
-    function removeOldBubbles(container, moveY) {
+    function removeOldBubbles(container) {
         if (!container) return;
 
         const bubbles = container.querySelectorAll('.bubble');
-        
+        // 削除の閾値: コンテナの相対位置 + transform値が-200pxを超えたら削除
+        const removeThreshold = -200; 
+
         bubbles.forEach(bubble => {
-            const bubbleTop = parseFloat(bubble.style.top);
-            // 泡の初期位置(top)と現在のスクロール移動量(moveY)を合計し、
-            // ビューポートの遥か上 (例: -2画面分) に出たら削除
-            if (bubbleTop + moveY < -window.innerHeight * 2) {
+            const bubbleTopRelative = parseFloat(bubble.style.top); 
+            // 泡のコンテナ相対位置 + 現在のコンテナの移動量 が閾値を超えたら削除
+            if (bubbleTopRelative + currentBubbleTransformY < removeThreshold) {
                 bubble.remove();
             }
         });
@@ -329,34 +330,49 @@ document.addEventListener("DOMContentLoaded", () => {
     function handleBubbleScroll() {
         const currentScrollY = window.scrollY;
         
-        // ドキュメントトップからのスクロール距離を基準に移動量を計算
-        const moveY = -(currentScrollY * BUBBLE_SPEED_MULTIPLIER); 
+        // 【修正1: スクロール方向による動きの制御】
+        if (currentScrollY < lastScrollY) {
+            // スクロールアップ時（深海から浅瀬に戻る時）: 泡を上昇させるため、視差効果を適用
+            // 泡の背景をスクロール速度よりも速い速度で下に動かす
+            currentBubbleTransformY = -(currentScrollY * BUBBLE_SPEED_MULTIPLIER); 
+            
+            if (unifiedBubbles) {
+                unifiedBubbles.style.transform = `translateY(${currentBubbleTransformY}px)`;
+            }
+        } else {
+            // スクロールダウン時: 泡を動かさない（コンテンツと一緒に動かし、相対的に沈降/静止させる）
+            // transformの値を更新しないことで、前回の位置に留まり、コンテンツと共にスクロールアップする
+            // 何もしない
+        } 
         
-        // Unified Bubblesを動かす
-        if (unifiedBubbles) {
-            unifiedBubbles.style.transform = `translateY(${moveY}px)`;
-        }
+        // --- 【修正2: 連続生成のロジック】 ---
         
-        // スクロールダウン時のみ生成と削除を実行（ユーザー要望）
+        const oceanStartAbsolute = oceanContainer.offsetTop;
+        const oceanEndAbsolute = oceanContainer.offsetTop + oceanContainer.offsetHeight;
+        const scrollBottom = currentScrollY + window.innerHeight; // 画面下端の絶対位置
+        
+        // スクロールダウン時のみ生成を実行
         if (currentScrollY >= lastScrollY) {
             
-            // --- 【連続生成のロジック】 ---
-            const scrollDistanceSinceLastGenerate = currentScrollY - lastGenerateScroll;
+            // 画面がunified-ocean-container内にある、または終了バッファ（画面の高さ1つ分）にあることを確認
+            if (currentScrollY >= oceanStartAbsolute - window.innerHeight && scrollBottom < oceanEndAbsolute + window.innerHeight) {
 
-            if (scrollDistanceSinceLastGenerate >= GENERATE_THRESHOLD) {
-                
-                // 画面下端 + 50px あたりを基準に生成位置を設定
-                const generationY = currentScrollY + window.innerHeight + 50; 
-                
-                // 泡を生成（連続生成のため、コンテナの終端チェックは不要）
-                createBubble(unifiedBubbles, generationY); 
-                
-                // 画面外に出た泡の削除
-                removeOldBubbles(unifiedBubbles, moveY);
+                const scrollDistanceSinceLastGenerate = currentScrollY - lastGenerateScroll;
 
-                lastGenerateScroll = currentScrollY;
+                if (scrollDistanceSinceLastGenerate >= GENERATE_THRESHOLD) {
+                    
+                    // 画面下端 + 50px あたりを基準に生成位置を設定
+                    const generationY = currentScrollY + window.innerHeight + 50; 
+                    
+                    createBubble(unifiedBubbles, generationY); 
+                    
+                    // 古い泡の削除チェック
+                    removeOldBubbles(unifiedBubbles);
+
+                    lastGenerateScroll = currentScrollY;
+                }
             }
-        } 
+        }
 
         lastScrollY = currentScrollY;
     }
@@ -375,7 +391,7 @@ document.addEventListener("DOMContentLoaded", () => {
     
     // --- 【既存の処理】 ---
 
-    // モーダル制御 (省略)
+    // モーダル制御
     const triggers = document.querySelectorAll(".work-trigger, .work-image-trigger");
     const closeBtns = document.querySelectorAll(".close-modal-btn");
 
