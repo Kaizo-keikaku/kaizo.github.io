@@ -1,10 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Zen+Old+Mincho:wght@400;700&display=swap');
 
 :root {
-    --bg-color: #f4f1ea;       /* サイト全体の背景（生成り） */
-    --text-color: #333333;     /* サイト全体の文字（墨色） */
-    --accent-color: #1d3a4e;   /* アクセント（鉄紺） */
-    --link-color: #5d7d9a;     /* リンク色 */
+    --bg-color: #f4f1ea;       /* 和紙のような生成り色 */
+    --text-color: #333333;     /* 墨色 */
+    --accent-color: #1d3a4e;   /* 深い鉄紺色 */
+    --link-color: #5d7d9a;     /* 落ち着いた青 */
     --font-main: 'Zen Old Mincho', 'Times New Roman', serif;
 }
 
@@ -18,6 +18,8 @@ body {
     margin: 0;
     padding: 0;
     letter-spacing: 0.05em;
+    /* 横スクロール防止 */
+    overflow-x: hidden; 
 }
 
 /* ポップアップ表示時に背景をスクロールさせないためのクラス */
@@ -25,6 +27,38 @@ body.no-scroll {
     overflow: hidden;
 }
 
+/* --------------------------------------------------------
+   演出：画面全体のノイズ（ザラつき）
+   -------------------------------------------------------- */
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none; /* 下のリンクをクリックできるようにする */
+    z-index: 9999;
+    opacity: 0.05; /* ザラつきの濃さ */
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
+/* --------------------------------------------------------
+   演出：ふわっと浮き上がるアニメーション
+   -------------------------------------------------------- */
+.fade-up {
+    opacity: 0;
+    transform: translateY(30px); /* 下から上へ */
+    transition: opacity 1.2s ease-out, transform 1.2s ease-out;
+    will-change: opacity, transform;
+}
+
+.fade-up.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* リンク */
 a {
     color: var(--link-color);
     text-decoration: none;
@@ -32,8 +66,15 @@ a {
     cursor: pointer;
 }
 
-a:hover { opacity: 0.7; }
+/* 演出：リンクのホバー（沈み込む動き） */
+a:not(.btn):hover {
+    opacity: 0.6;
+    display: inline-block;
+    transform: translateX(3px); /* 右へ少しズレる */
+    transition: all 0.4s ease;
+}
 
+/* レイアウト */
 .container {
     max-width: 700px;
     margin: 0 auto;
@@ -75,7 +116,7 @@ p { margin-bottom: 20px; text-align: justify; }
 .work-item { margin-bottom: 40px; }
 .work-date { font-size: 0.85rem; color: #888; display: block; margin-bottom: 5px; }
 
-/* 作品タイトル（クリックできるようにスタイル調整） */
+/* 作品タイトル（トリガー） */
 .work-trigger {
     font-size: 1.2rem;
     font-weight: bold;
@@ -105,15 +146,22 @@ p { margin-bottom: 20px; text-align: justify; }
     color: var(--accent-color);
     border-radius: 2px;
     font-size: 0.9rem;
+    transition: all 0.3s;
 }
-.btn:hover { background-color: var(--accent-color); color: #fff; }
+.btn:hover {
+    background-color: var(--accent-color);
+    color: #fff;
+    transform: translateY(-2px); /* ボタンは少し浮く */
+}
 
 .btn-share { background-color: #000; color: #fff; border: 1px solid #000; }
-.btn-share:hover { background-color: #333; }
+.btn-share:hover { background-color: #333; opacity: 1; }
 
 footer { text-align: center; margin-top: 100px; font-size: 0.8rem; color: #888; }
 
-/* --- ここからポップアップ（モーダル）のスタイル --- */
+/* --------------------------------------------------------
+   ポップアップ（モーダル）設定
+   -------------------------------------------------------- */
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -125,20 +173,18 @@ footer { text-align: center; margin-top: 100px; font-size: 0.8rem; color: #888; 
     /* 初期状態は非表示 */
     opacity: 0;
     visibility: hidden;
-    transition: opacity 0.4s ease, visibility 0.4s ease;
+    transition: opacity 0.6s ease, visibility 0.6s ease;
 
     /* HTML側のstyle属性で指定された色を使う変数 */
     background-color: var(--modal-bg, #fff);
     color: var(--modal-text, #333);
     
-    /* 中身が長い場合にスクロールできるようにする */
     overflow-y: auto;
     display: flex;
     justify-content: center;
-    align-items: flex-start; /* 上揃え */
+    align-items: flex-start;
 }
 
-/* ポップアップが表示される時のクラス */
 .modal-overlay.active {
     opacity: 1;
     visibility: visible;
@@ -147,23 +193,21 @@ footer { text-align: center; margin-top: 100px; font-size: 0.8rem; color: #888; 
 .modal-content {
     width: 100%;
     max-width: 800px;
-    padding: 80px 20px 100px; /* 上下に余白 */
+    padding: 80px 20px 100px;
     position: relative;
-    /* フェードインしながら少し浮き上がる演出 */
     transform: translateY(20px);
-    transition: transform 0.4s ease;
+    transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1); /* 余韻のある動き */
 }
 
 .modal-overlay.active .modal-content {
     transform: translateY(0);
 }
 
-/* 閉じるボタン */
 .close-modal-btn {
-    position: fixed; /* スクロールしても右上に固定 */
+    position: fixed;
     top: 20px;
     right: 30px;
-    font-size: 3rem; /* 大きく */
+    font-size: 3rem;
     font-weight: 100;
     cursor: pointer;
     background: none;
@@ -171,16 +215,13 @@ footer { text-align: center; margin-top: 100px; font-size: 0.8rem; color: #888; 
     line-height: 1;
     z-index: 1100;
     font-family: var(--font-main);
-    color: inherit; /* 背景に合わせて文字色を継承 */
+    color: inherit;
     opacity: 0.7;
     transition: opacity 0.3s;
 }
 
-.close-modal-btn:hover {
-    opacity: 1;
-}
+.close-modal-btn:hover { opacity: 1; }
 
-/* モーダル内のリンク色を調整（背景によっては見づらいため） */
 .modal-overlay a {
     color: inherit;
     text-decoration: underline;
