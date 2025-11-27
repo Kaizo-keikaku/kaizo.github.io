@@ -12,8 +12,6 @@
     --link-color-dark: #5d7d9a;
     --link-color-light: #b0c9f0; /* 深海セクション用 */
     
-    --spot-color: #ff595f; /* ★追加: さし色として鮮やかな赤を使用 */
-    
     --font-main: 'Zen Old Mincho', serif;
     --header-height: 60px; /* ナビゲーションバーの高さ */
 }
@@ -174,7 +172,7 @@ a:not(.btn):hover {
     align-items: center;
     position: relative;
     text-align: center;
-    background-color: var(--bg-color-home); 
+    background-color: var(--bg-color-home); /* 明示的に背景色を指定 */
 }
 
 .concept-content {
@@ -302,14 +300,14 @@ p { margin-bottom: 20px; text-align: justify; }
 .work-trigger {
     font-size: 1.5rem;
     font-weight: bold;
-    color: var(--text-color-dark); 
+    color: var(--text-color-dark); /* 浅い海セクションなので濃い色 */
     border-bottom: 1px solid transparent;
     display: inline-block;
     line-height: 1.4;
 }
 
 .work-trigger:hover {
-    border-bottom: 1px solid var(--spot-color); /* ★作品タイトルホバー時の色にさし色を適用 */
+    border-bottom: 1px solid var(--accent-color);
     transform: none; 
 }
 
@@ -338,7 +336,7 @@ p { margin-bottom: 20px; text-align: justify; }
 
 .member-name {
     font-size: 1.2rem;
-    color: var(--link-color-light); 
+    color: var(--link-color-light); /* 深海セクションなので明るい色 */
     margin: 0 0 10px 0;
 }
 
@@ -369,20 +367,12 @@ p { margin-bottom: 20px; text-align: justify; }
 .btn {
     padding: 12px 30px;
     border: 1px solid;
-    color: var(--text-color-dark); 
-    border-color: var(--accent-color); 
+    color: var(--text-color-dark); /* デフォルトのボタン文字色 */
+    border-color: var(--accent-color); /* デフォルトのボタン枠線色 */
     transition: .3s;
     display: inline-block;
     font-size: 1rem;
     line-height: 1; 
-}
-
-/* 作品紹介セクションのボタンホバー */
-#works .btn:hover {
-    background: var(--spot-color); /* ★さし色を適用 */
-    color: #fff;
-    transform: translateY(-2px);
-    opacity: 1; 
 }
 
 /* プロフィールセクションのボタン調整 */
@@ -393,7 +383,14 @@ p { margin-bottom: 20px; text-align: justify; }
 
 #profile .btn:hover {
     background: var(--text-color-light);
-    color: var(--bg-color-profile); 
+    color: var(--bg-color-profile); /* ホバー時、文字色を深海の色に */
+    transform: translateY(-2px);
+    opacity: 1; 
+}
+
+.btn:hover {
+    background: var(--accent-color);
+    color: #fff;
     transform: translateY(-2px);
     opacity: 1; 
 }
@@ -404,24 +401,21 @@ p { margin-bottom: 20px; text-align: justify; }
     line-height: 1;
 }
 
-/* 共有ボタンはXのブランドカラーを維持 */
+/* 共有ボタンは共通 */
 .btn-share {
     background: #000;
     color: #fff;
     border-color: #000;
 }
 
-.btn-share:hover { 
-    background: var(--spot-color); /* ★共有ボタンのホバーにさし色を適用 */
-    border-color: var(--spot-color); 
-}
+.btn-share:hover { background: #333; }
 
 /* フッター */
 footer {
     padding-top: 20px;
     text-align: center;
     font-size: 0.8rem;
-    color: #999; /* 深海セクションのフッター文字色を微調整 */
+    color: #666;
 }
 
 /* モーダルはそのまま */
