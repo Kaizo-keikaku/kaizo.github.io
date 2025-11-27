@@ -292,7 +292,10 @@ p { margin-bottom: 20px; text-align: justify; }
 .wave-separator {
     width: 100%;
     line-height: 0;
-    background-color: var(--bg-color-home);
+    /* 波要素を#unified-ocean-container内に移動したため、背景色は白を保持し、
+       SVGで色が塗られている部分と、#homeセクションからの色の繋がりを確保 */
+    background-color: var(--bg-color-home); 
+    position: relative; /* SVGが泡の上に表示されるように、z-indexは設定せず、z-index:1の泡の上に配置される */
 }
 
 .wave-separator svg {
@@ -566,6 +569,79 @@ footer {
     50% { border-color: var(--accent-color); }
 }
 
+/* ⛵ ヨットのスタイルとアニメーション (追加) */
+
+/* ヨットの浮遊アニメーション */
+@keyframes float {
+    0% { transform: translate(-50%, 0); }
+    50% { transform: translate(-50%, -5px); }
+    100% { transform: translate(-50%, 0); }
+}
+
+/* ヨットコンテナ */
+#yacht-container {
+    position: absolute;
+    /* #unified-ocean-container の開始位置 (波の上部) に配置 */
+    top: 0; 
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none; 
+    z-index: 5; /* 泡や波の上に表示 */
+}
+
+.yacht {
+    position: absolute;
+    /* 波の山のピーク（画面中央よりやや右）に配置 */
+    left: 70%; 
+    /* 波のピークに合わせて垂直位置を調整 */
+    top: 45px; 
+    width: 60px; 
+    height: 60px;
+    /* アニメーションの初期位置調整とアニメーション適用 */
+    transform: translateX(-50%);
+    animation: float 4s ease-in-out infinite;
+}
+
+/* 船体 */
+.hull {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 10px;
+    background-color: #ff593f; /* 指定色 */
+    border-radius: 5px 5px 0 0;
+}
+
+/* メインセイル (後側の帆) */
+.sail-main {
+    position: absolute;
+    top: -60px;
+    left: 30px;
+    width: 0;
+    height: 0;
+    border-left: 2px solid #333; /* マスト */
+    border-bottom: 50px solid #fff; /* 帆の色 */
+    border-right: 25px solid transparent; 
+    border-top: 0px solid transparent; 
+    transform: skewY(5deg);
+}
+
+/* ジブセイル (前側の帆) */
+.sail-jib {
+    position: absolute;
+    top: -60px;
+    left: 30px;
+    width: 0;
+    height: 0;
+    border-top: 50px solid #fff; /* 帆の色 */
+    border-left: 20px solid transparent; 
+    border-right: 0px solid transparent;
+    transform: skewY(-10deg) translateX(-20px);
+    opacity: 0.9;
+}
+
 /* レスポンシブ対応 */
 @media (max-width: 900px) {
     .site-title { font-size: 3rem; letter-spacing: 0.2em; }
@@ -598,6 +674,31 @@ footer {
     }
     
     .nav-links a { margin-left: 20px; }
+    
+    /* ヨットのサイズを調整 */
+    .yacht {
+        width: 40px; 
+        height: 40px;
+        top: 30px; /* 位置も再調整 */
+        left: 65%;
+    }
+    
+    .sail-main {
+        top: -40px;
+        border-bottom: 35px solid #fff;
+        border-right: 18px solid transparent;
+    }
+    
+    .sail-jib {
+        top: -40px;
+        border-top: 35px solid #fff;
+        border-left: 14px solid transparent;
+        transform: skewY(-10deg) translateX(-14px);
+    }
+    
+    .hull {
+        height: 7px;
+    }
 }
 
 @media (max-width: 768px) {
