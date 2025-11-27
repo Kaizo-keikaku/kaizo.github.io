@@ -47,9 +47,9 @@
         </svg>
     </div>
 
-    <div id="deep-sea-area">
+    <div id="unified-ocean-container">
         
-        <div class="bubbles-background" id="combined-bubbles-background"></div>
+        <div class="bubbles-background" id="unified-bubbles-background"></div>
 
         <section id="works">
             <div class="container site-content">
@@ -126,12 +126,15 @@
                     </a>
                 </div>
 
-                <footer class="fade-up">
-                    &copy; 2024 Kaizo Keikaku
-                </footer>
             </div>
+            
+            <footer class="fade-up">
+                &copy; 2024 Kaizo Keikaku
+            </footer>
         </section>
-    </div> <div id="modal-work01" class="modal-overlay" style="--modal-bg: #1d3a4e; --modal-text: #f4f1ea;">
+        
+    </div>
+    <div id="modal-work01" class="modal-overlay" style="--modal-bg: #1d3a4e; --modal-text: #f4f1ea;">
         <button class="close-modal-btn">×</button>
         <div class="modal-content">
             <span class="work-date">2024.11.26 発行</span>
@@ -228,12 +231,12 @@ document.addEventListener("DOMContentLoaded", () => {
     // --- 【修正・追加した処理：泡の動的生成とスクロール制御】 ---
     
     let lastScrollY = 0;
-    const deepSeaArea = document.getElementById('deep-sea-area'); // 新しい親コンテナ
     const worksSection = document.getElementById('works');
     const profileSection = document.getElementById('profile');
-    const combinedBubbles = document.getElementById('combined-bubbles-background'); // 統合された泡コンテナ
+    const oceanContainer = document.getElementById('unified-ocean-container');
+    const unifiedBubbles = document.getElementById('unified-bubbles-background');
     
-    const BUBBLE_COUNT = 30; // 常に各セクションに存在する泡の目標数
+    const BUBBLE_COUNT = 30; // 常に存在する泡の目標数
     const BUBBLE_SPEED_MULTIPLIER = 1.5; // スクロール速度の1.5倍
     const BUBBLE_SIZE_MIN = 40; // 最小直径 (px)
     const BUBBLE_SIZE_MAX = 100; // 最大直径 (px)
@@ -248,7 +251,7 @@ document.addEventListener("DOMContentLoaded", () => {
     /**
      * 新しい泡要素を生成し、ランダムな位置とサイズでDOMに追加する
      */
-    function createBubble(container, wrapperHeight, spawnY) {
+    function createBubble(container, containerHeight, initialY) {
         const bubble = document.createElement('div');
         bubble.classList.add('bubble');
         
@@ -258,8 +261,18 @@ document.addEventListener("DOMContentLoaded", () => {
         bubble.style.width = `${size}px`;
         bubble.style.height = `${size}px`;
         bubble.style.left = `${x}%`;
-        // スクロール時の現在位置 + 補正を加えたトップ位置
-        bubble.style.top = `${spawnY}px`; 
+        
+        // initialY (ドキュメントトップからの絶対位置) からコンテナのオフセットを引いて相対位置を計算
+        const containerTop = oceanContainer.offsetTop; 
+        bubble.style.top = `${initialY - containerTop - getRandom(0, containerHeight / 2)}px`; 
+        
+        // 泡の色を決定するクラスを追加 (worksセクションとprofileセクションの境界で泡の色が変わるように)
+        const worksEndAbsolute = worksSection.offsetTop + worksSection.offsetHeight;
+        if (initialY < worksEndAbsolute) {
+             bubble.classList.add('bubble-works-color');
+        } else {
+             bubble.classList.add('bubble-profile-color');
+        }
         
         // ランダムな時間差でフェードイン
         setTimeout(() => {
@@ -272,33 +285,18 @@ document.addEventListener("DOMContentLoaded", () => {
     /**
      * 指定されたコンテナ内に泡を初期生成・配置する関数
      */
-    function initializeBubbles(container, wrapper) {
-        if (!container || !wrapper) return;
+    function initializeBubbles(container, section) {
+        if (!container || !section) return;
         container.innerHTML = '';
         
-        // 泡の初期配置範囲 (Wrapperの高さ)
-        const wrapperHeight = wrapper.offsetHeight; 
+        // 泡の初期配置範囲 (コンテナ全体の高さ)
+        const containerHeight = section.offsetHeight; 
+        const containerTop = section.offsetTop;
 
         for (let i = 0; i < BUBBLE_COUNT; i++) {
-            const bubble = document.createElement('div');
-            bubble.classList.add('bubble');
-            
-            const size = getRandom(BUBBLE_SIZE_MIN, BUBBLE_SIZE_MAX);
-            const x = getRandom(0, 100); 
-            // Wrapperの高さの範囲でランダムなY座標に初期配置
-            const y = getRandom(0, wrapperHeight); 
-            
-            bubble.style.width = `${size}px`;
-            bubble.style.height = `${size}px`;
-            bubble.style.left = `${x}%`;
-            bubble.style.top = `${y}px`; 
-            
-            // ランダムな時間差でフェードイン
-            setTimeout(() => {
-                bubble.style.opacity = getRandom(0.4, 1);
-            }, getRandom(0, 500));
-            
-            container.appendChild(bubble);
+            // 初期配置では、コンテナの上端から下端までの範囲にランダムに配置
+            const initialY = containerTop + getRandom(0, containerHeight);
+            createBubble(container, containerHeight, initialY); 
         }
     }
     
@@ -311,7 +309,6 @@ document.addEventListener("DOMContentLoaded", () => {
         const bubbles = container.querySelectorAll('.bubble');
         if (bubbles.length > BUBBLE_COUNT * 2) { 
             // 制限数を超えたら、最も古い泡を削除
-            // 泡はFIFOキューとして扱われるため、インデックス0から削除
             for (let i = 0; i < bubbles.length - BUBBLE_COUNT; i++) {
                 bubbles[i].remove(); 
             }
@@ -322,47 +319,37 @@ document.addEventListener("DOMContentLoaded", () => {
     function handleBubbleScroll() {
         const currentScrollY = window.scrollY;
         
-        // deepSeaAreaの開始位置
-        const areaStartOffset = deepSeaArea.offsetTop;
-        // deepSeaAreaの終了位置 (画面外に出るまで)
-        const areaEndOffset = areaStartOffset + deepSeaArea.offsetHeight;
-
-        // deepSeaAreaの範囲内、またはその手前でスクロールダウンしている場合に処理を実行
-        if (currentScrollY >= areaStartOffset) {
+        // スクロールダウン時のみ処理を実行（ユーザー要望）
+        if (currentScrollY >= lastScrollY) {
             
             // ドキュメントトップからのスクロール距離を基準に移動量を計算
             const moveY = -(currentScrollY * BUBBLE_SPEED_MULTIPLIER); 
             
-            // 泡コンテナを動かす
-            if (combinedBubbles) {
-                combinedBubbles.style.transform = `translateY(${moveY}px)`;
+            // Unified Bubblesを動かす
+            if (unifiedBubbles) {
+                unifiedBubbles.style.transform = `translateY(${moveY}px)`;
             }
             
             // --- 【新規】ランダム生成のロジック ---
-            const scrollDistanceSinceLastGenerate = currentScrollY - lastGenerateScroll;
+            const oceanStart = oceanContainer.offsetTop;
+            const oceanEnd = oceanStart + oceanContainer.offsetHeight;
+            
+            // スクロールがOcean Containerの範囲内の場合のみ生成チェック
+            if (currentScrollY >= oceanStart - window.innerHeight && currentScrollY < oceanEnd) {
 
-            // deepSeaAreaが表示されている場合に生成
-            // areaEndOffset + window.innerHeight は、セクションが画面から完全に消えるまで生成を続けるための余裕
-            if (currentScrollY < areaEndOffset + window.innerHeight) { 
-                
-                if (currentScrollY > lastScrollY && scrollDistanceSinceLastGenerate >= GENERATE_THRESHOLD) {
-                    
-                    // 泡コンテナ内のY座標を計算
-                    // (現在のスクロール位置 + 画面の高さ) はドキュメント上のビューポートの底辺
-                    const viewportBottomOnDocument = currentScrollY + window.innerHeight;
-                    
-                    // コンテナ内の配置Y座標 (画面の底に泡が出現するように逆算)
-                    // Y位置 = (ビューポートの底) - (Deep Sea Areaの開始位置) - (泡コンテナの移動量: 負の値)
-                    const baseSpawnY = viewportBottomOnDocument - areaStartOffset - moveY;
+                const scrollDistanceSinceLastGenerate = currentScrollY - lastGenerateScroll;
 
-                    // 画面の底部周辺 (ビューポートの高さの20%の範囲) でランダムに生成
-                    const spawnY = baseSpawnY + getRandom(0, window.innerHeight * 0.2); 
+                if (scrollDistanceSinceLastGenerate >= GENERATE_THRESHOLD) {
                     
-                    // 泡を生成
-                    createBubble(combinedBubbles, deepSeaArea.offsetHeight, spawnY); 
+                    // 画面下端 + 100px あたりを基準に生成位置を設定
+                    const generationY = currentScrollY + window.innerHeight + 100;
                     
-                    // 画面外に出た泡の削除
-                    removeOldBubbles(combinedBubbles);
+                    // 生成位置がコンテナの終了位置より下でないことを確認
+                    if (generationY < oceanEnd + window.innerHeight) {
+                        createBubble(unifiedBubbles, window.innerHeight, generationY); 
+                    }
+                    
+                    removeOldBubbles(unifiedBubbles);
 
                     lastGenerateScroll = currentScrollY;
                 }
@@ -374,9 +361,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // ページのロード後に初期化関数を実行
     window.addEventListener('load', () => {
-        // Wrapperの高さが確定してから実行
-        initializeBubbles(combinedBubbles, deepSeaArea);
-        handleBubbleScroll(); // 初回実行
+        // コンテナの高さが確定してから実行
+        initializeBubbles(unifiedBubbles, oceanContainer);
+        handleBubbleScroll();
     });
     
     // スクロールイベントを登録
