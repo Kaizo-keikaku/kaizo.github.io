@@ -83,6 +83,8 @@
     </section>
     
     <section id="profile" class="bg-profile">
+        <div class="bubbles-background" id="bubbles-background"></div>
+        
         <div class="container site-content">
             <h2 class="section-title fade-up">海象計画について (Profile)</h2>
             <p class="fade-up">
@@ -221,6 +223,48 @@ document.addEventListener("DOMContentLoaded", () => {
 
         targets.forEach(el => observer.observe(el));
     }
+    
+    // --- 【追加・修正した処理】 ---
+    
+    let lastScrollY = 0;
+    const bubbles = document.getElementById('bubbles-background');
+    
+    // スクロール時の背景移動処理
+    function handleBubbleScroll() {
+        const currentScrollY = window.scrollY;
+        
+        // スクロールダウン時のみ処理を実行
+        if (currentScrollY > lastScrollY) {
+            // homeセクションの終わり（worksセクションの始まり）を基準にする
+            const worksStartOffset = document.getElementById('works').offsetTop;
+            
+            // 泡を動かす対象セクション内でのスクロール距離を計算
+            // スクロールトップがworksセクション開始位置を超えたら処理を開始
+            if (currentScrollY >= worksStartOffset) {
+                // worksセクション開始位置からのスクロール距離
+                const scrollDistance = currentScrollY - worksStartOffset; 
+                
+                // 1.5倍の距離だけ上に移動させる
+                // 背景要素は固定で、中身の泡を-1.5 * スクロール距離 だけY軸方向に移動させる
+                const moveY = -(scrollDistance * 1.5); 
+                
+                if (bubbles) {
+                    bubbles.style.transform = `translateY(${moveY}px)`;
+                }
+            }
+        } else {
+            // スクロールアップ時は泡の動きを停止（最後の位置を保持）
+            // CSSの移動が適用されたまま、スクロールYの更新のみ行う
+            // bubbles.style.transformは変更しない
+        }
+
+        lastScrollY = currentScrollY;
+    }
+
+    // スクロールイベントを登録
+    window.addEventListener('scroll', handleBubbleScroll);
+    
+    // --- 【既存の処理】 ---
 
     // モーダル制御
     const triggers = document.querySelectorAll(".work-trigger, .work-image-trigger");
@@ -253,7 +297,9 @@ document.addEventListener("DOMContentLoaded", () => {
             nav.classList.remove('fixed');
         }
     });
-
+    
+    // 初回実行
+    handleBubbleScroll();
 });
 </script>
 
