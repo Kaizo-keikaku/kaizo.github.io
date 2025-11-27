@@ -1,6 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Zen+Old+Mincho:wght@400;700&display=swap');
 
-/* FIX: セクション背景用の変数を再定義 */
 :root {
     --bg-color-home: #f4f1ea; /* コンセプト: 海上 */
     --bg-color-works: #c0d6d1; /* 作品紹介: 浅い海 */
@@ -14,7 +13,7 @@
     --link-color-light: #b0c9f0; /* 深海セクション用 */
     
     --font-main: 'Zen Old Mincho', serif;
-    --header-height: 60px; 
+    --header-height: 60px; /* ナビゲーションバーの高さ */
 }
 
 * { box-sizing: border-box; }
@@ -25,7 +24,6 @@ body {
     margin: 0;
     padding: 0;
     font-family: var(--font-main);
-    /* FIX: 背景色にHomeの変数を適用 */
     background: var(--bg-color-home); 
     color: var(--text-color-dark);
     line-height: 2;
@@ -60,7 +58,7 @@ body::before {
 
 /* リンク */
 a {
-    color: var(--link-color-dark); /* FIX: 変数名をlink-color-darkに修正 */
+    color: var(--link-color-dark); 
     text-decoration: none;
     transition: 0.3s;
 }
@@ -84,78 +82,86 @@ a:not(.btn):hover {
     z-index: 2;
 }
 
-/* 波のセパレーター */
-.wave-separator {
-    width: 100%;
-    line-height: 0;
-    background-color: var(--bg-color-home);
-}
-
-.wave-separator svg {
-    display: block;
-    width: 100%;
-    height: auto;
-}
-
-/* FIX: WorksとProfileを包むコンテナ (バブルの位置決め用) */
-.ocean-content-wrapper {
-    position: relative; 
-    width: 100%;
-    /* heightは子要素のsectionに依存するためautoのまま */
-    overflow: hidden; /* 泡の要素がはみ出さないように */
-}
-
-/* FIX: セクション背景色の設定 */
+/* セクション背景色の設定 */
 #works {
     background-color: var(--bg-color-works);
     color: var(--text-color-dark);
     position: relative; 
-    z-index: 2; /* コンテンツが泡の上にくるように */
+    overflow: hidden; 
 }
 
 #profile {
-    /* FIX: グラデーションを再定義 */
     background: linear-gradient(to bottom, var(--bg-color-works), var(--bg-color-profile)); 
     color: var(--text-color-light); 
+    padding-top: 40px;
     position: relative; 
-    z-index: 2; /* コンテンツが泡の上にくるように */
+    overflow: hidden; 
 }
 
-/* FIX: 単一の動く泡背景レイヤー */
+/* 泡の移動コンテナの共通定義 */
 .bubbles-background {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
-    /* worksとprofileをカバーし、さらにスクロール量に耐えうる高さを設定 */
-    height: 300vh; 
+    height: 100%; 
     z-index: 1; 
     pointer-events: none;
     transition: transform 0.05s linear; 
 }
 
-.bubbles-background::before {
+/* 泡のエフェクト（コンテンツは::beforeで実装） */
+/* ------------------------------------------- */
+
+/* 作品紹介の泡 (#works-bubbles-background) */
+#works-bubbles-background::before {
     content: '';
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
-    /* 泡のパターン画像をcontainerの高さまで広げる */
-    height: 100%;
+    height: 200%; 
     
-    /* 修正: 泡の色（透明度）とサイズを適用 (WorksとProfile共通) */
-    background-image: radial-gradient(circle at 10% 10%, rgba(255, 255, 255, 0.5) 3px, transparent 3px),
-                      radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.3) 4.5px, transparent 4.5px),
-                      radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.45) 6px, transparent 6px),
-                      radial-gradient(circle at 30% 70%, rgba(255, 255, 255, 0.6) 1.5px, transparent 1.5px),
-                      radial-gradient(circle at 70% 80%, rgba(255, 255, 255, 0.3) 3px, transparent 3px);
+    /* 修正: 泡のサイズを6倍に & 透過度を調整 */
+    background-image: radial-gradient(circle at 10% 10%, rgba(255, 255, 255, 0.7) 6px, transparent 6px),
+                      radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.5) 9px, transparent 9px),
+                      radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.6) 12px, transparent 12px),
+                      radial-gradient(circle at 30% 70%, rgba(255, 255, 255, 0.8) 3px, transparent 3px),
+                      radial-gradient(circle at 70% 80%, rgba(255, 255, 255, 0.5) 6px, transparent 6px);
     
-    /* 修正: 泡のパターンサイズを3倍に */
-    background-size: 600px 600px, 900px 900px, 750px 750px, 450px 450px, 1200px 1200px; 
+    /* 修正: 泡のパターンサイズを6倍に (前回の2倍) */
+    background-size: 1200px 1200px, 1800px 1800px, 1500px 1500px, 900px 900px, 2400px 2400px; 
     background-repeat: repeat;
     background-position: 0 0;
+    
+    opacity: 0.9; 
+}
+
+/* プロフィールの泡 (#bubbles-background) */
+#bubbles-background::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 200%; 
+    
+    /* 修正: 泡のサイズを6倍に */
+    background-image: radial-gradient(circle at 10% 10%, rgba(255, 255, 255, 0.3) 6px, transparent 6px),
+                      radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.2) 9px, transparent 9px),
+                      radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.25) 12px, transparent 12px),
+                      radial-gradient(circle at 30% 70%, rgba(255, 255, 255, 0.4) 3px, transparent 3px),
+                      radial-gradient(circle at 70% 80%, rgba(255, 255, 255, 0.2) 6px, transparent 6px);
+    
+    /* 修正: 泡のパターンサイズを6倍に (前回の2倍) */
+    background-size: 1200px 1200px, 1800px 1800px, 1500px 1500px, 900px 900px, 2400px 2400px; 
+    background-repeat: repeat;
+    background-position: 0 0;
+    
     opacity: 0.8; 
 }
+
+/* ------------------------------------------- */
 
 
 /* 深海セクション内の文字色、リンク色調整 */
@@ -220,7 +226,7 @@ a:not(.btn):hover {
 .nav-links a {
     margin-left: 30px;
     font-weight: 500;
-    color: var(--text-color-dark); /* FIX: 変数名をtext-color-darkに修正 */
+    color: var(--text-color-dark);
     padding-bottom: 3px;
     border-bottom: 2px solid transparent;
 }
@@ -294,6 +300,18 @@ a:not(.btn):hover {
 
 p { margin-bottom: 20px; text-align: justify; }
 
+/* 波のセパレーター */
+.wave-separator {
+    width: 100%;
+    line-height: 0;
+    background-color: var(--bg-color-home);
+}
+
+.wave-separator svg {
+    display: block;
+    width: 100%;
+    height: auto;
+}
 
 /* 作品リスト */
 .work-list { 
@@ -347,7 +365,7 @@ p { margin-bottom: 20px; text-align: justify; }
 .work-trigger {
     font-size: 1.5rem;
     font-weight: bold;
-    color: var(--text-color-dark); /* FIX: 変数名をtext-color-darkに修正 */
+    color: var(--text-color-dark); 
     border-bottom: 1px solid transparent;
     display: inline-block;
     line-height: 1.4;
@@ -363,7 +381,7 @@ p { margin-bottom: 20px; text-align: justify; }
     margin-bottom: 20px;
     font-size: 1rem;
     line-height: 1.7;
-    color: var(--text-color-dark); /* FIX: 変数名をtext-color-darkに修正 */
+    color: var(--text-color-dark);
 }
 
 /* プロフィール */
@@ -382,8 +400,8 @@ p { margin-bottom: 20px; text-align: justify; }
 }
 
 .member-name {
-    color: var(--link-color-light); /* FIX: 変数名をlink-color-lightに修正 */
     font-size: 1.2rem;
+    color: var(--link-color-light); 
     margin: 0 0 10px 0;
 }
 
@@ -396,8 +414,8 @@ p { margin-bottom: 20px; text-align: justify; }
     font-size: 1.1rem;
     margin-top: 50px;
     margin-bottom: 20px;
-    color: var(--text-color-light); /* FIX: 変数名をtext-color-lightに修正 */
-    border-bottom: 1px solid #aaa; /* FIX: 色を明るく修正 */
+    color: var(--text-color-light);
+    border-bottom: 1px solid #aaa;
     padding-bottom: 5px;
 }
 
@@ -414,7 +432,7 @@ p { margin-bottom: 20px; text-align: justify; }
 .btn {
     padding: 12px 30px;
     border: 1px solid;
-    color: var(--text-color-dark); /* FIX: 変数名をtext-color-darkに修正 */
+    color: var(--text-color-dark); 
     border-color: var(--accent-color); 
     transition: .3s;
     display: inline-block;
@@ -462,7 +480,7 @@ footer {
     padding-top: 20px;
     text-align: center;
     font-size: 0.8rem;
-    color: #999; /* FIX: 色をプロファイルセクションに合わせて暗く修正 */
+    color: #666;
 }
 
 /* モーダルはそのまま */
@@ -532,7 +550,7 @@ footer {
 #opening-overlay {
     position: fixed;
     inset: 0;
-    background: var(--bg-color-home); /* FIX: 変数名をbg-color-homeに修正 */
+    background: var(--bg-color-home);
     display: flex;
     justify-content: center;
     align-items: center;
