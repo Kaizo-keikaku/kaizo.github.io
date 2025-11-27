@@ -104,64 +104,39 @@ a:not(.btn):hover {
     top: 0;
     left: 0;
     width: 100%;
-    height: 100%; 
+    /* 【修正】泡の生成に合わせて高さを非常に大きく設定 */
+    height: 400vh; /* 画面の4倍の高さまで泡を生成できるようにする */
     z-index: 1; 
     pointer-events: none;
     transition: transform 0.05s linear; 
 }
 
-/* 泡のエフェクト（コンテンツは::beforeで実装） */
-/* ------------------------------------------- */
+/* 【削除】これまでの固定背景の定義は削除されました */
 
-/* 作品紹介の泡 (#works-bubbles-background) */
-#works-bubbles-background::before {
-    content: '';
+
+/* 【新規】動的に生成される泡のスタイル */
+.bubble {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 200%; 
-    
-    /* 泡の粒のサイズ（6倍）は維持 */
-    background-image: radial-gradient(circle at 10% 10%, rgba(255, 255, 255, 0.7) 6px, transparent 6px),
-                      radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.5) 9px, transparent 9px),
-                      radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.6) 12px, transparent 12px),
-                      radial-gradient(circle at 30% 70%, rgba(255, 255, 255, 0.8) 3px, transparent 3px),
-                      radial-gradient(circle at 70% 80%, rgba(255, 255, 255, 0.5) 6px, transparent 6px);
-    
-    /* 【修正】泡のパターンサイズを約半分に縮小し、総数を増やして空白を埋める */
-    background-size: 600px 600px, 900px 900px, 750px 750px, 450px 450px, 1200px 1200px; 
-    background-repeat: repeat;
-    background-position: 0 0;
-    
-    opacity: 0.9; 
+    border-radius: 50%;
+    /* 泡の色のベース (透明な白) */
+    background: rgba(255, 255, 255, 0.4); 
+    box-shadow: 0 0 5px rgba(255, 255, 255, 0.4);
+    opacity: 0; /* JSで生成・フェードインさせる */
+    /* opacity のみトランジションを設定 */
+    transition: opacity 0.5s linear; 
 }
 
-/* プロフィールの泡 (#bubbles-background) */
-#bubbles-background::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 200%; 
-    
-    /* 泡の粒のサイズ（6倍）は維持 */
-    background-image: radial-gradient(circle at 10% 10%, rgba(255, 255, 255, 0.3) 6px, transparent 6px),
-                      radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.2) 9px, transparent 9px),
-                      radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.25) 12px, transparent 12px),
-                      radial-gradient(circle at 30% 70%, rgba(255, 255, 255, 0.4) 3px, transparent 3px),
-                      radial-gradient(circle at 70% 80%, rgba(255, 255, 255, 0.2) 6px, transparent 6px);
-    
-    /* 【修正】泡のパターンサイズを約半分に縮小し、総数を増やす */
-    background-size: 600px 600px, 900px 900px, 750px 750px, 450px 450px, 1200px 1200px; 
-    background-repeat: repeat;
-    background-position: 0 0;
-    
-    opacity: 0.8; 
+/* 作品紹介セクションの泡 (より明るく) */
+#works-bubbles-background .bubble {
+    background: rgba(255, 255, 255, 0.9); /* 目立つように透過度を上げる */
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
 }
 
-/* ------------------------------------------- */
+/* プロフィールセクションの泡 (より暗く) */
+#bubbles-background .bubble {
+    background: rgba(255, 255, 255, 0.4);
+    box-shadow: none;
+}
 
 
 /* 深海セクション内の文字色、リンク色調整 */
