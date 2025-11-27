@@ -229,7 +229,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // --- 【修正・追加した処理】 ---
     
     let lastScrollY = 0;
-    // 【修正】作品紹介とプロフィールの両方の泡要素を取得
     const profileBubbles = document.getElementById('bubbles-background'); 
     const worksBubbles = document.getElementById('works-bubbles-background'); 
     
@@ -237,25 +236,18 @@ document.addEventListener("DOMContentLoaded", () => {
     function handleBubbleScroll() {
         const currentScrollY = window.scrollY;
         
-        // スクロールダウン時のみ処理を実行
-        if (currentScrollY > lastScrollY) {
-            const worksStartOffset = document.getElementById('works').offsetTop;
-            
-            if (currentScrollY >= worksStartOffset) {
-                const scrollDistance = currentScrollY - worksStartOffset; 
-                const moveY = -(scrollDistance * 1.5); 
-                
-                // worksセクションの泡を動かす
-                if (worksBubbles) {
-                    worksBubbles.style.transform = `translateY(${moveY}px)`;
-                }
-                
-                // profileセクションの泡を動かす
-                if (profileBubbles) {
-                    profileBubbles.style.transform = `translateY(${moveY}px)`;
-                }
-            }
-        } 
+        // 【修正】worksセクション開始位置に関わらず、現在のスクロール量に応じて移動距離を計算
+        const moveY = -(currentScrollY * 1.5); 
+        
+        // worksセクションの泡を動かす
+        if (worksBubbles) {
+            worksBubbles.style.transform = `translateY(${moveY}px)`;
+        }
+        
+        // profileセクションの泡を動かす
+        if (profileBubbles) {
+            profileBubbles.style.transform = `translateY(${moveY}px)`;
+        }
 
         lastScrollY = currentScrollY;
     }
