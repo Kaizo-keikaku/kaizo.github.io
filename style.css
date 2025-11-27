@@ -63,13 +63,13 @@ a:not(.btn):hover {
 
 /* レイアウト */
 .container {
-    max-width: 900px; /* 他の要素と幅を合わせる */
+    max-width: 900px; /* 少し広げる */
     margin: auto;
     padding: 0 20px;
 }
 
 .site-content {
-    padding-top: 60px; 
+    padding-top: 60px; /* ナビゲーションバーと被らないように調整 */
     padding-bottom: 60px;
 }
 
@@ -121,30 +121,25 @@ a:not(.btn):hover {
 
 /* ファーストビュー (コンセプト) */
 #home {
-    height: calc(100vh - var(--header-height)); /* ナビバーの高さを除いた全画面高 */
-    margin-top: var(--header-height); /* ナビバーの下から開始 */
-
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    height: calc(100vh - var(--header-height)); /* ナビバーの高さ分を引く */
+    margin-top: var(--header-height); /* ナビバーの下に配置 */
     position: relative;
-    text-align: center;
-    width: 100%;
-    overflow: hidden;
 }
 
-/* .containerで幅を制限し、中央に配置するためのラッパー */
-.concept-wrapper {
-    width: 100%;
-    height: 100%;
+.concept-container {
+    height: 100%; /* #homeの高さを使う */
     display: flex;
+    flex-direction: column; 
     justify-content: center;
     align-items: center;
+    text-align: center;
+    position: relative; /* scroll-indicatorの親要素として */
 }
 
 .concept-content {
-    max-width: 600px;
-    padding: 0; /* padding-bottomを削除し、flexで中央寄せ */
+    max-width: 100%; /* .containerの幅内 */
+    padding-bottom: 0; 
+    width: 100%;
 }
 
 .site-title {
@@ -167,14 +162,14 @@ a:not(.btn):hover {
     font-size: 1.1rem;
     margin-top: 30px;
     line-height: 1.8;
-    text-align: center;
+    text-align: center; 
 }
 
 .scroll-indicator {
     position: absolute;
-    left: 30px;
-    bottom: 50px;
-    font-size: 0.9rem;
+    left: 20px; /* .containerのpaddingに合わせて20pxに */
+    bottom: 75px; /* 親要素の下部から75pxに配置 */
+    font-size: calc(0.9rem * 1.2); /* 1.2倍に修正 */
     color: var(--accent-color);
     transform: rotate(90deg);
     transform-origin: left bottom;
@@ -482,7 +477,7 @@ p { margin-bottom: 20px; text-align: justify; }
     
     .scroll-indicator {
         left: 20px;
-        bottom: 30px;
+        bottom: 75px; /* 変更なし */
     }
     
     .work-media {
