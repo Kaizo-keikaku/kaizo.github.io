@@ -30,15 +30,15 @@
     </nav>
 
     <section id="home" class="first-view">
-        <div class="container concept-container"> <div class="concept-content fade-up">
-                <h1 class="site-title">海象計画</h1>
-                <p class="subtitle">Walrus Project</p>
-                <p class="concept-text">
-                    静謐な海を漂うような、言葉の記録。<br>
-                    言葉の海を泳ぐ、緩やかな計画。
-                </p>
-            </div>
-            <div class="scroll-indicator">scroll &rarr;</div> </div>
+        <div class="concept-content fade-up">
+            <h1 class="site-title">海象計画</h1>
+            <p class="subtitle">Walrus Project</p>
+            <p class="concept-text">
+                静謐な海を漂うような、言葉の記録。<br>
+                言葉の海を泳ぐ、緩やかな計画。
+            </p>
+        </div>
+        <div class="scroll-indicator">scroll &rarr;</div>
     </section>
 
     <div class="container site-content">
@@ -241,10 +241,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // ナビゲーションの固定
     const nav = document.getElementById('nav-bar');
-    const home = document.getElementById('home');
+    const firstView = document.getElementById('home');
 
     window.addEventListener('scroll', () => {
-        if (window.scrollY >= home.offsetHeight) {
+        if (window.scrollY >= firstView.offsetHeight) {
             nav.classList.add('fixed');
         } else {
             nav.classList.remove('fixed');
