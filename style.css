@@ -119,10 +119,11 @@ a:not(.btn):hover {
     top: 0;
     left: 0;
     width: 100%;
-    /* 【修正】親コンテナの高さより非常に大きく設定し、泡が途切れず生成され続けるようにする */
-    height: 800%; /* 400% から 800% に増量 */
+    /* 親コンテナの高さより大きく設定し、泡が途切れず生成され続けるようにする */
+    height: 400%; 
     z-index: 1; 
     pointer-events: none;
+    /* スクロールダウン時にのみ動かすため、transitionは維持 */
     transition: transform 0.05s linear; 
 }
 
@@ -130,15 +131,15 @@ a:not(.btn):hover {
 .bubble {
     position: absolute;
     border-radius: 50%;
-    /* 泡が小さくなったので影も控えめに */
-    box-shadow: 0 0 3px rgba(255, 255, 255, 0.3);
+    /* 泡のサイズ変更に伴い、影を小さく */
+    box-shadow: 0 0 3px rgba(255, 255, 255, 0.4);
     opacity: 0; /* JSで生成・フェードインさせる */
     transition: opacity 0.5s linear; 
 }
 
 /* 作品紹介セクションの泡の色 (浅い海: 明るい) */
 .bubble-works-color {
-    background: rgba(255, 255, 255, 0.8); 
+    background: rgba(255, 255, 255, 0.9); /* 目立つように透過度を上げる */
     box-shadow: 0 0 5px rgba(255, 255, 255, 0.6);
 }
 
