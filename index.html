@@ -10,6 +10,10 @@
     <meta property="og:description" content="静謐な海を漂うような、言葉の記録。">
     <meta property="og:url" content="https://kaizo-keikaku.github.io/">
     <meta property="og:type" content="website">
+    <style>
+        body { opacity: 0; }
+        body.visible { opacity: 1; }
+    </style>
 </head>
 <body>
 
@@ -17,6 +21,7 @@
         <div id="opening-text"></div>
     </div>
 
+    
     <div class="container site-content">
         <header class="fade-up">
             <h1 class="site-title">海象計画</h1>
@@ -108,6 +113,114 @@
         </div>
     </div>
 
-    <script src="animation.js" defer></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            const openingTextElement = document.getElementById('opening-text');
+            const openingOverlay = document.getElementById('opening-overlay');
+            const siteBody = document.body;
+            
+            // サイト本体の初期非表示状態を解除するためのクラスを一時的に追加
+            // これにより、CSSのopacityトランジションが有効になる
+            siteBody.classList.remove('visible'); 
+
+            // --------------------------------------------------
+            // 1. オープニングアニメーション
+            // --------------------------------------------------
+            const typingSequence = [
+                { text: "k", delay: 100 },
+                { text: "か", delay: 100 },
+                { text: "かい", delay: 100 },
+                { text: "かいz", delay: 100 },
+                { text: "かいぞ", delay: 100 },
+                { text: "かいぞう", delay: 100 },
+                { text: "改造", delay: 200 },
+                { text: "解像", delay: 200 },
+                { text: "海象", delay: 300 },
+                { text: "海象k", delay: 100 },
+                { text: "海象け", delay: 100 },
+                { text: "海象けい", delay: 100 },
+                { text: "海象けいk", delay: 100 },
+                { text: "海象けいか", delay: 100 },
+                { text: "海象けいかk", delay: 100 },
+                { text: "海象けいかく", delay: 100 },
+                { text: "海象計画", delay: 500 }
+            ];
+
+            let sequenceIndex = 0;
+
+            function typeEffect() {
+                if (sequenceIndex < typingSequence.length) {
+                    const step = typingSequence[sequenceIndex];
+                    openingTextElement.textContent = step.text;
+                    sequenceIndex++;
+                    setTimeout(typeEffect, step.delay);
+                } else {
+                    // タイピング終了後、2秒間表示を維持してからサイト本体へ移行
+                    setTimeout(() => {
+                        openingOverlay.style.opacity = '0';
+                        siteBody.style.opacity = '1'; // サイト本体を表示
+                        siteBody.classList.add('visible'); // opacityトランジションを有効化
+
+                        setTimeout(() => {
+                            openingOverlay.style.display = 'none'; // フェードアウト後に非表示にする
+                            // スクロール連動フェードインの監視を開始
+                            startScrollFadeIn();
+                        }, 500);
+                    }, 2000); 
+                }
+            }
+            typeEffect();
+
+
+            // --------------------------------------------------
+            // 2. スクロール連動フェードイン
+            // --------------------------------------------------
+            // オープニングアニメーション完了後に呼び出される
+            function startScrollFadeIn() {
+                const fadeElements = document.querySelectorAll('.fade-up');
+                const scrollObserver = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('visible');
+                            scrollObserver.unobserve(entry.target);
+                        }
+                    });
+                }, {
+                    rootMargin: '0px 0px -50px 0px',
+                    threshold: 0.1
+                });
+                fadeElements.forEach(el => scrollObserver.observe(el));
+            }
+
+
+            // --------------------------------------------------
+            // 3. ポップアップ制御
+            // --------------------------------------------------
+            const triggers = document.querySelectorAll('.work-trigger');
+            const closeBtns = document.querySelectorAll('.close-modal-btn');
+
+            triggers.forEach(trigger => {
+                trigger.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetId = trigger.getAttribute('data-target');
+                    const targetModal = document.getElementById(targetId);
+                    if (targetModal) {
+                        targetModal.classList.add('active');
+                        siteBody.classList.add('no-scroll');
+                    }
+                });
+            });
+
+            closeBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const modal = btn.closest('.modal-overlay');
+                    modal.classList.remove('active');
+                    siteBody.classList.remove('no-scroll');
+                });
+            });
+        });
+    </script>
 </body>
 </html>
