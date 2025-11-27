@@ -82,60 +82,54 @@ a:not(.btn):hover {
     z-index: 2;
 }
 
-/* セクション背景色の設定 */
+/* 【新規】WorksとProfileを包むコンテナの背景と泡の基点 */
+#deep-sea-area {
+    /* Worksの背景色からProfileの深海色へのグラデーションをここで設定 */
+    /* 30%まで浅い海、70%から深い海にグラデーション */
+    background: linear-gradient(to bottom, var(--bg-color-works) 0%, var(--bg-color-works) 35%, var(--bg-color-profile) 75%, var(--bg-color-profile) 100%);
+    position: relative; /* 泡のコンテナの基準点 */
+}
+
+
+/* セクション背景色の設定を削除/変更 */
 #works {
-    background-color: var(--bg-color-works);
+    background: transparent; /* 親要素の背景を使う */
     color: var(--text-color-dark);
     position: relative; 
     overflow: hidden; 
 }
 
 #profile {
-    background: linear-gradient(to bottom, var(--bg-color-works), var(--bg-color-profile)); 
+    background: transparent; /* 親要素のグラデーションを使う */
     color: var(--text-color-light); 
     padding-top: 40px;
     position: relative; 
     overflow: hidden; 
 }
 
-/* 泡の移動コンテナの共通定義 */
+/* 泡の移動コンテナの共通定義を更新 */
 .bubbles-background {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
-    /* 【修正】泡の生成に合わせて高さを非常に大きく設定 */
-    height: 400vh; /* 画面の4倍の高さまで泡を生成できるようにする */
+    /* 高さ: 親要素(#deep-sea-area)のコンテンツの高さ全体を使う */
+    height: 100%; 
     z-index: 1; 
     pointer-events: none;
     transition: transform 0.05s linear; 
 }
 
-/* 【削除】これまでの固定背景の定義は削除されました */
-
-
-/* 【新規】動的に生成される泡のスタイル */
-.bubble {
+/* 【修正】動的に生成される泡のスタイル - 統一 */
+#combined-bubbles-background .bubble {
     position: absolute;
     border-radius: 50%;
-    /* 泡の色のベース (透明な白) */
-    background: rgba(255, 255, 255, 0.4); 
-    box-shadow: 0 0 5px rgba(255, 255, 255, 0.4);
+    /* WorksからProfileへのスムーズな移行のため、中間的な不透明度に統一 */
+    background: rgba(255, 255, 255, 0.6); 
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.2);
     opacity: 0; /* JSで生成・フェードインさせる */
     /* opacity のみトランジションを設定 */
     transition: opacity 0.5s linear; 
-}
-
-/* 作品紹介セクションの泡 (より明るく) */
-#works-bubbles-background .bubble {
-    background: rgba(255, 255, 255, 0.9); /* 目立つように透過度を上げる */
-    box-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
-}
-
-/* プロフィールセクションの泡 (より暗く) */
-#bubbles-background .bubble {
-    background: rgba(255, 255, 255, 0.4);
-    box-shadow: none;
 }
 
 
@@ -272,6 +266,8 @@ a:not(.btn):hover {
     margin-bottom: 40px;
     color: var(--accent-color);
 }
+
+/* Worksセクションのタイトルは上書きしない */
 
 p { margin-bottom: 20px; text-align: justify; }
 
