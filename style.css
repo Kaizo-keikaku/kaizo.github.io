@@ -324,14 +324,20 @@ p { margin-bottom: 20px; text-align: justify; }
 .layout-right .work-info { order: 1; }
 
 .work-media {
-    flex: 0 0 300px; 
+    /* 変更: 300px固定から、画像の高さが変わるためflex: noneで固定幅を解除し、内容物(img)のサイズに合わせる */
+    flex: 0 0 auto; 
+    /* min-widthを設定して、レイアウトが崩れにくいようにする */
+    min-width: 250px; 
 }
 
 .work-media img {
     display: block;
-    width: 100%;
-    height: auto;
-    object-fit: cover;
+    /* 修正点: 高さを400pxに固定 */
+    height: 400px;
+    /* 修正点: 幅はautoにし、アスペクト比を維持 */
+    width: auto; 
+    /* 修正点: 縦横比を維持しつつ、要素内に収まるように調整 */
+    object-fit: contain; 
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
     transition: 0.3s ease-in-out;
 }
@@ -582,7 +588,8 @@ footer {
     
     .work-media {
         flex: none;
-        width: 60%; 
+        /* 変更: 高さが400pxなので、幅はアスペクト比で変わるためmax-widthで制限 */
+        max-width: 60%; 
         margin: 0 auto;
     }
     
@@ -614,6 +621,12 @@ footer {
     }
     
     .work-media {
-        width: 70%;
+        /* 変更: モバイルではさらに小さく */
+        max-width: 70%;
+    }
+    
+    /* 修正点: 縦長になったため、モバイルでも高さ400pxを維持すると長すぎる場合を考慮して高さを調整 */
+    .work-media img {
+        height: 300px; /* モバイルでは300pxに */
     }
 }
