@@ -1,3 +1,4 @@
+/* style.css は前回のバージョンから変更ありません。 */
 @import url('https://fonts.googleapis.com/css2?family=Zen+Old+Mincho:wght@400;700&display=swap');
 
 :root {
@@ -119,7 +120,7 @@ a:not(.btn):hover {
     top: 0;
     left: 0;
     width: 100%;
-    /* 【修正】親コンテナの高さより大きく設定し、泡が途切れず生成され続けるようにする */
+    /* コンテナの高さより大きく設定し、泡が途切れず生成され続けるようにする */
     height: 400%; 
     z-index: 1; 
     pointer-events: none;
@@ -130,7 +131,8 @@ a:not(.btn):hover {
 .bubble {
     position: absolute;
     border-radius: 50%;
-    box-shadow: 0 0 3px rgba(255, 255, 255, 0.4);
+    /* サイズが小さくなったためシャドウも微調整 */
+    box-shadow: 0 0 3px rgba(255, 255, 255, 0.4); 
     opacity: 0; /* JSで生成・フェードインさせる */
     transition: opacity 0.5s linear; 
 }
