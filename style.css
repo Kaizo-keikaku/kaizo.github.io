@@ -78,20 +78,92 @@ a:not(.btn):hover {
 .site-content {
     padding-top: 60px; 
     padding-bottom: 60px;
+    position: relative; /* 泡の背景の上にコンテンツが来るように */
+    z-index: 2;
 }
 
 /* セクション背景色の設定 */
 #works {
     background-color: var(--bg-color-works);
     color: var(--text-color-dark);
+    position: relative; /* 泡のコンテナを内包するため */
+    overflow: hidden; /* 泡の画像がはみ出さないように */
 }
 
 #profile {
-    /* 変更: 背景色をグラデーションに変更 */
     background: linear-gradient(to bottom, var(--bg-color-works), var(--bg-color-profile)); 
-    color: var(--text-color-light); /* プロフィールセクションの文字色を明るく */
+    color: var(--text-color-light); 
     padding-top: 40px;
+    position: relative; /* 泡のコンテナを内包するため */
+    overflow: hidden; /* 泡の画像がはみ出さないように */
 }
+
+/* 泡のエフェクト用コンテナ（作品紹介セクション用） */
+#works::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1; /* コンテンツの下、背景色の上 */
+    
+    /* 泡の模様をCSSグラデーションで作成（白色の透明度を低くして海中の泡を表現） */
+    background-image: radial-gradient(circle at 10% 10%, rgba(255, 255, 255, 0.2) 1px, transparent 1%),
+                      radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.1) 1.5px, transparent 1%),
+                      radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.15) 2px, transparent 1%),
+                      radial-gradient(circle at 30% 70%, rgba(255, 255, 255, 0.25) 0.5px, transparent 1%),
+                      radial-gradient(circle at 70% 80%, rgba(255, 255, 255, 0.1) 1px, transparent 1%);
+    
+    /* 泡のサイズと繰り返し設定 */
+    background-size: 200px 200px, 300px 300px, 250px 250px, 150px 150px, 400px 400px; 
+    background-repeat: repeat;
+    background-position: 0 0;
+    
+    /* スクロール移動はJavaScriptで行うため、一旦トランジションは設定しない */
+    /* opacityを調整して、浅い海（works）では少し薄い泡にする */
+    opacity: 0.6; 
+    
+    /* 泡の初期位置をセクション全体に広げる */
+    width: 100%;
+    height: 200%; /* セクションの2倍の高さで、下半分に余裕を持たせてスクロール移動に対応 */
+    top: 0;
+    left: 0;
+}
+
+
+/* 泡のエフェクト用コンテナ（プロフィールセクション用） - #profileセクション全体に適用 */
+/* 泡の動きをJavascriptで制御するため、ダミー要素を配置 */
+.bubbles-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%; 
+    z-index: 1; /* コンテンツの下、背景グラデーションの上 */
+    pointer-events: none;
+    transition: transform 0.05s linear; /* スムーズな移動のためトランジションを追加 */
+}
+
+.bubbles-background::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 200%; /* セクションの2倍の高さで、下半分に余裕を持たせてスクロール移動に対応 */
+    
+    background-image: radial-gradient(circle at 10% 10%, rgba(255, 255, 255, 0.3) 1px, transparent 1%),
+                      radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.2) 1.5px, transparent 1%),
+                      radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.25) 2px, transparent 1%),
+                      radial-gradient(circle at 30% 70%, rgba(255, 255, 255, 0.4) 0.5px, transparent 1%),
+                      radial-gradient(circle at 70% 80%, rgba(255, 255, 255, 0.2) 1px, transparent 1%);
+    
+    background-size: 200px 200px, 300px 300px, 250px 250px, 150px 150px, 400px 400px; 
+    background-repeat: repeat;
+    background-position: 0 0;
+    
+    /* 深海（profile）では浅い海よりも泡を濃くする */
+    opacity: 0.8; 
+}
+
 
 /* 深海セクション内の文字色、リンク色調整 */
 #profile a:not(.btn) {
@@ -102,6 +174,7 @@ a:not(.btn):hover {
     border-left-color: var(--text-color-light); 
     color: var(--text-color-light);
 }
+/* ... (以下、前回までのCSSと同じ) ... */
 
 #profile .member-name {
     color: var(--link-color-light);
@@ -241,9 +314,6 @@ p { margin-bottom: 20px; text-align: justify; }
     width: 100%;
     height: auto;
 }
-
-/* グラデーションセパレーターは削除 */
-
 
 /* 作品リスト */
 .work-list { 
