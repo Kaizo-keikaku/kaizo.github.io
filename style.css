@@ -1,31 +1,29 @@
+
 @import url('https://fonts.googleapis.com/css2?family=Zen+Old+Mincho:wght@400;700&display=swap');
 
 :root {
     --bg-color-home: #f4f1ea; /* コンセプト: 海上 */
     --bg-color-works: #c0d6d1; /* 作品紹介: 浅い海 */
-    --bg-color-profile: #0f267f; /* プロフィール: 深海 */
+    --bg-color-profile: #0f267f; /* プロフィール: 深海 (グラデーション中間点) */
+    --bg-color-event: #040a23; /* 参加イベント: 最深部 */
     
-    --text-color-light: #f4f1ea; /* 明るい色（深海セクション用） */
-    --text-color-dark: #333333; /* 暗い色（海上・浅い海セクション用） */
+    --text-color-light: #f4f1ea; 
+    --text-color-dark: #333333; 
     
     --accent-color: #1d3a4e;
     --link-color-dark: #5d7d9a;
     --link-color-light: #b0c9f0; /* 深海セクション用 */
     
     --font-main: 'Zen Old Mincho', serif;
-    --header-height: 60px; /* ナビゲーションバーの高さ */
+    --header-height: 60px; 
 }
 
 * { box-sizing: border-box; }
 
-/* 修正点: Lenisを使用するため、CSSのスムーズスクロールは削除 */
 html { 
-    /* scroll-behavior: smooth;  <-- 削除 */
-    /* 固定ヘッダーの高さ分、スクロール位置をオフセット */
     scroll-padding-top: var(--header-height); 
 }
 
-/* Lenis推奨の設定: スクロールバーの表示崩れを防ぐ */
 html.lenis, html.lenis body {
   height: auto;
 }
@@ -40,7 +38,6 @@ body {
     overflow-x: hidden;
 }
 
-/* スクロール禁止用 */
 body.no-scroll { overflow: hidden; }
 
 /* ノイズレイヤー */
@@ -73,7 +70,6 @@ a {
     transition: 0.3s;
 }
 
-/* hover shift */
 a:not(.btn):hover {
     opacity: 0.8; 
 }
@@ -89,24 +85,22 @@ a:not(.btn):hover {
     padding-top: 60px; 
     padding-bottom: 60px;
     position: relative; 
-    /* z-indexを上げて泡の上に表示 */
     z-index: 3;
 }
 
-/* 【統合】WorksとProfileを包むコンテナの背景を設定 */
+/* Works -> Profile -> Eventへの三段階グラデーション */
 #unified-ocean-container {
     position: relative;
-    /* Worksの背景色からProfileの背景色へのグラデーション */
     background: linear-gradient(to bottom, 
         var(--bg-color-works) 0%, 
-        var(--bg-color-works) 35%, /* 35%までWorksの色を保持 */
-        var(--bg-color-profile) 65%, /* 65%からProfileの色へ */
-        var(--bg-color-profile) 100%
+        var(--bg-color-works) 30%, 
+        var(--bg-color-profile) 50%, /* Profileの色の開始 */
+        var(--bg-color-profile) 75%, /* Profileの色の中間点 */
+        var(--bg-color-event) 100%  /* Eventの最深部の色 */
     ); 
     overflow: hidden; 
 }
 
-/* Worksセクションの背景をリセット */
 #works {
     background-color: transparent; 
     color: var(--text-color-dark);
@@ -114,7 +108,7 @@ a:not(.btn):hover {
     z-index: 2; 
 }
 
-/* Profileセクションの背景をリセット */
+/* Profile, Eventの背景を透明に */
 #profile {
     background: transparent; 
     color: var(--text-color-light); 
@@ -123,17 +117,24 @@ a:not(.btn):hover {
     z-index: 2; 
 }
 
+#event {
+    background: transparent; 
+    color: var(--text-color-light);
+    padding-top: 40px;
+    position: relative;
+    z-index: 2;
+    min-height: 80vh; /* 最深部セクションの長さを確保 */
+}
+
 /* 泡の移動コンテナの共通定義 */
 .bubbles-background {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
-    /* 親コンテナの高さより大きく設定し、泡が途切れず生成され続けるようにする */
     height: 400%; 
     z-index: 1; 
     pointer-events: none;
-    /* スクロールダウン時にのみ動かすため、transitionは維持 */
     transition: transform 0.05s linear; 
 }
 
@@ -141,36 +142,69 @@ a:not(.btn):hover {
 .bubble {
     position: absolute;
     border-radius: 50%;
-    /* 泡のサイズ変更に伴い、影を小さく */
     box-shadow: 0 0 3px rgba(255, 255, 255, 0.4);
-    opacity: 0; /* JSで生成・フェードインさせる */
+    opacity: 0; 
     transition: opacity 0.5s linear; 
 }
 
-/* 作品紹介セクションの泡の色 (浅い海: 明るい) */
 .bubble-works-color {
-    background: rgba(255, 255, 255, 0.9); /* 目立つように透過度を上げる */
+    background: rgba(255, 255, 255, 0.9); 
     box-shadow: 0 0 5px rgba(255, 255, 255, 0.6);
 }
 
-/* プロフィールセクションの泡の色 (深海: 暗い) */
+/* 深海セクションの泡の色 (Profile/Event共通) */
 .bubble-profile-color {
-    background: rgba(255, 255, 255, 0.4);
-    box-shadow: none;
+    background: rgba(255, 255, 255, 0.2);
+    /* 青白い発光を表現 */
+    box-shadow: 0 0 5px 1px rgba(176, 201, 240, 0.3);
+}
+
+/* --- 生物発光 (Bioluminescence) アニメーション --- */
+#bioluminescence-container {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 2; 
+}
+
+.biolum-particle {
+    position: absolute;
+    background: #ffffff; /* 白い光の粒 */
+    border-radius: 50%;
+    box-shadow: 0 0 8px 2px rgba(176, 201, 240, 0.8); /* 強く光る影 */
+    opacity: 0; /* JSでanimation-durationが設定されるまで透明 */
+    
+    /* 動きのアニメーション */
+    animation: biolum-float 2s ease-out forwards; 
+    /* slowFadeFlashはJSでdurationを設定して適用される */
+}
+
+/* 光の粒の微細な浮上 */
+@keyframes biolum-float {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-5px); }
+}
+
+/* 【修正点】ゆっくり点滅させるキーフレーム */
+@keyframes slowFadeFlash {
+    0% { opacity: 0; }           /* 開始: 透明 */
+    30% { opacity: 0.7; }        /* 30%までゆっくり光る (フェードイン) */
+    70% { opacity: 0.7; }        /* 70%まで光を維持 */
+    100% { opacity: 0; }         /* 70%から100%までゆっくり消える (フェードアウト) */
 }
 
 
-/* 深海セクション内の文字色、リンク色調整 */
-#profile a:not(.btn) {
+/* 深海セクション内の文字色、リンク色調整 (Profile/Event共通) */
+#profile a:not(.btn), #event a:not(.btn) {
     color: var(--link-color-light); 
 }
 
-#profile .section-title {
+#profile .section-title, #event .section-title {
     border-left-color: var(--text-color-light); 
     color: var(--text-color-light);
 }
 
-#profile .member-name {
+#profile .member-name, #event .event-name {
     color: var(--link-color-light);
 }
 
@@ -179,17 +213,29 @@ a:not(.btn):hover {
     border-bottom-color: #aaa;
 }
 
-#profile p {
+#profile p, #event p {
     color: var(--text-color-light);
 }
 
-#profile footer {
+#event .event-item {
+    padding-left: 20px;
+    border-left: 3px solid #ddd;
+    margin-bottom: 20px;
+}
+
+#event .event-date, #event .event-detail {
+    font-size: 0.95rem;
+    color: #999;
+}
+
+#profile footer, #event footer {
     color: #999;
     position: relative;
     z-index: 3;
 }
 
-/* ナビゲーションバー */
+
+/* ナビゲーションバー (変更なし) */
 #nav-bar {
     position: fixed;
     top: 0;
@@ -235,7 +281,7 @@ a:not(.btn):hover {
     transform: none; 
 }
 
-/* ファーストビュー (コンセプト) */
+/* ファーストビュー (変更なし) */
 #home {
     height: 100vh;
     display: flex;
@@ -286,7 +332,7 @@ a:not(.btn):hover {
     opacity: 0.7;
 }
 
-/* セクションタイトル */
+/* セクションタイトル (変更なし) */
 .section-title {
     font-size: 1.8rem;
     border-left: 6px solid var(--accent-color);
@@ -298,14 +344,12 @@ a:not(.btn):hover {
 
 p { margin-bottom: 20px; text-align: justify; }
 
-/* 波のセパレーター */
+/* 波のセパレーター (変更なし) */
 .wave-separator {
     width: 100%;
     line-height: 0;
-    /* 波要素を#unified-ocean-container内に移動したため、背景色は白を保持し、
-       SVGで色が塗られている部分と、#homeセクションからの色の繋がりを確保 */
     background-color: var(--bg-color-home); 
-    position: relative; /* SVGが泡の上に表示されるように、z-indexは設定せず、z-index:1の泡の上に配置される */
+    position: relative; 
 }
 
 .wave-separator svg {
@@ -314,7 +358,7 @@ p { margin-bottom: 20px; text-align: justify; }
     height: auto;
 }
 
-/* 作品リスト */
+/* 作品リスト (変更なし) */
 .work-list { 
     list-style: none; 
     padding: 0; 
@@ -326,7 +370,6 @@ p { margin-bottom: 20px; text-align: justify; }
     gap: 40px;
 }
 
-/* 作品レイアウト調整 */
 .layout-left .work-media { order: 1; }
 .layout-left .work-info { order: 2; }
 
@@ -385,11 +428,7 @@ p { margin-bottom: 20px; text-align: justify; }
     color: var(--text-color-dark);
 }
 
-/* プロフィール */
-#profile {
-    padding-top: 40px;
-}
-
+/* プロフィール (変更なし) */
 .member-list {
     margin-top: 40px;
 }
@@ -420,7 +459,7 @@ p { margin-bottom: 20px; text-align: justify; }
     padding-bottom: 5px;
 }
 
-/* ボタン */
+/* ボタン (変更なし) */
 .btn-area {
     margin-top: 60px;
     text-align: center;
@@ -441,13 +480,13 @@ p { margin-bottom: 20px; text-align: justify; }
     line-height: 1; 
 }
 
-/* プロフィールセクションのボタン調整 */
-#profile .btn {
+/* プロフィール・イベントセクションのボタン調整 */
+#profile .btn, #event .btn {
     color: var(--text-color-light);
     border-color: var(--text-color-light);
 }
 
-#profile .btn:hover {
+#profile .btn:hover, #event .btn:hover {
     background: var(--text-color-light);
     color: var(--bg-color-profile); 
     transform: translateY(-2px);
@@ -467,7 +506,6 @@ p { margin-bottom: 20px; text-align: justify; }
     line-height: 1;
 }
 
-/* 共有ボタンは共通 */
 .btn-share {
     background: #000;
     color: #fff;
@@ -476,16 +514,15 @@ p { margin-bottom: 20px; text-align: justify; }
 
 .btn-share:hover { background: #333; }
 
-/* フッター */
+/* フッター (変更なし) */
 footer {
     padding-top: 20px;
     text-align: center;
     font-size: 0.8rem;
-    /* フッターの色は深海の色 */
     color: #999; 
 }
 
-/* モーダル */
+/* モーダル (変更なし) */
 .modal-overlay {
     position: fixed;
     inset: 0;
@@ -509,14 +546,12 @@ footer {
     width: 100%;
     max-width: 800px;
     padding: 80px 20px 100px;
-    /* 修正: 水面から浮かび上がるようなアニメーション */
     opacity: 0;
     transform: translateY(20px) scale(0.95); 
     transition: opacity .8s ease-out, transform .8s ease-out;
 }
 
 .modal-overlay.active .modal-content {
-    /* 修正: アクティブ時に表示 */
     opacity: 1;
     transform: translateY(0) scale(1);
 }
@@ -583,7 +618,7 @@ footer {
     50% { border-color: var(--accent-color); }
 }
 
-/* レスポンシブ対応 */
+/* レスポンシブ対応 (変更なし) */
 @media (max-width: 900px) {
     .site-title { font-size: 3rem; letter-spacing: 0.2em; }
     
