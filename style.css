@@ -18,7 +18,17 @@
 
 * { box-sizing: border-box; }
 
-html { scroll-behavior: smooth; }
+/* 修正点: Lenisを使用するため、CSSのスムーズスクロールは削除 */
+html { 
+    /* scroll-behavior: smooth;  <-- 削除 */
+    /* 固定ヘッダーの高さ分、スクロール位置をオフセット */
+    scroll-padding-top: var(--header-height); 
+}
+
+/* Lenis推奨の設定: スクロールバーの表示崩れを防ぐ */
+html.lenis, html.lenis body {
+  height: auto;
+}
 
 body {
     margin: 0;
