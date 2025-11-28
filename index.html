@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -12,6 +11,8 @@
     <meta property="og:type" content="website">
     <link rel="stylesheet" href="style.css">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text x=%2250%%22 y=%2250%%22 style=%22dominant-baseline:central;text-anchor:middle;font-size:90px;%22>🌊</text></svg>">
+    
+    <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.19/bundled/lenis.min.js"></script>
 </head>
 
 <body>
@@ -174,8 +175,33 @@
 <script>
 document.addEventListener("DOMContentLoaded", () => {
 
+    // --- Lenis スムーズスクロール設定 ---
+    const lenis = new Lenis({
+        duration: 1.5, // 慣性スクロールのスピード (1.0 以上でなめらか)
+        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // スクロールのイージング関数
+        direction: 'vertical', // 垂直スクロール
+        gestureDirection: 'vertical', // マウスやタッチのジェスチャーを垂直方向に制限
+        smooth: true, // スムーズスクロールを有効化
+        mouseMultiplier: 1, // マウスホイールの感度
+        smoothTouch: false, // スマホやタブレットでのスムーズスクロールをオフ
+        touchMultiplier: 2, // タッチスクロールの感度
+        infinite: false, // 無限スクロールをオフ
+    });
+
+    // Lenisのアニメーションループ
+    function raf(time) {
+        lenis.raf(time);
+        requestAnimationFrame(raf);
+    }
+    requestAnimationFrame(raf);
+
+    // --- オープニングアニメーション ---
     const openingText = document.getElementById("opening-text");
     const openingOverlay = document.getElementById("opening-overlay");
+
+    // オープニング中はスクロールを停止
+    lenis.stop();
+    document.body.classList.add("no-scroll");
 
     const typingSequence = [
         { text: "k", delay: 100 }, { text: "か", delay: 100 },
@@ -200,11 +226,10 @@ document.addEventListener("DOMContentLoaded", () => {
         } else {
             setTimeout(() => {
                 openingOverlay.classList.add("fade-out");
-                // フェードアウト完了後、bodyにno-scrollクラスを追加
-                document.body.classList.add("no-scroll");
                 setTimeout(() => {
                     openingOverlay.style.display = "none";
-                    document.body.classList.remove("no-scroll"); // スクロール禁止を解除
+                    document.body.classList.remove("no-scroll"); 
+                    lenis.start(); // アニメーション終了後にスクロール再開
                     startScrollFadeIn();
                 }, 700);
             }, 1000);
@@ -224,12 +249,12 @@ document.addEventListener("DOMContentLoaded", () => {
                     observer.unobserve(entry.target);
                 }
             });
-        }, { rootMargin: '0px 0px -100px 0px' }); // ビューポートの下端から100px手前で発火
+        }, { rootMargin: '0px 0px -100px 0px' }); 
 
         targets.forEach(el => observer.observe(el));
     }
     
-    // --- 泡の動的生成とスクロール制御 (requestAnimationFrameによる効率化) ---
+    // --- 泡の動的生成とスクロール制御 ---
     
     let lastScrollY = 0;
     const worksSection = document.getElementById('works');
@@ -237,27 +262,19 @@ document.addEventListener("DOMContentLoaded", () => {
     const oceanContainer = document.getElementById('unified-ocean-container');
     const unifiedBubbles = document.getElementById('unified-bubbles-background');
     
-    // 泡の密度調整
     const BUBBLE_COUNT = 10; 
     const BUBBLE_SPEED_MULTIPLIER = 0.65; 
     const BUBBLE_SIZE_MIN = 10; 
     const BUBBLE_SIZE_MAX = 25; 
-    // 生成頻度調整
     const GENERATE_THRESHOLD = 80; 
 
-    let lastGenerateScroll = 0; // 最後に泡を生成したスクロール位置
-    let rafId = null; // requestAnimationFrame ID
+    let lastGenerateScroll = 0; 
+    let rafId = null; 
 
     function getRandom(min, max) {
         return Math.random() * (max - min) + min;
     }
     
-    /**
-     * 新しい泡要素を生成し、ランダムな位置とサイズでDOMに追加する
-     * @param {HTMLElement} container - 泡を追加するDOMコンテナ
-     * @param {number} initialY - ドキュメントトップからの絶対生成位置 (px)
-     * @param {number} offsetCompensation - 泡のコンテナがスクロールによって移動した距離 (px) (正の値)
-     */
     function createBubble(container, initialY, offsetCompensation = 0) { 
         if (!container || !worksSection || !profileSection) return;
         
@@ -265,23 +282,17 @@ document.addEventListener("DOMContentLoaded", () => {
         bubble.classList.add('bubble');
         
         const size = getRandom(BUBBLE_SIZE_MIN, BUBBLE_SIZE_MAX);
-        const x = getRandom(0, 100); // 0%から100%
+        const x = getRandom(0, 100); 
         
         bubble.style.width = `${size}px`;
         bubble.style.height = `${size}px`;
         bubble.style.left = `${x}%`;
         
-        // 泡の'top'位置は、ドキュメント絶対位置からコンテナの開始位置を引いた相対位置
         const containerTop = oceanContainer.offsetTop; 
-        
-        // 現在のスクロールによるコンテナの移動量(offsetCompensation)を相殺して、
-        // 画面上の正確な位置に配置する
         let relativeTop = initialY - containerTop + offsetCompensation;
         
-        // ランダムなオフセットを適用
         bubble.style.top = `${relativeTop - getRandom(0, size * 2)}px`; 
         
-        // 泡の色を決定するクラスを追加 (WorksとProfileの境界で泡の色が変わるように)
         const worksEndAbsolute = worksSection.offsetTop + worksSection.offsetHeight;
         if (initialY < worksEndAbsolute) {
              bubble.classList.add('bubble-works-color');
@@ -289,7 +300,6 @@ document.addEventListener("DOMContentLoaded", () => {
              bubble.classList.add('bubble-profile-color');
         }
         
-        // ランダムな時間差でフェードイン
         setTimeout(() => {
             bubble.style.opacity = getRandom(0.4, 1);
         }, getRandom(0, 500));
@@ -297,89 +307,58 @@ document.addEventListener("DOMContentLoaded", () => {
         container.appendChild(bubble);
     }
     
-    /**
-     * 初期表示時に泡を生成・配置する関数
-     */
     function initializeBubbles(container) {
         if (!container) return;
         container.innerHTML = '';
-        
         const containerTop = oceanContainer.offsetTop;
-        
-        // 最初の3画面分にランダムに泡を配置
         const initialRange = window.innerHeight * 3; 
-
-        // BUBBLE_COUNT * 2 = 20個を初期生成
         for (let i = 0; i < BUBBLE_COUNT * 2; i++) { 
-            // ドキュメントトップからの絶対初期位置
             const initialY = containerTop + getRandom(0, initialRange);
-            // 初期生成時は補正は不要（0）
             createBubble(container, initialY, 0); 
         }
     }
     
-    /**
-     * 画面外の上部に出た古い泡を削除する
-     */
     function removeOldBubbles(container, moveY) {
         if (!container) return;
-
         const bubbles = container.querySelectorAll('.bubble');
-        
         bubbles.forEach(bubble => {
             const bubbleTop = parseFloat(bubble.style.top);
-            // 泡の初期位置(top)と現在のスクロール移動量(moveY)を合計し、
-            // ビューポートの遥か上 (例: -2画面分) に出たら削除
             if (bubbleTop + moveY < -window.innerHeight * 2) {
                 bubble.remove();
             }
         });
     }
     
-    // スクロール時の背景移動処理 (requestAnimationFrameで実行されるメインロジック)
+    // 背景の泡アニメーション更新
     function updateBubblePosition() {
         const currentScrollY = window.scrollY;
         
-        // スクロールダウン時のみ泡の移動と生成処理を実行
         if (currentScrollY >= lastScrollY) {
-            
-            // ドキュメントトップからのスクロール距離を基準に移動量を計算
             const moveY = -(currentScrollY * BUBBLE_SPEED_MULTIPLIER); 
-            
-            // Unified Bubblesを動かす（上に上昇させる）
             if (unifiedBubbles) {
                 unifiedBubbles.style.transform = `translateY(${moveY}px)`;
             }
             
-            // --- 【連続生成のロジック】 ---
-            
             const scrollDistanceSinceLastGenerate = currentScrollY - lastGenerateScroll;
 
             if (scrollDistanceSinceLastGenerate >= GENERATE_THRESHOLD) {
-                
-                // 画面下端 + 50px あたりを基準に生成位置を設定
                 const generationY = currentScrollY + window.innerHeight + 50; 
-                
-                // 泡を生成（補正値として-moveY (正の値) を渡す）
                 createBubble(unifiedBubbles, generationY, -moveY); 
-                
-                // 画面外に出た泡の削除
                 removeOldBubbles(unifiedBubbles, moveY);
-
                 lastGenerateScroll = currentScrollY;
             }
         } 
         
         lastScrollY = currentScrollY;
-        rafId = null; // 処理完了
+        rafId = null; 
     }
 
-    // スクロールイベントを requestAnimationFrame で最適化
     function handleScrollOptimized() {
         if (rafId === null) {
             rafId = window.requestAnimationFrame(updateBubblePosition);
         }
-        // ナビゲーションの固定処理は DOM 変更を伴うため、スクロールイベントでそのまま実行
+        
+        // ナビゲーションバーの固定処理
         const nav = document.getElementById('nav-bar');
         const firstView = document.getElementById('home');
 
@@ -390,22 +369,40 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // ページのロード後に初期化関数を実行
     window.addEventListener('load', () => {
         if (oceanContainer) {
-            // コンテナの高さが確定してから実行
             initializeBubbles(unifiedBubbles);
-            // ロード直後の初期位置を反映させるために一度実行
             updateBubblePosition();
         }
     });
     
-    // スクロールイベントを requestAnimationFrame のハンドラに登録
     window.addEventListener('scroll', handleScrollOptimized);
     
-    // --- 【既存の処理】 ---
+    // --- 【修正】アンカーリンクのゆったりスクロール ---
+    const navLinks = document.querySelectorAll('#nav-bar a');
+    const headerHeight = 60; 
 
-    // モーダル制御
+    navLinks.forEach(link => {
+        if (link.hash) {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.hash;
+                const targetElement = document.querySelector(targetId);
+
+                if (targetElement) {
+                    // Lenisを使ってスクロールさせる
+                    // durationを3秒に設定し、かなりゆっくり移動させる
+                    lenis.scrollTo(targetElement, {
+                        offset: -headerHeight, // ヘッダー分ずらす
+                        duration: 3.0,        // 3秒かけてゆっくり移動
+                        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)) // 緩やかなイージング
+                    });
+                }
+            });
+        }
+    });
+    
+    // --- モーダル制御 ---
     const triggers = document.querySelectorAll(".work-trigger, .work-image-trigger");
     const closeBtns = document.querySelectorAll(".close-modal-btn");
 
@@ -414,6 +411,8 @@ document.addEventListener("DOMContentLoaded", () => {
             e.preventDefault();
             const id = trigger.dataset.target;
             document.getElementById(id)?.classList.add("active");
+            // モーダル表示時はスクロール停止
+            lenis.stop();
             document.body.classList.add("no-scroll");
         });
     });
@@ -421,22 +420,11 @@ document.addEventListener("DOMContentLoaded", () => {
     closeBtns.forEach(btn => {
         btn.addEventListener("click", () => {
             btn.closest(".modal-overlay").classList.remove("active");
+            // モーダルを閉じたらスクロール再開
             document.body.classList.remove("no-scroll");
+            lenis.start();
         });
     });
-
-    // ナビゲーションの固定（handleScrollOptimizedに移動し、この部分は削除）
-    // const nav = document.getElementById('nav-bar');
-    // const firstView = document.getElementById('home');
-
-    // window.addEventListener('scroll', () => {
-    //     if (window.scrollY >= firstView.offsetHeight) {
-    //         nav.classList.add('fixed');
-    //     } else {
-    //         nav.classList.remove('fixed');
-    //     }
-    // });
-    
 });
 </script>
 
