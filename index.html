@@ -59,7 +59,7 @@
                     <li class="work-item fade-up layout-left">
                         <div class="work-media">
                             <a class="work-image-trigger" data-target="modal-work01">
-                                <img src="work01_cover.jpg" alt="『海象』表紙" loading="lazy">
+                                <img src="work01_cover.jpg" alt="『海象』表紙" loading="lazy" class="parallax-element">
                             </a>
                         </div>
                         <div class="work-info">
@@ -73,7 +73,7 @@
                     <li class="work-item fade-up layout-right">
                         <div class="work-media">
                             <a class="work-image-trigger" data-target="modal-work02">
-                                <img src="work02_cover.jpg" alt="『出血』表紙" loading="lazy">
+                                <img src="work02_cover.jpg" alt="『出血』表紙" loading="lazy" class="parallax-element">
                             </a>
                         </div>
                         <div class="work-info">
@@ -235,6 +235,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const profileSection = document.getElementById('profile');
     const oceanContainer = document.getElementById('unified-ocean-container');
     const unifiedBubbles = document.getElementById('unified-bubbles-background');
+    // 作品画像のパララックス要素と速度設定
+    const parallaxElements = document.querySelectorAll('.parallax-element');
+    const PARALLAX_SPEED_WORKS = 0.15; // 泡(0.65)より遅く設定 (0.1〜0.2程度がおすすめ)
     
     // 泡の密度調整
     const BUBBLE_COUNT = 10; 
@@ -252,9 +255,6 @@ document.addEventListener("DOMContentLoaded", () => {
     
     /**
      * 新しい泡要素を生成し、ランダムな位置とサイズでDOMに追加する
-     * @param {HTMLElement} container - 泡を追加するDOMコンテナ
-     * @param {number} initialY - ドキュメントトップからの絶対生成位置 (px)
-     * @param {number} offsetCompensation - 泡のコンテナがスクロールによって移動した距離 (px) (正の値)
      */
     function createBubble(container, initialY, offsetCompensation = 0) { 
         if (!container || !worksSection || !profileSection) return;
@@ -333,23 +333,39 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     }
+
+    /**
+     * 作品画像のパララックス効果を適用する関数
+     */
+    function applyWorksParallax(currentScrollY) {
+        // スクロール距離に比例した移動量を計算
+        // スクロールダウン (Yが増加) すると、moveYも増加 (画像が下方向に移動)
+        // -> スクロールに「遅れて」ついてくるように見え、遠近感が発生
+        const moveY = currentScrollY * PARALLAX_SPEED_WORKS; 
+
+        parallaxElements.forEach(el => {
+            // 画像はコンテナ内にあるため、相対的な位置を維持
+            el.style.transform = `translateY(${moveY}px)`;
+        });
+    }
     
-    // スクロール時の背景移動処理
-    function handleBubbleScroll() {
+    // スクロール時の背景移動処理とパララックス処理を統合
+    function handleScrollEffects() {
         const currentScrollY = window.scrollY;
         
-        // 【重要】スクロールダウン時のみ泡の移動と生成処理を実行
-        if (currentScrollY >= lastScrollY) {
-            
-            // ドキュメントトップからのスクロール距離を基準に移動量を計算
-            const moveY = -(currentScrollY * BUBBLE_SPEED_MULTIPLIER); 
-            
-            // Unified Bubblesを動かす（上に上昇させる）
-            if (unifiedBubbles) {
-                unifiedBubbles.style.transform = `translateY(${moveY}px)`;
-            }
-            
-            // --- 【連続生成のロジック】 ---
+        // 1. 泡コンテナの移動 (常に適用)
+        // moveYは負の値になり、泡コンテナ全体が上方向に移動
+        const moveY = -(currentScrollY * BUBBLE_SPEED_MULTIPLIER); 
+        if (unifiedBubbles) {
+            unifiedBubbles.style.transform = `translateY(${moveY}px)`;
+        }
+
+        // 2. 作品画像のパララックス (常に適用)
+        applyWorksParallax(currentScrollY);
+        
+        // 3. 泡の生成・削除 (スクロールダウン時のみ)
+        // ページ読み込み後の初期スクロールや、スムーズスクロール時も動作するため、lastScrollYと比較
+        if (currentScrollY > lastScrollY) { 
             
             const scrollDistanceSinceLastGenerate = currentScrollY - lastGenerateScroll;
 
@@ -367,7 +383,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 lastGenerateScroll = currentScrollY;
             }
         } 
-        // 上にスクロールした場合は、このifブロックがスキップされ、泡のコンテナのtransformが更新されないため、泡は固定される
 
         lastScrollY = currentScrollY;
     }
@@ -377,12 +392,12 @@ document.addEventListener("DOMContentLoaded", () => {
         if (oceanContainer) {
             // コンテナの高さが確定してから実行
             initializeBubbles(unifiedBubbles);
-            handleBubbleScroll();
+            handleScrollEffects(); // 初期位置での描画を適用
         }
     });
     
     // スクロールイベントを登録
-    window.addEventListener('scroll', handleBubbleScroll);
+    window.addEventListener('scroll', handleScrollEffects);
     
     // --- 【既存の処理】 ---
 
