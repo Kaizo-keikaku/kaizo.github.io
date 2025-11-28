@@ -27,6 +27,7 @@
             <div class="nav-links">
                 <a href="#works">Works</a>
                 <a href="#profile">Profile</a>
+                <a href="#event">Event</a>
             </div>
         </div>
     </nav>
@@ -122,14 +123,37 @@
                         Note
                     </a>
                 </div>
+            </div>
+        </section>
+        
+        <section id="event">
+            <div class="container site-content">
+                <h2 class="section-title fade-up">参加イベント</h2>
+                <p class="fade-up">
+                    当サークルの参加イベント情報です。会場の深部にて皆様をお待ちしております。
+                </p>
+                
+                <ul class="event-list">
+                    <li class="event-item fade-up">
+                        <span class="event-date">2025.11.23</span>
+                        <h3 class="event-name">文学フリマ東京41</h3>
+                        <p class="event-detail">配置: T-86 / 新刊『海象』『出血』</p>
+                    </li>
+                    <li class="event-item fade-up">
+                        <span class="event-date">2026.01.10</span>
+                        <h3 class="event-name">ZINEフェス東京</h3>
+                        <p class="event-detail">配置:（未定） / 既刊のみ</p>
+                    </li>
+                </ul>
 
                 <div class="btn-area fade-up">
                     <a href="https://twitter.com/intent/tweet?text=文学同人サークル%20海象計画%20公式サイト&url=https://kaizo-keikaku.github.io/" target="_blank" class="btn btn-share">
                         X で共有する
                     </a>
                 </div>
-
+                
             </div>
+            <div id="bioluminescence-container"></div>
             
             <footer class="fade-up">
                 &copy; 2024 Kaizo Keikaku
@@ -178,20 +202,44 @@
 document.addEventListener("DOMContentLoaded", () => {
 
     // --- Lenis スムーズスクロール設定 ---
+    
+    // スクロール速度をセクションごとに制御する関数
+    function getScrollDuration() {
+        const scrollY = window.scrollY;
+        const worksSection = document.getElementById('works');
+        const worksEnd = worksSection.offsetTop + worksSection.offsetHeight;
+        const profileSection = document.getElementById('profile');
+        const profileEnd = profileSection.offsetTop + profileSection.offsetHeight;
+        
+        // #home, #works: 1.5s
+        if (scrollY < worksEnd) {
+            return 1.5;
+        // #profile: 2.0s
+        } else if (scrollY < profileEnd) {
+            return 2.0;
+        // #event: 3.0s (最も重い水圧)
+        } else {
+            return 3.0;
+        }
+    }
+
     const lenis = new Lenis({
-        duration: 1.5, // 慣性スクロールのスピード (1.0 以上でなめらか)
-        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // スクロールのイージング関数
-        direction: 'vertical', // 垂直スクロール
-        gestureDirection: 'vertical', // マウスやタッチのジェスチャーを垂直方向に制限
-        smooth: true, // スムーズスクロールを有効化
-        mouseMultiplier: 1, // マウスホイールの感度
-        smoothTouch: false, // スマホやタブレットでのスムーズスクロールをオフ
-        touchMultiplier: 2, // タッチスクロールの感度
-        infinite: false, // 無限スクロールをオフ
+        // 初期値は最も遅い3.0にしておき、requestAnimationFrameで調整
+        duration: 3.0, 
+        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), 
+        direction: 'vertical', 
+        gestureDirection: 'vertical', 
+        smooth: true, 
+        mouseMultiplier: 1, 
+        smoothTouch: false, 
+        touchMultiplier: 2, 
+        infinite: false, 
     });
 
     // Lenisのアニメーションループ
     function raf(time) {
+        // スクロール中にdurationを動的に変更
+        lenis.options.duration = getScrollDuration();
         lenis.raf(time);
         requestAnimationFrame(raf);
     }
@@ -201,7 +249,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const openingText = document.getElementById("opening-text");
     const openingOverlay = document.getElementById("opening-overlay");
 
-    // オープニング中はスクロールを停止
     lenis.stop();
     document.body.classList.add("no-scroll");
 
@@ -231,8 +278,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 setTimeout(() => {
                     openingOverlay.style.display = "none";
                     document.body.classList.remove("no-scroll"); 
-                    lenis.start(); // アニメーション終了後にスクロール再開
+                    lenis.start(); 
                     startScrollFadeIn();
+                    initializeBioluminescence(); // 蛍光アニメーション初期化
                 }, 700);
             }, 1000);
         }
@@ -261,6 +309,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let lastScrollY = 0;
     const worksSection = document.getElementById('works');
     const profileSection = document.getElementById('profile');
+    const eventSection = document.getElementById('event'); // 新しいセクション
     const oceanContainer = document.getElementById('unified-ocean-container');
     const unifiedBubbles = document.getElementById('unified-bubbles-background');
     
@@ -278,7 +327,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     
     function createBubble(container, initialY, offsetCompensation = 0) { 
-        if (!container || !worksSection || !profileSection) return;
+        if (!container || !worksSection || !profileSection || !eventSection) return;
         
         const bubble = document.createElement('div');
         bubble.classList.add('bubble');
@@ -296,10 +345,15 @@ document.addEventListener("DOMContentLoaded", () => {
         bubble.style.top = `${relativeTop - getRandom(0, size * 2)}px`; 
         
         const worksEndAbsolute = worksSection.offsetTop + worksSection.offsetHeight;
+        const profileEndAbsolute = profileSection.offsetTop + profileSection.offsetHeight;
+        
         if (initialY < worksEndAbsolute) {
              bubble.classList.add('bubble-works-color');
-        } else {
+        } else if (initialY < profileEndAbsolute) {
              bubble.classList.add('bubble-profile-color');
+        } else {
+             // #event セクションの泡は#profileと同じ色を継承
+             bubble.classList.add('bubble-profile-color'); 
         }
         
         setTimeout(() => {
@@ -355,6 +409,53 @@ document.addEventListener("DOMContentLoaded", () => {
         rafId = null; 
     }
 
+    // --- 生物発光 (Bioluminescence) アニメーションの追加 ---
+    const bioluminescenceContainer = document.getElementById('bioluminescence-container');
+    const BIOLUMINESCENCE_INTERVAL = 1500; 
+
+    function createLightParticle() {
+        if (!bioluminescenceContainer) return;
+        const particle = document.createElement('div');
+        particle.classList.add('biolum-particle');
+        
+        const containerRect = bioluminescenceContainer.getBoundingClientRect();
+        const y = getRandom(0, bioluminescenceContainer.offsetHeight);
+        const x = getRandom(0, 100); 
+
+        particle.style.top = `${y}px`;
+        particle.style.left = `${x}%`;
+        
+        const size = getRandom(4, 12);
+        particle.style.width = `${size}px`;
+        particle.style.height = `${size}px`;
+        
+        bioluminescenceContainer.appendChild(particle);
+
+        // --- 【修正点】ゆっくり点滅させるための設定 ---
+        // ランダムな寿命を設定 (4秒から7秒)
+        const lifeDuration = getRandom(4, 7); 
+        
+        // CSSアニメーションを適用: 
+        // 1. biolum-float (少し上に揺らぐ動き) 2. slowFadeFlash (ゆっくり点滅)
+        particle.style.animation = `
+            biolum-float 2s ease-out forwards, 
+            slowFadeFlash ${lifeDuration}s ease-in-out forwards
+        `;
+
+        // アニメーション完了後に要素を削除
+        setTimeout(() => {
+            particle.remove();
+        }, lifeDuration * 1000); 
+        // ------------------------------------------
+    }
+    
+    function initializeBioluminescence() {
+        if (!bioluminescenceContainer) return;
+        
+        // 300ms間隔で光を生成
+        setInterval(createLightParticle, BIOLUMINESCENCE_INTERVAL);
+    }
+    
     function handleScrollOptimized() {
         if (rafId === null) {
             rafId = window.requestAnimationFrame(updateBubblePosition);
@@ -380,7 +481,7 @@ document.addEventListener("DOMContentLoaded", () => {
     
     window.addEventListener('scroll', handleScrollOptimized);
     
-    // --- 【修正】アンカーリンクのゆったりスクロール ---
+    // --- アンカーリンクのゆったりスクロール ---
     const navLinks = document.querySelectorAll('#nav-bar a');
     const headerHeight = 60; 
 
@@ -390,14 +491,15 @@ document.addEventListener("DOMContentLoaded", () => {
                 e.preventDefault();
                 const targetId = this.hash;
                 const targetElement = document.querySelector(targetId);
-
+                
                 if (targetElement) {
-                    // Lenisを使ってスクロールさせる
-                    // durationを3秒に設定し、かなりゆっくり移動させる
+                    // クリック時もセクションに応じた duration を使用（最も深い水圧(3.0)を適用）
+                    const clickDuration = 3.0; 
+                    
                     lenis.scrollTo(targetElement, {
-                        offset: -headerHeight, // ヘッダー分ずらす
-                        duration: 3.0,        // 3秒かけてゆっくり移動
-                        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)) // 緩やかなイージング
+                        offset: -headerHeight, 
+                        duration: clickDuration,        
+                        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)) 
                     });
                 }
             });
@@ -413,7 +515,6 @@ document.addEventListener("DOMContentLoaded", () => {
             e.preventDefault();
             const id = trigger.dataset.target;
             document.getElementById(id)?.classList.add("active");
-            // モーダル表示時はスクロール停止
             lenis.stop();
             document.body.classList.add("no-scroll");
         });
@@ -422,10 +523,14 @@ document.addEventListener("DOMContentLoaded", () => {
     closeBtns.forEach(btn => {
         btn.addEventListener("click", () => {
             btn.closest(".modal-overlay").classList.remove("active");
-            // モーダルを閉じたらスクロール再開
             document.body.classList.remove("no-scroll");
             lenis.start();
         });
+    });
+    
+    // 初期ロード時に蛍光アニメーションを遅延開始
+    window.addEventListener('load', () => {
+        setTimeout(initializeBioluminescence, 1500);
     });
 });
 </script>
