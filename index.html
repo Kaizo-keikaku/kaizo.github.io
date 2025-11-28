@@ -214,12 +214,12 @@ document.addEventListener("DOMContentLoaded", () => {
         // #home, #works: 1.5s
         if (scrollY < worksEnd) {
             return 1.5;
-        // #profile: 2.0s
+        // #profile: 3.0s
         } else if (scrollY < profileEnd) {
-            return 2.0;
-        // #event: 3.0s (最も重い水圧)
-        } else {
             return 3.0;
+        // #event: 6.0s (最も重い水圧)
+        } else {
+            return 6.0;
         }
     }
 
@@ -493,8 +493,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 const targetElement = document.querySelector(targetId);
                 
                 if (targetElement) {
-                    // クリック時もセクションに応じた duration を使用（最も深い水圧(3.0)を適用）
-                    const clickDuration = 3.0; 
+                    // クリック時もセクションに応じた duration を使用（最も深い水圧(6.0)を適用）
+                    const clickDuration = 6.0; 
                     
                     lenis.scrollTo(targetElement, {
                         offset: -headerHeight, 
