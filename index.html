@@ -68,6 +68,7 @@
                             <span class="work-date">2025.11.23</span>
                             <a class="work-trigger" data-target="modal-work01">『海象』</a>
                             <p class="description">文学作品集、『曇り硝子の目色』と『白痴ゅうむ』を収録</p>
+                            <a class="btn btn-small" data-target="modal-work01">詳細</a>
                         </div>
                     </li>
 
@@ -81,7 +82,7 @@
                             <span class="work-date">2025.11.23</span>
                             <a class="work-trigger" data-target="modal-work02">『出血』</a>
                             <p class="description">詩集。計三十扁。</p>
-                            <a href="#" class="btn btn-small">詳細・購入</a>
+                            <a class="btn btn-small" data-target="modal-work02">詳細</a>
                         </div>
                     </li>
                 </ul>
@@ -404,7 +405,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     
     // --- モーダル制御 ---
-    const triggers = document.querySelectorAll(".work-trigger, .work-image-trigger");
+    const triggers = document.querySelectorAll(".work-trigger, .work-image-trigger, .btn-small");
     const closeBtns = document.querySelectorAll(".close-modal-btn");
 
     triggers.forEach(trigger => {
