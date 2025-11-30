@@ -1,20 +1,3 @@
-/* style.css の冒頭に追加 */
-@font-face {
-    font-family: 'Zen Old Mincho';
-    font-style: normal;
-    font-weight: 400;
-    font-display: swap;
-    src: url('ZenOldMincho-Regular.woff2') format('woff2');
-}
-
-@font-face {
-    font-family: 'Zen Old Mincho';
-    font-style: normal;
-    font-weight: 700;
-    font-display: swap;
-    src: url('ZenOldMincho-Bold.woff2') format('woff2');
-}
-
 /*フェードアップ*/
 .fade-up {
     opacity: 0;
