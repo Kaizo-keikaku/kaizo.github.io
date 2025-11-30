@@ -258,6 +258,7 @@ a:not(.btn):hover {
     color: #666;
     margin-top: 5px;
     display: block;
+    text-align: center; 
 }
 
 .concept-text {
