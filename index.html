@@ -4,14 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>海象計画</title>
-        <style>
+    <meta name="description" content="文学同人サークル「海象計画」の公式サイト。">
+    <meta property="og:title" content="海象計画">
+    <meta property="og:description" content="静謐な海を漂うような、言葉の記録。">
+    <meta property="og:url" content="https://kaizo-keikaku.github.io/">
+    <meta property="og:type" content="website">
+    <style>
         @font-face {
             font-family: 'Zen Old Mincho Subset';
             font-style: normal;
             font-weight: 700; 
             font-display: block; /* 読み込みが完了するまでブロックし、即座に適用 */
             /* ※ファイル名は適宜変更してください */
-            src: url('subset-ZenOldMincho-Bold') format('woff2'); 
+            src: url('subset-ZenOldMincho-Bold.woff2') format('woff2'); 
         }
         #opening-overlay {
             position: fixed;
@@ -30,6 +35,7 @@
         }
 
         #opening-text {
+            font-family: 'Zen Old Mincho Subset', serif;
             font-size: 3rem;
             font-weight: 700;
             color: #1d3a4e;
@@ -53,11 +59,6 @@
         /* フォントの@font-faceもインラインで挿入可能ですが、ファイルサイズ増大に注意 */
         /* (ここでは割愛し、既存の遅延ロード方式を維持) */
     </style>
-    <meta name="description" content="文学同人サークル「海象計画」の公式サイト。">
-    <meta property="og:title" content="海象計画">
-    <meta property="og:description" content="静謐な海を漂うような、言葉の記録。">
-    <meta property="og:url" content="https://kaizo-keikaku.github.io/">
-    <meta property="og:type" content="website">
     <link rel="stylesheet" href="style.css" media="print" onload="this.media='all'">
     <noscript><link rel="stylesheet" href="style.css"></noscript>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text x=%2250%%22 y=%2250%%22 style=%22dominant-baseline:central;text-anchor:middle;font-size:90px;%22>🌊</text></svg>">
