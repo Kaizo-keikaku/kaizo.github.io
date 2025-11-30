@@ -201,31 +201,55 @@
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {
+    
+    // --- ジオメトリキャッシュ変数 (Forced Reflow Fix) ---
+    let worksEndAbsolute = 0;
+    let profileEndAbsolute = 0;
+    let firstViewHeight = 0;
+    let oceanContainerTop = 0;
+    
+    // DOM要素の参照をキャッシュ
+    const worksSection = document.getElementById('works');
+    const profileSection = document.getElementById('profile');
+    const firstView = document.getElementById('home');
+    const oceanContainer = document.getElementById('unified-ocean-container');
+    
+    // --- ジオメトリのキャッシュ関数 (Forced Reflow Fix) ---
+    // 幾何学的プロパティの読み取りをこの関数内に集約し、頻繁な実行を避ける
+    function cacheGeometry() {
+        if (worksSection && profileSection) {
+            worksEndAbsolute = worksSection.offsetTop + worksSection.offsetHeight;
+            profileEndAbsolute = profileSection.offsetTop + profileSection.offsetHeight;
+        }
+        if (firstView) {
+            firstViewHeight = firstView.offsetHeight;
+        }
+        if (oceanContainer) {
+            oceanContainerTop = oceanContainer.offsetTop;
+        }
+    }
+
+    // 初期化時とリサイズ時にキャッシュを更新
+    cacheGeometry(); 
+    window.addEventListener('resize', cacheGeometry);
 
     // --- Lenis スムーズスクロール設定 ---
     
-    // スクロール速度をセクションごとに制御する関数
+    // スクロール速度をセクションごとに制御する関数 (キャッシュ値を使用)
     function getScrollDuration() {
-        const scrollY = window.scrollY;
-        const worksSection = document.getElementById('works');
-        const worksEnd = worksSection.offsetTop + worksSection.offsetHeight;
-        const profileSection = document.getElementById('profile');
-        const profileEnd = profileSection.offsetTop + profileSection.offsetHeight;
+        const scrollY = window.scrollY; 
         
-        // #home, #works: 1.5s
-        if (scrollY < worksEnd) {
+        // キャッシュされた絶対位置 worksEndAbsolute, profileEndAbsolute を使用
+        if (scrollY < worksEndAbsolute) {
             return 1.5;
-        // #profile: 3.0s
-        } else if (scrollY < profileEnd) {
+        } else if (scrollY < profileEndAbsolute) {
             return 3.0;
-        // #event: 6.0s (最も重い水圧)
         } else {
             return 6.0;
         }
     }
 
     const lenis = new Lenis({
-        // 初期値は最も遅い3.0にしておき、requestAnimationFrameで調整
         duration: 3.0, 
         easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), 
         direction: 'vertical', 
@@ -244,13 +268,16 @@ document.addEventListener("DOMContentLoaded", () => {
         lenis.raf(time);
         requestAnimationFrame(raf);
     }
-    requestAnimationFrame(raf);
+    
+    // 【✅ スクロール機能回復の修正点】アニメーションループをここで開始
+    raf(0); 
 
     // --- オープニングアニメーション ---
     const openingText = document.getElementById("opening-text");
     const openingOverlay = document.getElementById("opening-overlay");
 
-    lenis.stop();
+    // raf開始後に lenis.stop() を呼び出し、スクロールを停止
+    lenis.stop(); 
     document.body.classList.add("no-scroll");
 
     const typingSequence = [
@@ -279,6 +306,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 setTimeout(() => {
                     openingOverlay.style.display = "none";
                     document.body.classList.remove("no-scroll"); 
+                    // 【✅ スクロール機能回復の修正点】 Lenisを再開
                     lenis.start(); 
                     startScrollFadeIn();
                     initializeBioluminescence(); // 蛍光アニメーション初期化
@@ -308,10 +336,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // --- 泡の動的生成とスクロール制御 ---
     
     let lastScrollY = 0;
-    const worksSection = document.getElementById('works');
-    const profileSection = document.getElementById('profile');
-    const eventSection = document.getElementById('event'); // 新しいセクション
-    const oceanContainer = document.getElementById('unified-ocean-container');
     const unifiedBubbles = document.getElementById('unified-bubbles-background');
     
     const BUBBLE_COUNT = 10; 
@@ -327,8 +351,9 @@ document.addEventListener("DOMContentLoaded", () => {
         return Math.random() * (max - min) + min;
     }
     
+    // oceanContainerTop (キャッシュ値) を使用するように修正
     function createBubble(container, initialY, offsetCompensation = 0) { 
-        if (!container || !worksSection || !profileSection || !eventSection) return;
+        if (!container || !worksSection || !profileSection) return; 
         
         const bubble = document.createElement('div');
         bubble.classList.add('bubble');
@@ -340,20 +365,17 @@ document.addEventListener("DOMContentLoaded", () => {
         bubble.style.height = `${size}px`;
         bubble.style.left = `${x}%`;
         
-        const containerTop = oceanContainer.offsetTop; 
-        let relativeTop = initialY - containerTop + offsetCompensation;
+        // 【✅ 強制リフロー回避】 oceanContainerTop (キャッシュ値) を使用
+        let relativeTop = initialY - oceanContainerTop + offsetCompensation;
         
         bubble.style.top = `${relativeTop - getRandom(0, size * 2)}px`; 
         
-        const worksEndAbsolute = worksSection.offsetTop + worksSection.offsetHeight;
-        const profileEndAbsolute = profileSection.offsetTop + profileSection.offsetHeight;
-        
+        // 【✅ 強制リフロー回避】worksEndAbsolute, profileEndAbsolute (キャッシュ値) を使用
         if (initialY < worksEndAbsolute) {
              bubble.classList.add('bubble-works-color');
         } else if (initialY < profileEndAbsolute) {
              bubble.classList.add('bubble-profile-color');
         } else {
-             // #event セクションの泡は#profileと同じ色を継承
              bubble.classList.add('bubble-profile-color'); 
         }
         
@@ -364,13 +386,14 @@ document.addEventListener("DOMContentLoaded", () => {
         container.appendChild(bubble);
     }
     
+    // oceanContainerTop (キャッシュ値) を使用するように修正
     function initializeBubbles(container) {
         if (!container) return;
         container.innerHTML = '';
-        const containerTop = oceanContainer.offsetTop;
+        // 【✅ 強制リフロー回避】 oceanContainerTop (キャッシュ値) を使用
         const initialRange = window.innerHeight * 3; 
         for (let i = 0; i < BUBBLE_COUNT * 2; i++) { 
-            const initialY = containerTop + getRandom(0, initialRange);
+            const initialY = oceanContainerTop + getRandom(0, initialRange);
             createBubble(container, initialY, 0); 
         }
     }
@@ -393,6 +416,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (currentScrollY >= lastScrollY) {
             const moveY = -(currentScrollY * BUBBLE_SPEED_MULTIPLIER); 
             if (unifiedBubbles) {
+                // transform はリフローを発生させにくい (Composite Layerで処理される)
                 unifiedBubbles.style.transform = `translateY(${moveY}px)`;
             }
             
@@ -432,31 +456,25 @@ document.addEventListener("DOMContentLoaded", () => {
         
         bioluminescenceContainer.appendChild(particle);
 
-        // --- 【修正点】ゆっくり点滅させるための設定 ---
-        // ランダムな寿命を設定 (1秒から5秒)
         const lifeDuration = getRandom(1, 5); 
         
-        // CSSアニメーションを適用: 
-        // 1. biolum-float (少し上に揺らぐ動き) 2. slowFadeFlash (ゆっくり点滅)
         particle.style.animation = `
             biolum-float 2s ease-out forwards, 
             slowFadeFlash ${lifeDuration}s ease-in-out forwards
         `;
 
-        // アニメーション完了後に要素を削除
         setTimeout(() => {
             particle.remove();
         }, lifeDuration * 1000); 
-        // ------------------------------------------
     }
     
     function initializeBioluminescence() {
         if (!bioluminescenceContainer) return;
         
-        // 300ms間隔で光を生成
         setInterval(createLightParticle, BIOLUMINESCENCE_INTERVAL);
     }
     
+    // handleScrollOptimizedでDOMの読み取り (offsetHeight) を回避
     function handleScrollOptimized() {
         if (rafId === null) {
             rafId = window.requestAnimationFrame(updateBubblePosition);
@@ -464,9 +482,9 @@ document.addEventListener("DOMContentLoaded", () => {
         
         // ナビゲーションバーの固定処理
         const nav = document.getElementById('nav-bar');
-        const firstView = document.getElementById('home');
-
-        if (window.scrollY >= firstView.offsetHeight) {
+        
+        // 【✅ 強制リフロー回避】 firstViewHeight (キャッシュ値) を使用
+        if (window.scrollY >= firstViewHeight) {
             nav.classList.add('fixed');
         } else {
             nav.classList.remove('fixed');
@@ -474,10 +492,15 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     window.addEventListener('load', () => {
+        // load完了時にも念のためキャッシュ更新
+        cacheGeometry(); 
         if (oceanContainer) {
             initializeBubbles(unifiedBubbles);
             updateBubblePosition();
         }
+        // 蛍光アニメーション開始を遅延実行
+        // オープニングアニメーション終了時にも呼ばれるため、ここではコメントアウト
+        // setTimeout(initializeBioluminescence, 1500); 
     });
     
     window.addEventListener('scroll', handleScrollOptimized);
@@ -494,7 +517,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 const targetElement = document.querySelector(targetId);
                 
                 if (targetElement) {
-                    // クリック時もセクションに応じた duration を使用（最も深い水圧(6.0)を適用）
                     const clickDuration = 6.0; 
                     
                     lenis.scrollTo(targetElement, {
@@ -527,11 +549,6 @@ document.addEventListener("DOMContentLoaded", () => {
             document.body.classList.remove("no-scroll");
             lenis.start();
         });
-    });
-    
-    // 初期ロード時に蛍光アニメーションを遅延開始
-    window.addEventListener('load', () => {
-        setTimeout(initializeBioluminescence, 1500);
     });
 });
 </script>
