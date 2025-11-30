@@ -11,7 +11,10 @@
     <meta property="og:type" content="website">
     <link rel="stylesheet" href="style.css">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text x=%2250%%22 y=%2250%%22 style=%22dominant-baseline:central;text-anchor:middle;font-size:90px;%22>🌊</text></svg>">
-    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Old+Mincho:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.19/bundled/lenis.min.js"></script>
 </head>
 
@@ -68,7 +71,7 @@
                         <div class="work-info">
                             <span class="work-date">2025.11.23</span>
                             <a class="work-trigger" data-target="modal-work01">『海象』</a>
-                            <p class="description">文学作品集、『曇り硝子の目色』と『白痴ゅうむ』を収録</p>
+                            <p class="description">文学作品集。<br>『曇り硝子の目色』と『白痴ゅうむ』を収録</p>
                             <a class="btn btn-small" data-target="modal-work01">詳細</a>
                         </div>
                     </li>
@@ -82,7 +85,7 @@
                         <div class="work-info">
                             <span class="work-date">2025.11.23</span>
                             <a class="work-trigger" data-target="modal-work02">『出血』</a>
-                            <p class="description">詩集。計三十扁。</p>
+                            <p class="description">催花亮太初の詩集。<br>計三十篇。</p>
                             <a class="btn btn-small" data-target="modal-work02">詳細</a>
                         </div>
                     </li>
@@ -101,15 +104,13 @@
                     <div class="member-item fade-up">
                         <h3 class="member-name">催花亮太 (Saika Ryota)</h3>
                         <p class="member-description">
-                            主に散文や詩を執筆。海と冬の情景を愛し、孤独と記憶をテーマに据えることが多い。
-                            静かな筆致で、日常に潜む微かな機微を捉えることを信条としている。
+                            静寂の中にも息遣いや拍動を感じさせる独特の筆致で、内面世界を紙上に浮かび上がらせる。主に詩と散文を執筆。
                         </p>
                     </div>
                     <div class="member-item fade-up">
-                        <h3 class="member-name">榎田ブショネ (Enokida Bushone)</h3>
+                        <h3 class="member-name">榎田ブショネ (Enokida Bouchonné)</h3>
                         <p class="member-description">
-                            物語や批評を担当。『白痴ゅうむ』のような、人間の内面の葛藤や不理解への苛立ちをグロテスクに描く作風が特徴的。
-                            現実の輪郭を曖昧にするような、実験的な表現を追求している。
+                            人間は誰しも醜いと言う前提に立ち、しかしそこに絶望ではなく希望を見出すことを信条とする。何気ない短歌と本気の文学。
                         </p>
                     </div>
                 </div>
@@ -189,8 +190,8 @@
             </p>
             <p class="modal-text">
                 【概要】<br>
-                初期の習作を集めたアンソロジー。<br>
-                今はもう手に入らない、断片的な思考の記録。
+                血を連想させる言葉が随所にちりばめられた、コンセプチュアルな詩集。<br>
+                淡々とした語りの行間に、確かな初期衝動が蠢いている。
             </p>
             <div class="btn-area">
                 <a href="#" class="btn" style="border-color:currentColor; color:currentColor;">BOOTHで購入</a>
@@ -432,8 +433,8 @@ document.addEventListener("DOMContentLoaded", () => {
         bioluminescenceContainer.appendChild(particle);
 
         // --- 【修正点】ゆっくり点滅させるための設定 ---
-        // ランダムな寿命を設定 (4秒から7秒)
-        const lifeDuration = getRandom(4, 7); 
+        // ランダムな寿命を設定 (1秒から5秒)
+        const lifeDuration = getRandom(1, 5); 
         
         // CSSアニメーションを適用: 
         // 1. biolum-float (少し上に揺らぐ動き) 2. slowFadeFlash (ゆっくり点滅)
