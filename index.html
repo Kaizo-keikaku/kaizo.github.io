@@ -17,6 +17,47 @@
     <link href="https://fonts.googleapis.com/css2?family=Zen+Old+Mincho:wght@400;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
     <noscript><link href="https://fonts.googleapis.com/css2?family=Zen+Old+Mincho:wght@400;700&display=swap" rel="stylesheet"></noscript>
     <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.19/bundled/lenis.min.js" defer></script>
+    <style>
+        #opening-overlay {
+            position: fixed;
+            inset: 0;
+            background: #f4f1ea; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 99999;
+            opacity: 1;
+            transition: opacity .6s ease-out;
+        }
+        
+        #opening-overlay.fade-out {
+            opacity: 0;
+        }
+
+        #opening-text {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #1d3a4e;
+            white-space: nowrap;
+            border-right: 0.1em solid #1d3a4e;
+            animation: cursorBlink .7s infinite;
+        }
+
+        @keyframes cursorBlink {
+            0%,100% { border-color: transparent; }
+            50% { border-color: #1d3a4e; }
+        }
+
+        body.no-scroll { 
+            overflow: hidden; 
+        }
+
+        @media (max-width: 768px) {
+            #opening-text { font-size: 2rem; }
+        }
+        /* フォントの@font-faceもインラインで挿入可能ですが、ファイルサイズ増大に注意 */
+        /* (ここでは割愛し、既存の遅延ロード方式を維持) */
+    </style>
 </head>
 
 <body>
