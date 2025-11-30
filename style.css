@@ -239,20 +239,6 @@ a:not(.btn):hover {
     background-color: var(--bg-color-home); 
 }
 
-.concept-content {
-    max-width: 600px;
-    padding-bottom: 100px; 
-}
-
-.site-title {
-    font-size: 4rem; 
-    font-weight: 700;
-    color: var(--accent-color);
-    letter-spacing: 0.3em;
-    margin: 0;
-    line-height: 1.2;
-}
-
 .subtitle {
     font-size: 1.2rem;
     color: #666;
@@ -535,37 +521,6 @@ footer {
 
 .close-modal-btn:hover { opacity: 1; }
 
-/* オープニング (変更なし) */
-#opening-overlay {
-    position: fixed;
-    inset: 0;
-    background: var(--bg-color-home);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 99999;
-    opacity: 1;
-    transition: opacity .6s ease-out;
-}
-
-#opening-overlay.fade-out {
-    opacity: 0;
-}
-
-#opening-text {
-    font-size: 3rem;
-    font-weight: 700;
-    color: var(--accent-color);
-    white-space: nowrap;
-    border-right: 0.1em solid var(--accent-color);
-    animation: cursorBlink .7s infinite;
-}
-
-@keyframes cursorBlink {
-    0%,100% { border-color: transparent; }
-    50% { border-color: var(--accent-color); }
-}
-
 /* レスポンシブ対応 (変更なし) */
 @media (max-width: 900px) {
     .site-title { font-size: 3rem; letter-spacing: 0.2em; }
@@ -601,7 +556,6 @@ footer {
 }
 
 @media (max-width: 768px) {
-    #opening-text { font-size: 2rem; }
     
     .site-title { font-size: 2.5rem; letter-spacing: 0.15em; }
     

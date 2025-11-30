@@ -98,8 +98,25 @@
         @media (max-width: 768px) {
             #opening-text { font-size: 2rem; }
         }
-        /* フォントの@font-faceもインラインで挿入可能ですが、ファイルサイズ増大に注意 */
-        /* (ここでは割愛し、既存の遅延ロード方式を維持) */
+        .concept-content {
+            max-width: 600px;
+            padding-bottom: 100px; 
+            /* 以下を追加：文字サイズが変わってもレイアウトが崩れないようにする */
+            min-height: 300px; /* 中身のテキストが収まる十分な高さ */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .site-title {
+            font-size: 4rem; 
+            font-weight: 700;
+            color: var(--accent-color);
+            letter-spacing: 0.3em;
+            margin: 0;
+            line-height: 1.2; 
+            min-height: 1.2em; /* 1行分の高さを確保 */
+        }
     </style>
     <link rel="stylesheet" href="style.css" media="print" onload="this.media='all'">
     <noscript><link rel="stylesheet" href="style.css"></noscript>
