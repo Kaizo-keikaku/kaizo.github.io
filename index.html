@@ -205,19 +205,26 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // --- Lenis スムーズスクロール設定 ---
     
+    // 【修正点2 & 3の準備】セクション境界の絶対位置をグローバル変数として保持
+    let worksEndAbsolute = 0;
+    let profileEndAbsolute = 0;
+
+    const worksSection = document.getElementById('works');
+    const profileSection = document.getElementById('profile');
+    const eventSection = document.getElementById('event'); 
+    const oceanContainer = document.getElementById('unified-ocean-container');
+    const unifiedBubbles = document.getElementById('unified-bubbles-background');
+
     // スクロール速度をセクションごとに制御する関数
     function getScrollDuration() {
         const scrollY = window.scrollY;
-        const worksSection = document.getElementById('works');
-        const worksEnd = worksSection.offsetTop + worksSection.offsetHeight;
-        const profileSection = document.getElementById('profile');
-        const profileEnd = profileSection.offsetTop + profileSection.offsetHeight;
         
+        // 【修正点2】DOMプロパティの読み取りを避け、グローバル変数を使用
         // #home, #works: 1.5s
-        if (scrollY < worksEnd) {
+        if (scrollY < worksEndAbsolute) {
             return 1.5;
         // #profile: 3.0s
-        } else if (scrollY < profileEnd) {
+        } else if (scrollY < profileEndAbsolute) {
             return 3.0;
         // #event: 6.0s (最も重い水圧)
         } else {
@@ -282,7 +289,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     document.body.classList.remove("no-scroll"); 
                     lenis.start(); 
                     startScrollFadeIn();
-                    initializeBioluminescence(); // 蛍光アニメーション初期化
+                    // initializeBioluminescence(); // ロード時に移動
                 }, 700);
             }, 1000);
         }
@@ -309,11 +316,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // --- 泡の動的生成とスクロール制御 ---
     
     let lastScrollY = 0;
-    const worksSection = document.getElementById('works');
-    const profileSection = document.getElementById('profile');
-    const eventSection = document.getElementById('event'); // 新しいセクション
-    const oceanContainer = document.getElementById('unified-ocean-container');
-    const unifiedBubbles = document.getElementById('unified-bubbles-background');
     
     const BUBBLE_COUNT = 10; 
     const BUBBLE_SPEED_MULTIPLIER = 0.65; 
@@ -328,6 +330,7 @@ document.addEventListener("DOMContentLoaded", () => {
         return Math.random() * (max - min) + min;
     }
     
+    // 【修正点3】topの代わりにtranslate3dを使用し、リフローを回避
     function createBubble(container, initialY, offsetCompensation = 0) { 
         if (!container || !worksSection || !profileSection || !eventSection) return;
         
@@ -342,13 +345,13 @@ document.addEventListener("DOMContentLoaded", () => {
         bubble.style.left = `${x}%`;
         
         const containerTop = oceanContainer.offsetTop; 
-        let relativeTop = initialY - containerTop + offsetCompensation;
         
-        bubble.style.top = `${relativeTop - getRandom(0, size * 2)}px`; 
+        // topの代わりにtranslate3dで初期位置を設定（リフロー回避）
+        let initialTranslateY = (initialY - containerTop + offsetCompensation) - getRandom(0, size * 2);
+        bubble.style.transform = `translate3d(0, ${initialTranslateY}px, 0)`; 
         
-        const worksEndAbsolute = worksSection.offsetTop + worksSection.offsetHeight;
-        const profileEndAbsolute = profileSection.offsetTop + profileSection.offsetHeight;
-        
+        // 【修正点4】スクロール時に計算される worksSection/profileSection の境界線の代わりに、
+        // 初期化時に計算された worksEndAbsolute/profileEndAbsolute を利用して色を判定する
         if (initialY < worksEndAbsolute) {
              bubble.classList.add('bubble-works-color');
         } else if (initialY < profileEndAbsolute) {
@@ -368,6 +371,15 @@ document.addEventListener("DOMContentLoaded", () => {
     function initializeBubbles(container) {
         if (!container) return;
         container.innerHTML = '';
+        
+        // 【修正点5】初期化時にも worksEndAbsolute と profileEndAbsolute が設定されていることを確認
+        if (worksEndAbsolute === 0 && worksSection) {
+            worksEndAbsolute = worksSection.offsetTop + worksSection.offsetHeight;
+        }
+        if (profileEndAbsolute === 0 && profileSection) {
+            profileEndAbsolute = profileSection.offsetTop + profileSection.offsetHeight;
+        }
+        
         const containerTop = oceanContainer.offsetTop;
         const initialRange = window.innerHeight * 3; 
         for (let i = 0; i < BUBBLE_COUNT * 2; i++) { 
@@ -380,8 +392,11 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!container) return;
         const bubbles = container.querySelectorAll('.bubble');
         bubbles.forEach(bubble => {
-            const bubbleTop = parseFloat(bubble.style.top);
-            if (bubbleTop + moveY < -window.innerHeight * 2) {
+            // translate3d/translateY を考慮した位置計算
+            const currentTransform = new WebKitCSSMatrix(window.getComputedStyle(bubble).transform).m42;
+            
+            // 古い泡を削除
+            if (currentTransform + moveY < -window.innerHeight * 2) {
                 bubble.remove();
             }
         });
@@ -391,17 +406,22 @@ document.addEventListener("DOMContentLoaded", () => {
     function updateBubblePosition() {
         const currentScrollY = window.scrollY;
         
+        // スクロールダウン時のみ処理
         if (currentScrollY >= lastScrollY) {
             const moveY = -(currentScrollY * BUBBLE_SPEED_MULTIPLIER); 
             if (unifiedBubbles) {
-                unifiedBubbles.style.transform = `translateY(${moveY}px)`;
+                // transformを使ってコンテナを移動（リフローを起こさない）
+                unifiedBubbles.style.transform = `translate3d(0, ${moveY}px, 0)`;
             }
             
             const scrollDistanceSinceLastGenerate = currentScrollY - lastGenerateScroll;
 
             if (scrollDistanceSinceLastGenerate >= GENERATE_THRESHOLD) {
+                // 画面外の新しい泡を生成
                 const generationY = currentScrollY + window.innerHeight + 50; 
                 createBubble(unifiedBubbles, generationY, -moveY); 
+                
+                // 古い泡を削除
                 removeOldBubbles(unifiedBubbles, moveY);
                 lastGenerateScroll = currentScrollY;
             }
@@ -420,7 +440,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const particle = document.createElement('div');
         particle.classList.add('biolum-particle');
         
-        const containerRect = bioluminescenceContainer.getBoundingClientRect();
+        // const containerRect = bioluminescenceContainer.getBoundingClientRect(); // リフロー要因のため削除
         const y = getRandom(0, bioluminescenceContainer.offsetHeight);
         const x = getRandom(0, 100); 
 
@@ -433,12 +453,10 @@ document.addEventListener("DOMContentLoaded", () => {
         
         bioluminescenceContainer.appendChild(particle);
 
-        // --- 【修正点】ゆっくり点滅させるための設定 ---
-        // ランダムな寿命を設定 (1秒から5秒)
+        // --- ゆっくり点滅させるための設定 ---
         const lifeDuration = getRandom(1, 5); 
         
         // CSSアニメーションを適用: 
-        // 1. biolum-float (少し上に揺らぐ動き) 2. slowFadeFlash (ゆっくり点滅)
         particle.style.animation = `
             biolum-float 2s ease-out forwards, 
             slowFadeFlash ${lifeDuration}s ease-in-out forwards
@@ -448,7 +466,6 @@ document.addEventListener("DOMContentLoaded", () => {
         setTimeout(() => {
             particle.remove();
         }, lifeDuration * 1000); 
-        // ------------------------------------------
     }
     
     function initializeBioluminescence() {
@@ -474,11 +491,21 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+    // 初期化処理の実行
+    if (worksSection && profileSection) {
+        // 【修正点1】セクション境界の絶対位置を一度だけ計算
+        worksEndAbsolute = worksSection.offsetTop + worksSection.offsetHeight;
+        profileEndAbsolute = profileSection.offsetTop + profileSection.offsetHeight;
+    }
+    
+    // ロード時にバブルを初期化し、位置を更新
     window.addEventListener('load', () => {
         if (oceanContainer) {
             initializeBubbles(unifiedBubbles);
             updateBubblePosition();
         }
+        // 開閉アニメーション後に蛍光アニメーションを開始
+        setTimeout(initializeBioluminescence, 1500);
     });
     
     window.addEventListener('scroll', handleScrollOptimized);
@@ -530,10 +557,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
     
-    // 初期ロード時に蛍光アニメーションを遅延開始
-    window.addEventListener('load', () => {
-        setTimeout(initializeBioluminescence, 1500);
-    });
 });
 </script>
 
