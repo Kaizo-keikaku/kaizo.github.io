@@ -94,18 +94,6 @@
         body.no-scroll { 
             overflow: hidden; 
         }
-
-        @media (max-width: 768px) {
-            #opening-text { font-size: 2rem; }
-            .site-title { font-size: 2.5rem; letter-spacing: 0.15em; }
-            .scroll-indicator {
-                left: 20px;
-                bottom: 150px;
-            }
-        }
-        @media (max-width: 900px) {
-            .site-title { font-size: 3rem; letter-spacing: 0.2em; }
-        }
         /* ファーストビュー (変更なし) */
         #home {
             height: 100vh;
@@ -161,6 +149,17 @@
             margin: 0;
             line-height: 1.2; 
             min-height: 1.2em; /* 1行分の高さを確保 */
+        }
+        @media (max-width: 768px) {
+            #opening-text { font-size: 2rem; }
+            .site-title { font-size: 2.5rem; letter-spacing: 0.15em; }
+            .scroll-indicator {
+                left: 20px;
+                bottom: 150px;
+            }
+        }
+        @media (max-width: 900px) {
+            .site-title { font-size: 3rem; letter-spacing: 0.2em; }
         }
     </style>
     <link rel="stylesheet" href="style.css" media="print" onload="this.media='all'">
