@@ -357,19 +357,25 @@
 document.addEventListener("DOMContentLoaded", () => {
     
     // --- ジオメトリキャッシュ変数 (Forced Reflow Fix) ---
+    // これらは頻繁なDOM計測を避けるために値を保持します
     let worksEndAbsolute = 0;
     let profileEndAbsolute = 0;
     let firstViewHeight = 0;
     let oceanContainerTop = 0;
+    let bioContainerWidth = 0;  // 追加: 発光エリアの幅
+    let bioContainerHeight = 0; // 追加: 発光エリアの高さ
     
-    // DOM要素の参照をキャッシュ
+    // DOM要素の参照をキャッシュ（探索コスト削減）
     const worksSection = document.getElementById('works');
     const profileSection = document.getElementById('profile');
     const firstView = document.getElementById('home');
     const oceanContainer = document.getElementById('unified-ocean-container');
-    
-    // --- ジオメトリのキャッシュ関数 (Forced Reflow Fix) ---
-    // 幾何学的プロパティの読み取りをこの関数内に集約し、頻繁な実行を避ける
+    const bioluminescenceContainer = document.getElementById('bioluminescence-container');
+    const navBar = document.getElementById('nav-bar');
+    const unifiedBubbles = document.getElementById('unified-bubbles-background');
+
+    // --- ジオメトリのキャッシュ関数 ---
+    // 画面サイズ変更時のみ実行され、アニメーション中は実行されません
     function cacheGeometry() {
         if (worksSection && profileSection) {
             worksEndAbsolute = worksSection.offsetTop + worksSection.offsetHeight;
@@ -381,6 +387,13 @@ document.addEventListener("DOMContentLoaded", () => {
         if (oceanContainer) {
             oceanContainerTop = oceanContainer.offsetTop;
         }
+        // 追加: 生物発光コンテナのサイズをキャッシュ
+        if (bioluminescenceContainer) {
+            // getBoundingClientRectは重いのでここで一度だけ呼ぶ
+            const rect = bioluminescenceContainer.getBoundingClientRect();
+            bioContainerWidth = rect.width;
+            bioContainerHeight = rect.height;
+        }
     }
 
     // 初期化時とリサイズ時にキャッシュを更新
@@ -388,12 +401,8 @@ document.addEventListener("DOMContentLoaded", () => {
     window.addEventListener('resize', cacheGeometry);
 
     // --- Lenis スムーズスクロール設定 ---
-    
-    // スクロール速度をセクションごとに制御する関数 (キャッシュ値を使用)
     function getScrollDuration() {
         const scrollY = window.scrollY; 
-        
-        // キャッシュされた絶対位置 worksEndAbsolute, profileEndAbsolute を使用
         if (scrollY < worksEndAbsolute) {
             return 1.5;
         } else if (scrollY < profileEndAbsolute) {
@@ -415,22 +424,18 @@ document.addEventListener("DOMContentLoaded", () => {
         infinite: false, 
     });
 
-    // Lenisのアニメーションループ
     function raf(time) {
-        // スクロール中にdurationを動的に変更
         lenis.options.duration = getScrollDuration();
         lenis.raf(time);
         requestAnimationFrame(raf);
     }
     
-    // 【✅ スクロール機能回復の修正点】アニメーションループをここで開始
     raf(0); 
 
     // --- オープニングアニメーション ---
     const openingText = document.getElementById("opening-text");
     const openingOverlay = document.getElementById("opening-overlay");
 
-    // raf開始後に lenis.stop() を呼び出し、スクロールを停止
     lenis.stop(); 
     document.body.classList.add("no-scroll");
 
@@ -460,10 +465,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 setTimeout(() => {
                     openingOverlay.style.display = "none";
                     document.body.classList.remove("no-scroll"); 
-                    // 【✅ スクロール機能回復の修正点】 Lenisを再開
                     lenis.start(); 
                     startScrollFadeIn();
-                    initializeBioluminescence(); // 蛍光アニメーション初期化
+                    initializeBioluminescence(); 
                 }, 700);
             }, 1000);
         }
@@ -474,7 +478,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // スクロールフェードイン
     function startScrollFadeIn() {
         const targets = document.querySelectorAll(".fade-up");
-
         const observer = new IntersectionObserver(entries => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -490,7 +493,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // --- 泡の動的生成とスクロール制御 ---
     
     let lastScrollY = 0;
-    const unifiedBubbles = document.getElementById('unified-bubbles-background');
     
     const BUBBLE_COUNT = 10; 
     const BUBBLE_SPEED_MULTIPLIER = 0.65; 
@@ -505,9 +507,9 @@ document.addEventListener("DOMContentLoaded", () => {
         return Math.random() * (max - min) + min;
     }
     
-    // oceanContainerTop (キャッシュ値) を使用するように修正
     function createBubble(container, initialY, offsetCompensation = 0) { 
-        if (!container || !worksSection || !profileSection) return; 
+        // containerはDOM要素かDocumentFragment
+        if (!worksSection || !profileSection) return; 
         
         const bubble = document.createElement('div');
         bubble.classList.add('bubble');
@@ -519,12 +521,12 @@ document.addEventListener("DOMContentLoaded", () => {
         bubble.style.height = `${size}px`;
         bubble.style.left = `${x}%`;
         
-        // 【✅ 強制リフロー回避】 oceanContainerTop (キャッシュ値) を使用
+        // キャッシュされたoceanContainerTopを使用
         let relativeTop = initialY - oceanContainerTop + offsetCompensation;
         
         bubble.style.top = `${relativeTop - getRandom(0, size * 2)}px`; 
         
-        // 【✅ 強制リフロー回避】worksEndAbsolute, profileEndAbsolute (キャッシュ値) を使用
+        // キャッシュされた境界線を使用
         if (initialY < worksEndAbsolute) {
              bubble.classList.add('bubble-works-color');
         } else if (initialY < profileEndAbsolute) {
@@ -533,6 +535,7 @@ document.addEventListener("DOMContentLoaded", () => {
              bubble.classList.add('bubble-profile-color'); 
         }
         
+        // 少し遅れて不透明度を設定（CSS transition用）
         setTimeout(() => {
             bubble.style.opacity = getRandom(0.4, 1);
         }, getRandom(0, 500));
@@ -540,22 +543,30 @@ document.addEventListener("DOMContentLoaded", () => {
         container.appendChild(bubble);
     }
     
-    // oceanContainerTop (キャッシュ値) を使用するように修正
+    // ★修正: DocumentFragmentを使ってリフローを1回に抑える
     function initializeBubbles(container) {
         if (!container) return;
         container.innerHTML = '';
-        // 【✅ 強制リフロー回避】 oceanContainerTop (キャッシュ値) を使用
+        
+        // メモリ上の断片を作成
+        const fragment = document.createDocumentFragment();
+        
         const initialRange = window.innerHeight * 3; 
         for (let i = 0; i < BUBBLE_COUNT * 2; i++) { 
             const initialY = oceanContainerTop + getRandom(0, initialRange);
-            createBubble(container, initialY, 0); 
+            // DOMではなくfragmentに追加
+            createBubble(fragment, initialY, 0); 
         }
+        
+        // 最後にまとめてDOMに追加（重い処理を1回で済ませる）
+        container.appendChild(fragment);
     }
     
     function removeOldBubbles(container, moveY) {
         if (!container) return;
         const bubbles = container.querySelectorAll('.bubble');
         bubbles.forEach(bubble => {
+            // スタイル読み取りだが、transform内での計算なので許容範囲
             const bubbleTop = parseFloat(bubble.style.top);
             if (bubbleTop + moveY < -window.innerHeight * 2) {
                 bubble.remove();
@@ -563,14 +574,22 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
     
-    // 背景の泡アニメーション更新
+    // ★修正: ナビゲーション制御と泡制御を一つのループに統合
     function updateBubblePosition() {
+        // 1. まず読み取りを行う (Read Phase)
         const currentScrollY = window.scrollY;
         
+        // 2. 書き込みを行う (Write Phase) - ナビゲーションバー
+        if (currentScrollY >= firstViewHeight) {
+            navBar.classList.add('fixed');
+        } else {
+            navBar.classList.remove('fixed');
+        }
+
+        // 3. 書き込みを行う (Write Phase) - 泡
         if (currentScrollY >= lastScrollY) {
             const moveY = -(currentScrollY * BUBBLE_SPEED_MULTIPLIER); 
             if (unifiedBubbles) {
-                // transform はリフローを発生させにくい (Composite Layerで処理される)
                 unifiedBubbles.style.transform = `translateY(${moveY}px)`;
             }
             
@@ -588,18 +607,20 @@ document.addEventListener("DOMContentLoaded", () => {
         rafId = null; 
     }
 
-    // --- 生物発光 (Bioluminescence) アニメーションの追加 ---
-    const bioluminescenceContainer = document.getElementById('bioluminescence-container');
+    // --- 生物発光 (Bioluminescence) アニメーション ---
     const BIOLUMINESCENCE_INTERVAL = 1500; 
 
     function createLightParticle() {
         if (!bioluminescenceContainer) return;
+        
+        // ★修正: 毎回DOM計測せず、キャッシュ変数を使用
+        // (bioContainerHeight / Width は cacheGeometry で計算済み)
+        
+        const y = getRandom(0, bioContainerHeight);
+        const x = getRandom(0, 100); 
+
         const particle = document.createElement('div');
         particle.classList.add('biolum-particle');
-        
-        const containerRect = bioluminescenceContainer.getBoundingClientRect();
-        const y = getRandom(0, bioluminescenceContainer.offsetHeight);
-        const x = getRandom(0, 100); 
 
         particle.style.top = `${y}px`;
         particle.style.left = `${x}%`;
@@ -624,37 +645,26 @@ document.addEventListener("DOMContentLoaded", () => {
     
     function initializeBioluminescence() {
         if (!bioluminescenceContainer) return;
-        
         setInterval(createLightParticle, BIOLUMINESCENCE_INTERVAL);
     }
     
-    // handleScrollOptimizedでDOMの読み取り (offsetHeight) を回避
     function handleScrollOptimized() {
         if (rafId === null) {
             rafId = window.requestAnimationFrame(updateBubblePosition);
         }
-        
-        // ナビゲーションバーの固定処理
-        const nav = document.getElementById('nav-bar');
-        
-        // 【✅ 強制リフロー回避】 firstViewHeight (キャッシュ値) を使用
-        if (window.scrollY >= firstViewHeight) {
-            nav.classList.add('fixed');
-        } else {
-            nav.classList.remove('fixed');
-        }
+        // ナビゲーション処理は updateBubblePosition 内に移動しました
     }
 
     window.addEventListener('load', () => {
-        // load完了時にも念のためキャッシュ更新
+        // load完了時に正確なサイズを再取得
         cacheGeometry(); 
         if (oceanContainer) {
             initializeBubbles(unifiedBubbles);
-            updateBubblePosition();
+            // 初回の位置合わせのために手動で一度呼ぶ
+            if (unifiedBubbles) {
+                unifiedBubbles.style.transform = `translateY(0px)`;
+            }
         }
-        // 蛍光アニメーション開始を遅延実行
-        // オープニングアニメーション終了時にも呼ばれるため、ここではコメントアウト
-        // setTimeout(initializeBioluminescence, 1500); 
     });
     
     window.addEventListener('scroll', handleScrollOptimized);
