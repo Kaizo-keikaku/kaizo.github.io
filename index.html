@@ -17,6 +17,17 @@
             font-display: swap;
             src: url('subset-ZenOldMincho-Bold.woff2') format('woff2'); 
         }
+        /* 游明朝をZen Old Minchoに近づけるためのカスタム@font-face */
+        @font-face {
+          /* 呼び出す際に使用する任意のファミリー名 */
+          font-family: 'ZenOldMinchoFallback';
+          /* 游明朝を指定（Windows: 'YuMincho', Mac: 'YuMincho'） */
+          src: local('YuMincho'), local('游明朝');
+          ascent-override: 95%;   /* アセンダー（文字の上端）の調整 */
+          descent-override: 20%;  /* ディセンダー（文字の下端）の調整 */
+          line-gap-override: 0%;  /* 行間（line-gap）の調整 */
+          /* size-adjust: 98%;      文字全体のスケールを微調整 */
+        }
         :root {
             --bg-color-home: #f4f1ea; /* コンセプト: 海上 */
             --bg-color-works: #c0d6d1; /* 作品紹介: 浅い海 */
@@ -27,7 +38,7 @@
             --accent-color: #1d3a4e;
             --link-color-dark: #5d7d9a;
             --link-color-light: #b0c9f0; /* 深海セクション用 */
-            --font-main: 'Zen Old Mincho', 'YuMincho', 'Hiragino Mincho ProN', 'MS PMincho', serif;
+            --font-main: 'Zen Old Mincho', 'ZenOldMinchoFallback', 'YuMincho', 'Hiragino Mincho ProN', 'MS PMincho', serif;
             --header-height: 60px; 
         }
         * { box-sizing: border-box; }
