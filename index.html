@@ -352,9 +352,8 @@
             </div>
         </div>
     </div>
-
 <script>
-document.addEventListener("DOMContentLoaded", () => {
+    document.addEventListener("DOMContentLoaded", () => {
     
     // --- ジオメトリキャッシュ変数 (Forced Reflow Fix) ---
     // これらは頻繁なDOM計測を避けるために値を保持します
@@ -362,8 +361,8 @@ document.addEventListener("DOMContentLoaded", () => {
     let profileEndAbsolute = 0;
     let firstViewHeight = 0;
     let oceanContainerTop = 0;
-    let bioContainerWidth = 0;  // 追加: 発光エリアの幅
-    let bioContainerHeight = 0; // 追加: 発光エリアの高さ
+    let bioContainerWidth = 0;
+    let bioContainerHeight = 0;
     
     // DOM要素の参照をキャッシュ（探索コスト削減）
     const worksSection = document.getElementById('works');
@@ -389,7 +388,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         // 追加: 生物発光コンテナのサイズをキャッシュ
         if (bioluminescenceContainer) {
-            // getBoundingClientRectは重いのでここで一度だけ呼ぶ
             const rect = bioluminescenceContainer.getBoundingClientRect();
             bioContainerWidth = rect.width;
             bioContainerHeight = rect.height;
@@ -507,8 +505,12 @@ document.addEventListener("DOMContentLoaded", () => {
         return Math.random() * (max - min) + min;
     }
     
+    /**
+     * @param {Element|DocumentFragment} container 泡を追加するコンテナ
+     * @param {number} initialY ページ上端からの絶対位置 (oceanContainerTop + 相対位置)
+     * @param {number} offsetCompensation スクロールによる補正量（通常は0）
+     */
     function createBubble(container, initialY, offsetCompensation = 0) { 
-        // containerはDOM要素かDocumentFragment
         if (!worksSection || !profileSection) return; 
         
         const bubble = document.createElement('div');
@@ -521,10 +523,15 @@ document.addEventListener("DOMContentLoaded", () => {
         bubble.style.height = `${size}px`;
         bubble.style.left = `${x}%`;
         
-        // キャッシュされたoceanContainerTopを使用
-        let relativeTop = initialY - oceanContainerTop + offsetCompensation;
+        // bubbles-backgroundの原点（oceanContainerTop）からの相対距離
+        const relativeTop = initialY - oceanContainerTop + offsetCompensation;
         
         bubble.style.top = `${relativeTop - getRandom(0, size * 2)}px`; 
+
+        // ★リフロー修正1: 泡の初期位置（bubbles-backgroundからの相対距離）をデータ属性に保存
+        // これを基準に削除判定を行うことで、スクロール時のDOM読み取りを回避する
+        bubble.dataset.initialTop = relativeTop; 
+
         
         // キャッシュされた境界線を使用
         if (initialY < worksEndAbsolute) {
@@ -554,7 +561,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const initialRange = window.innerHeight * 3; 
         for (let i = 0; i < BUBBLE_COUNT * 2; i++) { 
             const initialY = oceanContainerTop + getRandom(0, initialRange);
-            // DOMではなくfragmentに追加
+            // 💡 createBubble内で data-initial-top が設定される
             createBubble(fragment, initialY, 0); 
         }
         
@@ -562,13 +569,25 @@ document.addEventListener("DOMContentLoaded", () => {
         container.appendChild(fragment);
     }
     
-    function removeOldBubbles(container, moveY) {
+    // ★リフロー修正2: 強制リフローの原因となっていた bubble.style.top の読み取りを削除
+    // 代わりに data-initial-top と現在のスクロール位置を比較する
+    function removeOldBubbles(container, currentScrollY) {
         if (!container) return;
         const bubbles = container.querySelectorAll('.bubble');
+        const buffer = window.innerHeight * 2; // 2画面分上に行ったら削除
+
         bubbles.forEach(bubble => {
-            // スタイル読み取りだが、transform内での計算なので許容範囲
-            const bubbleTop = parseFloat(bubble.style.top);
-            if (bubbleTop + moveY < -window.innerHeight * 2) {
+            const initialRelativeTop = parseFloat(bubble.dataset.initialTop || 0);
+
+            // 削除判定:
+            // bubbles-backgroundの原点からの相対位置 (initialRelativeTop) に、
+            // スクロール量で打ち消されている移動量 (-currentScrollY * BUBBLE_SPEED_MULTIPLIER) を足したものが、
+            // 画面外に出ていれば削除。
+            
+            // 簡易的に、泡がページ上端から一定距離以上上に行った場合に削除する
+            // initialRelativeTop + oceanContainerTop が泡のページ全体での絶対位置。
+            // これが currentScrollY - buffer より小さい場合に削除。
+            if (initialRelativeTop + oceanContainerTop < currentScrollY - buffer) {
                 bubble.remove();
             }
         });
@@ -587,18 +606,20 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         // 3. 書き込みを行う (Write Phase) - 泡
-        if (currentScrollY >= lastScrollY) {
+        if (unifiedBubbles) {
             const moveY = -(currentScrollY * BUBBLE_SPEED_MULTIPLIER); 
-            if (unifiedBubbles) {
-                unifiedBubbles.style.transform = `translateY(${moveY}px)`;
-            }
+            // 書き込み
+            unifiedBubbles.style.transform = `translateY(${moveY}px)`;
             
             const scrollDistanceSinceLastGenerate = currentScrollY - lastGenerateScroll;
 
             if (scrollDistanceSinceLastGenerate >= GENERATE_THRESHOLD) {
                 const generationY = currentScrollY + window.innerHeight + 50; 
+                // 💡 書き込み (泡の生成)
                 createBubble(unifiedBubbles, generationY, -moveY); 
-                removeOldBubbles(unifiedBubbles, moveY);
+                
+                // 💡 削除処理の呼び出しを修正: currentScrollYを渡す
+                removeOldBubbles(unifiedBubbles, currentScrollY);
                 lastGenerateScroll = currentScrollY;
             }
         } 
@@ -612,9 +633,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function createLightParticle() {
         if (!bioluminescenceContainer) return;
-        
-        // ★修正: 毎回DOM計測せず、キャッシュ変数を使用
-        // (bioContainerHeight / Width は cacheGeometry で計算済み)
         
         const y = getRandom(0, bioContainerHeight);
         const x = getRandom(0, 100); 
