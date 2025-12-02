@@ -1,0 +1,116 @@
+/* ---------------------------------------------------- */
+/* 試し読みページ (sample.html) 専用スタイルシート */
+/* ---------------------------------------------------- */
+
+/* 全体の背景色をメインサイトのホームカラーに設定 */
+.sample-page {
+    background-color: var(--bg-color-home, #f4f1ea);
+    color: var(--text-color-dark, #040a23);
+    padding-bottom: 80px;
+}
+
+/* ヘッダーセクション */
+.sample-header {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 30px 20px 50px;
+    text-align: center;
+    border-bottom: 1px solid #ccc;
+    margin-bottom: 50px;
+}
+
+.sample-header h1 {
+    font-family: 'Zen Old Mincho Subset', serif;
+    font-size: 2.2rem;
+    margin-top: 10px;
+}
+
+.sample-spec {
+    font-size: 1.1rem;
+    color: #444;
+}
+
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    font-size: 1rem;
+    color: var(--link-color-dark, #0f267f);
+    text-decoration: none;
+    margin-bottom: 20px;
+}
+
+.arrow {
+    font-size: 1.2rem;
+    margin-right: 5px;
+}
+
+/* 縦書きのコンテナ設定 */
+.writing-container {
+    max-width: 95%; /* 横幅を広くとる */
+    height: 80vh; /* 縦書きでスクロールさせるため、高さを指定 */
+    margin: 0 auto;
+    padding: 40px 0;
+    
+    /* 縦書きの基本設定 */
+    writing-mode: vertical-rl; /* 縦書き・右から左 */
+    text-orientation: mixed; /* 数字などを横向きにする */
+    
+    overflow-x: auto; /* 横方向（縦書きなので）にスクロール可能にする */
+    white-space: nowrap; /* テキストの折り返しを防ぐ */
+    
+    font-family: 'Zen Old Mincho Subset', serif;
+    font-size: 1.2rem;
+    line-height: 2.5; /* 行間を広めに設定 */
+    letter-spacing: 0.1em; /* 文字間隔を調整 */
+    
+    border: 1px solid #ccc;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    border-radius: 8px;
+}
+
+/* テキストブロック */
+.text-block {
+    display: flex; /* p要素を横（縦書きでは縦）に並べるためのflex */
+    flex-direction: column; /* 要素の並びを縦方向に */
+    /* writing-mode: vertical-rl; は writing-container で設定済み */
+}
+
+/* 段落ごとのスタイル */
+.text-block p {
+    /* インデントのための設定 */
+    text-indent: 2.5em; /* 最初の行のみインデント */
+    margin-left: 1.5em; /* 段落間のスペース（縦書きでは横方向のスペース） */
+    margin-right: 0;
+    line-height: inherit;
+    /* 縦書きなので、改行要素（br）は使わず、pタグで段落を作るのが原則 */
+}
+
+.author {
+    margin-left: 5em; /* 著者名を右端に寄せる */
+    text-indent: 0;
+}
+
+.section-title {
+    font-size: 1.5rem;
+    margin-left: 2em;
+    margin-right: 2em;
+    text-indent: 0;
+    font-weight: 700;
+}
+
+/* 試し読みの終わりを示す部分 */
+.end-of-sample {
+    margin-left: 5em;
+    text-align: center;
+    writing-mode: horizontal-tb; /* ここだけ横書きに戻す */
+    text-orientation: sideways-right; /* 縦書きコンテナ内での表示調整 */
+    display: inline-block; /* インラインブロックにして縦書きの流れに乗せる */
+    vertical-align: middle;
+}
+
+.sample-footer {
+    margin-top: 50px;
+    margin-left: 5em;
+    writing-mode: horizontal-tb; /* 横書き */
+    text-align: center;
+}
