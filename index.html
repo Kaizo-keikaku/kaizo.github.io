@@ -328,6 +328,11 @@
         <div class="modal-content">
             <span class="work-date">2025.11.23 発行</span>
             <h2 style="border-left-color: #fff; margin-top:0;">海象 vol.1</h2>
+            <div class="work-media">
+                <a class="work-image-trigger">
+                    <img src="work01_cover.webp" alt="『海象』表紙" loading="lazy">
+                </a>
+            </div>
             <p class="modal-spec">
                 <strong>仕様：</strong> B5サイズ / 132ページ / 800円<br>
                 <strong>著者：</strong> 催花亮太 / 榎田ブショネ
@@ -357,6 +362,11 @@
         <div class="modal-content">
             <span class="work-date">2025.11.23 発行</span>
             <h2 style="border-left-color: #e6e0d5; margin-top:0;">出血</h2>
+            <div class="work-media">
+                <a class="work-image-trigger">
+                    <img src="work02_cover.webp" alt="『出血』表紙" loading="lazy">
+                </a>
+            </div>
             <p class="modal-spec">
                 <strong>仕様：</strong> 98ページ / 700円<br>
                 <strong>著者：</strong> 催花亮太
@@ -373,7 +383,7 @@
     </div>
 
 <script>
-document.addEventListener("DOMContentLoaded", () => {
+    document.addEventListener("DOMContentLoaded", () => {
     
     // --- ジオメトリキャッシュ変数 (Forced Reflow Fix) ---
     let worksEndAbsolute = 0;
@@ -391,6 +401,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // 幾何学的プロパティの読み取りをこの関数内に集約し、頻繁な実行を避ける
     function cacheGeometry() {
         if (worksSection && profileSection) {
+            // .offsetTop は body からの絶対位置
             worksEndAbsolute = worksSection.offsetTop + worksSection.offsetHeight;
             profileEndAbsolute = profileSection.offsetTop + profileSection.offsetHeight;
         }
@@ -442,7 +453,7 @@ document.addEventListener("DOMContentLoaded", () => {
         requestAnimationFrame(raf);
     }
     
-    // 【✅ スクロール機能回復の修正点】アニメーションループをここで開始
+    // アニメーションループを開始
     raf(0); 
 
     // --- オープニングアニメーション ---
@@ -479,7 +490,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 setTimeout(() => {
                     openingOverlay.style.display = "none";
                     document.body.classList.remove("no-scroll"); 
-                    // 【✅ スクロール機能回復の修正点】 Lenisを再開
+                    // Lenisを再開
                     lenis.start(); 
                     startScrollFadeIn();
                     initializeBioluminescence(); // 蛍光アニメーション初期化
@@ -538,12 +549,12 @@ document.addEventListener("DOMContentLoaded", () => {
         bubble.style.height = `${size}px`;
         bubble.style.left = `${x}%`;
         
-        // 【✅ 強制リフロー回避】 oceanContainerTop (キャッシュ値) を使用
+        // oceanContainerTop (キャッシュ値) を使用
         let relativeTop = initialY - oceanContainerTop + offsetCompensation;
         
         bubble.style.top = `${relativeTop - getRandom(0, size * 2)}px`; 
         
-        // 【✅ 強制リフロー回避】worksEndAbsolute, profileEndAbsolute (キャッシュ値) を使用
+        // worksEndAbsolute, profileEndAbsolute (キャッシュ値) を使用
         if (initialY < worksEndAbsolute) {
              bubble.classList.add('bubble-works-color');
         } else if (initialY < profileEndAbsolute) {
@@ -563,7 +574,7 @@ document.addEventListener("DOMContentLoaded", () => {
     function initializeBubbles(container) {
         if (!container) return;
         container.innerHTML = '';
-        // 【✅ 強制リフロー回避】 oceanContainerTop (キャッシュ値) を使用
+        // oceanContainerTop (キャッシュ値) を使用
         const initialRange = window.innerHeight * 3; 
         for (let i = 0; i < BUBBLE_COUNT * 2; i++) { 
             const initialY = oceanContainerTop + getRandom(0, initialRange);
@@ -656,7 +667,7 @@ document.addEventListener("DOMContentLoaded", () => {
         // ナビゲーションバーの固定処理
         const nav = document.getElementById('nav-bar');
         
-        // 【✅ 強制リフロー回避】 firstViewHeight (キャッシュ値) を使用
+        // firstViewHeight (キャッシュ値) を使用
         if (window.scrollY >= firstViewHeight) {
             nav.classList.add('fixed');
         } else {
@@ -671,9 +682,6 @@ document.addEventListener("DOMContentLoaded", () => {
             initializeBubbles(unifiedBubbles);
             updateBubblePosition();
         }
-        // 蛍光アニメーション開始を遅延実行
-        // オープニングアニメーション終了時にも呼ばれるため、ここではコメントアウト
-        // setTimeout(initializeBioluminescence, 1500); 
     });
     
     window.addEventListener('scroll', handleScrollOptimized);
@@ -702,25 +710,78 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
     
-    // --- モーダル制御 ---
+    // --- モーダル制御 (Lenis対応) ---
     const triggers = document.querySelectorAll(".work-trigger, .work-image-trigger, .btn-small");
     const closeBtns = document.querySelectorAll(".close-modal-btn");
+    
+    // モーダル専用 Lenis インスタンスを管理する変数
+    let modalLenis = null;
+    let modalRafId = null;
+
+    function destroyModalLenis() {
+        if (modalRafId) {
+            cancelAnimationFrame(modalRafId);
+            modalRafId = null;
+        }
+        if (modalLenis) {
+            modalLenis.destroy();
+            modalLenis = null;
+        }
+    }
 
     triggers.forEach(trigger => {
         trigger.addEventListener("click", e => {
             e.preventDefault();
             const id = trigger.dataset.target;
-            document.getElementById(id)?.classList.add("active");
-            lenis.stop();
-            document.body.classList.add("no-scroll");
+            const modal = document.getElementById(id);
+            
+            if (modal) {
+                // メインの Lenis を停止
+                lenis.stop(); 
+                
+                // body の overflow: hidden を解除 (style.cssの修正が必要)
+                document.body.classList.remove("no-scroll");
+
+                modal.classList.add("active");
+                
+                // モーダルコンテナに対して Lenis を初期化
+                destroyModalLenis(); // 念のため既存を破棄
+                modalLenis = new Lenis({
+                    // スムーズスクロールを適用する要素をモーダルコンテナに指定
+                    wrapper: modal, 
+                    // スクロールコンテンツ要素をモーダルコンテンツに指定
+                    content: modal.querySelector('.modal-content'), 
+                    duration: 1.2, // モーダル内のスクロール速度
+                    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+                    direction: 'vertical', 
+                    gestureDirection: 'vertical',
+                    smooth: true,
+                });
+                
+                // モーダル内の Lenis のための raf ループを再定義
+                function modalRaf(time) {
+                    if (modalLenis) {
+                        modalLenis.raf(time);
+                        modalRafId = requestAnimationFrame(modalRaf);
+                    }
+                }
+                modalRafId = requestAnimationFrame(modalRaf);
+            }
         });
     });
 
     closeBtns.forEach(btn => {
         btn.addEventListener("click", () => {
-            btn.closest(".modal-overlay").classList.remove("active");
-            document.body.classList.remove("no-scroll");
-            lenis.start();
+            const modal = btn.closest(".modal-overlay");
+            if (modal) {
+                modal.classList.remove("active");
+                
+                // モーダルの Lenis を破棄
+                destroyModalLenis();
+                
+                // メインの Lenis を再開
+                lenis.start();
+            }
         });
     });
 });

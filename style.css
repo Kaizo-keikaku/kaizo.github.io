@@ -432,6 +432,8 @@ footer {
     display: flex;
     justify-content: center;
     z-index: 2000;
+    /* モーダルコンテンツが中央に来るように設定 */
+    align-items: flex-start; /* 上からコンテンツを配置 */
 }
 
 .modal-overlay.active {
