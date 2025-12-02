@@ -383,7 +383,7 @@
     </div>
 
 <script>
-    document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", () => {
     
     // --- ジオメトリキャッシュ変数 (Forced Reflow Fix) ---
     let worksEndAbsolute = 0;
@@ -398,10 +398,8 @@
     const oceanContainer = document.getElementById('unified-ocean-container');
     
     // --- ジオメトリのキャッシュ関数 (Forced Reflow Fix) ---
-    // 幾何学的プロパティの読み取りをこの関数内に集約し、頻繁な実行を避ける
     function cacheGeometry() {
         if (worksSection && profileSection) {
-            // .offsetTop は body からの絶対位置
             worksEndAbsolute = worksSection.offsetTop + worksSection.offsetHeight;
             profileEndAbsolute = profileSection.offsetTop + profileSection.offsetHeight;
         }
@@ -423,7 +421,6 @@
     function getScrollDuration() {
         const scrollY = window.scrollY; 
         
-        // キャッシュされた絶対位置 worksEndAbsolute, profileEndAbsolute を使用
         if (scrollY < worksEndAbsolute) {
             return 1.5;
         } else if (scrollY < profileEndAbsolute) {
@@ -440,27 +437,24 @@
         gestureDirection: 'vertical', 
         smooth: true, 
         mouseMultiplier: 1, 
-        smoothTouch: false, 
+        smoothTouch: false, // メインのLenisはスムーズなタッチを無効にして、ネイティブに近い動きにしています
         touchMultiplier: 2, 
         infinite: false, 
     });
 
     // Lenisのアニメーションループ
     function raf(time) {
-        // スクロール中にdurationを動的に変更
         lenis.options.duration = getScrollDuration();
         lenis.raf(time);
         requestAnimationFrame(raf);
     }
     
-    // アニメーションループを開始
     raf(0); 
 
     // --- オープニングアニメーション ---
     const openingText = document.getElementById("opening-text");
     const openingOverlay = document.getElementById("opening-overlay");
 
-    // raf開始後に lenis.stop() を呼び出し、スクロールを停止
     lenis.stop(); 
     document.body.classList.add("no-scroll");
 
@@ -490,10 +484,9 @@
                 setTimeout(() => {
                     openingOverlay.style.display = "none";
                     document.body.classList.remove("no-scroll"); 
-                    // Lenisを再開
                     lenis.start(); 
                     startScrollFadeIn();
-                    initializeBioluminescence(); // 蛍光アニメーション初期化
+                    initializeBioluminescence();
                 }, 700);
             }, 500);
         }
@@ -535,7 +528,6 @@
         return Math.random() * (max - min) + min;
     }
     
-    // oceanContainerTop (キャッシュ値) を使用するように修正
     function createBubble(container, initialY, offsetCompensation = 0) { 
         if (!container || !worksSection || !profileSection) return; 
         
@@ -549,12 +541,10 @@
         bubble.style.height = `${size}px`;
         bubble.style.left = `${x}%`;
         
-        // oceanContainerTop (キャッシュ値) を使用
         let relativeTop = initialY - oceanContainerTop + offsetCompensation;
         
         bubble.style.top = `${relativeTop - getRandom(0, size * 2)}px`; 
         
-        // worksEndAbsolute, profileEndAbsolute (キャッシュ値) を使用
         if (initialY < worksEndAbsolute) {
              bubble.classList.add('bubble-works-color');
         } else if (initialY < profileEndAbsolute) {
@@ -570,11 +560,9 @@
         container.appendChild(bubble);
     }
     
-    // oceanContainerTop (キャッシュ値) を使用するように修正
     function initializeBubbles(container) {
         if (!container) return;
         container.innerHTML = '';
-        // oceanContainerTop (キャッシュ値) を使用
         const initialRange = window.innerHeight * 3; 
         for (let i = 0; i < BUBBLE_COUNT * 2; i++) { 
             const initialY = oceanContainerTop + getRandom(0, initialRange);
@@ -600,7 +588,6 @@
         if (currentScrollY >= lastScrollY) {
             const moveY = -(currentScrollY * BUBBLE_SPEED_MULTIPLIER); 
             if (unifiedBubbles) {
-                // transform はリフローを発生させにくい (Composite Layerで処理される)
                 unifiedBubbles.style.transform = `translateY(${moveY}px)`;
             }
             
@@ -658,16 +645,13 @@
         setInterval(createLightParticle, BIOLUMINESCENCE_INTERVAL);
     }
     
-    // handleScrollOptimizedでDOMの読み取り (offsetHeight) を回避
     function handleScrollOptimized() {
         if (rafId === null) {
             rafId = window.requestAnimationFrame(updateBubblePosition);
         }
         
-        // ナビゲーションバーの固定処理
         const nav = document.getElementById('nav-bar');
         
-        // firstViewHeight (キャッシュ値) を使用
         if (window.scrollY >= firstViewHeight) {
             nav.classList.add('fixed');
         } else {
@@ -676,7 +660,6 @@
     }
 
     window.addEventListener('load', () => {
-        // load完了時にも念のためキャッシュ更新
         cacheGeometry(); 
         if (oceanContainer) {
             initializeBubbles(unifiedBubbles);
@@ -756,6 +739,9 @@
                     direction: 'vertical', 
                     gestureDirection: 'vertical',
                     smooth: true,
+                    // ✅ スマホ対応のための設定を追加
+                    smoothTouch: true, // タッチデバイスでもスムーズスクロールを有効化
+                    touchMultiplier: 2, // メイン Lenis と同様の倍率を適用
                 });
                 
                 // モーダル内の Lenis のための raf ループを再定義
