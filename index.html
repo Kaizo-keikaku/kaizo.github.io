@@ -362,7 +362,7 @@
         <div class="modal-content">
             <span class="work-date">2025.11.23 発行</span>
             <h2 style="border-left-color: #e6e0d5; margin-top:0;">出血</h2>
-            <div class="work-media" style="max-width: 50%;height: auto;">
+            <div class="work-media" style="max-width: 80%;height: auto;">
                 <a class="work-image-trigger">
                     <img src="work02_cover.webp" alt="『出血』表紙" loading="lazy">
                 </a>
@@ -418,9 +418,11 @@ document.addEventListener("DOMContentLoaded", () => {
     // --- Lenis スムーズスクロール設定 ---
     
     // スクロール速度をセクションごとに制御する関数 (キャッシュ値を使用)
-    function getScrollDuration() {
-        const scrollY = window.scrollY; 
+    // ✅ 修正点: Lenisが管理するスクロール位置 (lenisScrollY) を引数として受け取る
+    function getScrollDuration(lenisScrollY) {
+        const scrollY = lenisScrollY; // Lenisのスクロール位置を使う
         
+        // キャッシュされた絶対位置 worksEndAbsolute, profileEndAbsolute を使用
         if (scrollY < worksEndAbsolute) {
             return 1.5;
         } else if (scrollY < profileEndAbsolute) {
@@ -437,14 +439,16 @@ document.addEventListener("DOMContentLoaded", () => {
         gestureDirection: 'vertical', 
         smooth: true, 
         mouseMultiplier: 1, 
-        smoothTouch: false, // メインのLenisはスムーズなタッチを無効にして、ネイティブに近い動きにしています
+        smoothTouch: false, 
         touchMultiplier: 2, 
         infinite: false, 
     });
 
     // Lenisのアニメーションループ
     function raf(time) {
-        lenis.options.duration = getScrollDuration();
+        // スクロール中にdurationを動的に変更
+        // ✅ 修正点: lenis.scroll (Lenisが把握している現在のスクロール位置) を渡す
+        lenis.options.duration = getScrollDuration(lenis.scroll);
         lenis.raf(time);
         requestAnimationFrame(raf);
     }
@@ -583,7 +587,10 @@ document.addEventListener("DOMContentLoaded", () => {
     
     // 背景の泡アニメーション更新
     function updateBubblePosition() {
-        const currentScrollY = window.scrollY;
+        // メインの Lenis が動いている場合は lenis.scroll を使うべきですが、
+        // 泡の背景は Lenisとは独立して window.scrollY に基づいて動かしているため、
+        // ここは window.scrollY のままとします。
+        const currentScrollY = window.scrollY; 
         
         if (currentScrollY >= lastScrollY) {
             const moveY = -(currentScrollY * BUBBLE_SPEED_MULTIPLIER); 
@@ -652,6 +659,7 @@ document.addEventListener("DOMContentLoaded", () => {
         
         const nav = document.getElementById('nav-bar');
         
+        // ナビゲーションバーの固定処理は window.scrollY に基づく
         if (window.scrollY >= firstViewHeight) {
             nav.classList.add('fixed');
         } else {
@@ -722,7 +730,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 // メインの Lenis を停止
                 lenis.stop(); 
                 
-                // body の overflow: hidden を解除 (style.cssの修正が必要)
+                // body の overflow: hidden を解除
                 document.body.classList.remove("no-scroll");
 
                 modal.classList.add("active");
@@ -739,9 +747,9 @@ document.addEventListener("DOMContentLoaded", () => {
                     direction: 'vertical', 
                     gestureDirection: 'vertical',
                     smooth: true,
-                    // ✅ スマホ対応のための設定を追加
-                    smoothTouch: true, // タッチデバイスでもスムーズスクロールを有効化
-                    touchMultiplier: 2, // メイン Lenis と同様の倍率を適用
+                    // スマホ対応のための設定
+                    smoothTouch: true, 
+                    touchMultiplier: 2, 
                 });
                 
                 // モーダル内の Lenis のための raf ループを再定義
