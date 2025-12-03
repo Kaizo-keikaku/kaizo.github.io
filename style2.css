@@ -1,224 +1,228 @@
-/* ---------------------------------------------------- */
-/* 試し読みページ (sample.html) 専用スタイルシート */
-/* ---------------------------------------------------- */
+@charset "UTF-8";
 
-/* 全画面表示とスクロールの無効化 */
-html, body {
-    height: 100%;
-    width: 100%;
+/* --- 基本設定 --- */
+.sample-page {
     margin: 0;
     padding: 0;
-    overflow: hidden; /* 縦横のスクロールを無効化 */
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden; /* スクロール禁止 */
+    background-color: var(--bg-color-home, #f4f1ea);
+    color: var(--text-color-dark, #040a23);
+    font-family: 'Zen Old Mincho Subset', serif;
+    position: relative;
+}
+
+/* --- ビューポートとコンテンツ --- */
+#book-viewport {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer; /* クリック可能であることを示す */
+}
+
+#book-content {
+    /* 縦書き設定 */
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    
+    /* コンテナの高さは画面いっぱい */
+    height: 100vh;
+    width: auto; /* 横幅は中身に応じて広がる */
+    
+    /* ページネーションのキモ：CSS Columns */
+    /* 画面幅（100vw）ごとにカラムを切ることで、擬似的なページを作る */
+    column-width: 100vw;
+    column-gap: 0;
+    column-fill: auto;
+    
+    /* 配置 */
+    position: absolute;
+    top: 0;
+    right: 0; /* 右端（1ページ目）基準 */
+    
+    /* アニメーション用（波の裏で動くので瞬時でよいが、念のためなめらかに） */
+    transition: transform 0s; 
+    
+    /* 余白設定：ここで文字の詰まり具合を調整 */
+    padding-top: 5vh;
+    padding-bottom: 5vh;
+    /* 左右パディングはカラム幅に含まれるため、box-sizingに注意 */
     box-sizing: border-box;
 }
 
-:root {
-    --bg-color-home: #f4f1ea; /* 海上・紙の色 */
-    --text-color-dark: #040a23; /* 深海・文字色 */
-    --wave-color: rgba(69, 137, 185, 0.1); /* 薄い青の波 */
+/* --- テキストスタイル --- */
+.text-body {
+    /* カラム内でテキストが途切れるのを許容しつつ、美しく見せる */
+    font-size: 1.1rem; /* 少し大きめで読みやすく */
+    line-height: 2.2;  /* 行間ゆったり */
+    letter-spacing: 0.1em;
+    height: 90vh; /* 上下のパディングを考慮した高さ */
+    margin: 0;
 }
 
-/* 全体の背景と文字色 */
-.sample-page {
-    background-color: var(--bg-color-home);
-    color: var(--text-color-dark);
-    font-family: 'Zen Old Mincho Subset', serif;
-    transition: background-color 0.5s ease;
+/* 段落設定 */
+.text-body p {
+    margin: 0 0 0 1em; /* 縦書きなのでmargin-leftが行間になる */
+    text-indent: 1em;
 }
 
-/* ヘッダーセクション（ページ外に固定） */
-.sample-header {
+/* タイトルと著者 */
+.in-text-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin: 0 0 0 2em; /* タイトル後の余白 */
+    letter-spacing: 0.2em;
+}
+
+.in-text-author {
+    font-size: 1.2rem;
+    margin: 0 0 0 3em; /* 著者名後の余白 */
+    text-align: right; /* 縦書きでは下寄せになる */
+    margin-top: auto; /* 親がflexでないので効きにくいが、念のため */
+}
+
+/* 最後のマーク */
+.end-mark {
+    display: inline-block;
+    margin: 0 2em;
+    text-align: center;
+    writing-mode: horizontal-tb; /* ここだけ横書きに戻すか、縦のまま中央配置 */
+    /* デザインに合わせて調整：今回は縦書きの流れの中で表示 */
+    writing-mode: vertical-rl; 
+}
+
+.back-btn {
+    display: inline-block;
+    margin-right: 1em;
+    padding: 10px 20px;
+    border: 1px solid currentColor;
+    color: var(--link-color-dark, #0f267f);
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: all 0.3s;
+    writing-mode: horizontal-tb; /* ボタンは横書きで見やすく */
+}
+
+.back-btn:hover {
+    background: var(--accent-color, #1d3a4e);
+    color: #fff;
+}
+
+/* --- ページ番号 --- */
+.page-number {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.9rem;
+    color: #888;
+    pointer-events: none;
+    font-family: sans-serif; /* 数字は見やすく */
+}
+
+/* --- ナビゲーションヒント（マウスオーバーで表示など） --- */
+.nav-hint {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 2rem;
+    color: rgba(0,0,0,0.1);
+    pointer-events: none;
+    transition: opacity 0.3s;
+    font-family: serif;
+}
+
+.hint-prev { left: 20px; }
+.hint-next { right: 20px; }
+
+#book-viewport:hover .nav-hint {
+    opacity: 0.4;
+}
+
+/* --- 波のアニメーションオーバーレイ --- */
+#wave-overlay {
     position: fixed;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 60px; /* 高さ固定 */
-    z-index: 1000;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 30px;
-    background-color: rgba(244, 241, 234, 0.95); /* 半透明の紙の色 */
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-}
-
-.sample-header h1 {
-    font-size: 1.2rem;
-    margin: 0;
-    text-align: center;
-    flex-grow: 1;
-}
-
-.back-link {
-    font-size: 0.9rem;
-    color: var(--text-color-dark);
-    text-decoration: none;
-    transition: opacity 0.3s;
-}
-
-.back-link:hover { opacity: 0.7; }
-
-/* ページングコンテナ */
-.reading-container {
+    width: 100vw;
     height: 100vh;
-    width: 100vw;
-    padding-top: 60px; /* ヘッダーの分だけ下げる */
-    /* 縦書き設定 */
-    writing-mode: vertical-rl;
-    /* 横方向のスクロールを有効にし、スクロールバーを非表示にする */
-    overflow-x: scroll; 
-    overflow-y: hidden;
-    
-    /* ページめくりをスムーズにするための設定 */
-    scroll-behavior: smooth;
-    /* ページ全体でスナップさせる */
-    scroll-snap-type: x mandatory; 
+    z-index: 100; /* コンテンツより上 */
+    pointer-events: none; /* 通常時はクリックを通す */
+    visibility: hidden; /* 通常時は見えない */
 }
 
-/* スクロールバーの非表示（WebKit/Blink系ブラウザ） */
-.reading-container::-webkit-scrollbar {
-    display: none;
-}
-
-/* ページ要素 */
-.page {
-    /* ページの寸法をビューポートサイズに設定 */
-    height: calc(100vh - 60px); /* ヘッダーの高さを引く */
-    width: 100vw;
-    
-    /* 横書き要素を縦書き内で正しく配置 */
-    display: flex;
-    flex-shrink: 0; /* 縮小させない */
-    scroll-snap-align: start; /* スナップの開始位置 */
-    
-    /* ページ内の余白 (縦書きなので右と左に余白) */
-    padding: 30px 40px; 
-
-    /* テキストスタイル */
-    font-size: 1.2rem;
-    line-height: 2.2; 
-    letter-spacing: 0.1em; 
-
-    /* ページのインデントとタイトル位置調整 */
-    text-align: justify; /* 均等割付 */
-    text-justify: inter-ideograph;
-}
-
-/* 段落 */
-.page p {
-    text-indent: 2.5em; /* 段落の字下げ */
-    margin: 0;
-    padding: 0;
-    /* 縦書き内での行間（margin-topは縦書きの行間相当） */
-    margin-top: 1.5rem; 
-}
-
-/* タイトル・著者名など */
-.page .author, .page .section-title {
-    writing-mode: horizontal-tb; /* 縦書きの中で横書きに戻す */
-    text-indent: 0;
-    margin-top: 0;
-    margin-bottom: 2rem;
-    height: fit-content;
+.wave-shape {
     width: 100%;
+    height: 100%;
+    display: block;
 }
 
-.page .section-title {
-    font-size: 1.6rem;
-    font-weight: bold;
-    border-right: 2px solid var(--text-color-dark);
-    padding-right: 15px;
-    margin-bottom: 3rem;
-    margin-top: 0;
-    text-align: right;
+#wave-path {
+    fill: var(--accent-color, #1d3a4e);
+    opacity: 0.9;
 }
 
-.page .author {
-    font-size: 1.1rem;
-    color: #444;
-    text-align: right;
-}
-
-/* ナビゲーションボタン */
-.nav-buttons {
-    position: fixed;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    pointer-events: none; /* ボタン以外では操作できないように */
-    z-index: 1010;
-}
-
-.nav-button {
-    pointer-events: auto; /* ボタン上での操作を有効化 */
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 3rem;
-    color: var(--text-color-dark);
-    opacity: 0.3;
-    transition: opacity 0.3s, transform 0.3s;
-    padding: 10px 20px;
-    user-select: none;
-}
-
-.nav-button:hover {
-    opacity: 0.8;
-    transform: scale(1.1);
-}
-
-.left-btn {
-    padding-left: 30px;
-}
-
-.right-btn {
-    padding-right: 30px;
-}
-
-/* 読了時のメッセージ */
-.end-message {
-    writing-mode: horizontal-tb;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    height: calc(100vh - 60px);
-    width: 100vw;
-    text-align: center;
-    padding: 20px;
-    flex-shrink: 0;
-    scroll-snap-align: start;
-}
-
-.end-message h2 {
-    font-size: 2rem;
-    margin-bottom: 15px;
-}
-
-/* 波のアニメーションを模した背景効果 */
-/* ページの背景に薄い波の模様の繰り返しアニメーションを適用 */
-.reading-container {
-    position: relative;
-    background: 
-        repeating-linear-gradient(
-            -45deg,
-            var(--wave-color) 0%,
-            var(--wave-color) 1px,
-            transparent 1px,
-            transparent 10px
-        );
-    background-size: 200vw 200vh; /* アニメーションの範囲を広げる */
-    animation: waveFlow 60s linear infinite;
-}
-
-@keyframes waveFlow {
-    from {
-        background-position: 0 0;
+/* 次のページへ（左へめくる）ときのアニメーション */
+/* 波が右から左へ押し寄せる */
+@keyframes wave-next {
+    0% {
+        clip-path: polygon(100% 0, 100% 0, 100% 100%, 100% 100%);
+        visibility: visible;
     }
-    to {
-        background-position: 200vw 200vh; /* 右下方向へ流れる */
+    40% {
+        clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); /* 全画面を覆う */
+    }
+    60% {
+        clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); /* 一瞬留まる */
+    }
+    100% {
+        clip-path: polygon(0 0, 0 0, 0 100%, 0 100%); /* 左へ消える */
+        visibility: hidden;
+    }
+}
+
+/* 前のページへ（右へ戻る）ときのアニメーション */
+/* 波が左から右へ押し寄せる（逆再生的な動き） */
+@keyframes wave-prev {
+    0% {
+        clip-path: polygon(0 0, 0 0, 0 100%, 0 100%);
+        visibility: visible;
+    }
+    40% {
+        clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+    }
+    60% {
+        clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+    }
+    100% {
+        clip-path: polygon(100% 0, 100% 0, 100% 100%, 100% 100%);
+        visibility: hidden;
+    }
+}
+
+/* アニメーションクラス適用時 */
+#wave-overlay.animate-next {
+    animation: wave-next 1s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+#wave-overlay.animate-prev {
+    animation: wave-prev 1s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* スマホ対応調整 */
+@media (max-width: 768px) {
+    .text-body {
+        font-size: 1rem;
+        padding-top: 3vh;
+        padding-bottom: 8vh; /* ページ番号とかぶらないように */
+    }
+    .in-text-title {
+        font-size: 1.5rem;
+    }
+    .nav-hint {
+        display: none; /* スマホでは邪魔なので消す */
     }
 }
 
