@@ -3,141 +3,112 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>特典書籍 受取申込フォーム</title>
-    <meta name="description" content="電子書籍ご購入者様限定の、オフラインイベントでの紙の書籍受け取りを申し込むフォームです。">
-    <link rel="stylesheet" href="style3.css">
-    <!-- 既存デザインで利用されていたZen Old Mincho Subsetフォントを想定 -->
-    <style>
-        @font-face {
-            font-family: 'Zen Old Mincho Subset';
-            font-style: normal;
-            font-weight: 700;
-            font-display: swap;
-            /* 実際には適切なURLに置き換えてください */
-            src: url('subset-ZenOldMincho-Bold.woff2') format('woff2'); 
-        }
-        body {
-            font-family: 'Zen Old Mincho Subset', sans-serif;
-        }
-    </style>
+    <title>アンケート | 海象計画</title>
+    <meta name="description" content="海象計画のアンケートページです。">
+    <meta property="og:title" content="アンケート | 海象計画">
+    <meta property="og:description" content="ご意見・ご感想をお待ちしております。">
+    <meta property="og:url" content="[ページのURLを挿入]">
+    <meta property="og:type" content="website">
+
+    <!-- 新しいスタイルシートを参照 -->
+    <link rel="stylesheet" href="style3.css"> 
+
+    <!-- Google Fontsの読み込み（Zen Old MinchoとNoto Sans JP） -->
+    <!-- 実際には<link>タグが必要です。ここでは簡略化のため省略していますが、本番環境では追加してください -->
+
 </head>
 <body>
-    <div id="unified-ocean-container">
-        <!-- ヘッダーやナビゲーションは省略 -->
 
-        <header id="concept" class="site-section">
-            <div class="container">
-                <h1 class="main-title fade-up">BOOTH電子書籍購入者特典</h1>
-                <p class="description fade-up">オフラインイベントにて紙の書籍をプレゼントいたします。下記のフォームよりお申し込みください。</p>
+    <!-- ヘッダー（ナビゲーション） -->
+    <header>
+        <div class="nav-container">
+            <div class="logo">
+                <a href="index.html">海象計画</a>
             </div>
-        </header>
+            <nav>
+                <ul>
+                    <li><a href="index.html#works">作品紹介</a></li>
+                    <li><a href="index.html#profile">プロフィール</a></li>
+                    <li><a href="index.html#event">参加イベント</a></li>
+                    <!-- このページ自身へのリンク（必要に応じて） -->
+                    <li><a href="anke-to.html">アンケート</a></li> 
+                </ul>
+            </nav>
+        </div>
+    </header>
 
-        <main id="form-section" class="site-section">
-            <div class="container">
-                <!-- Googleフォームの埋め込み要素。フォームの内容に合わせてデザインを変更します。 -->
-                <div id="form-embed-wrapper" class="fade-up">
-                    <div id="access-denied" style="display: none; text-align: center; padding: 40px; color: #fff;">
-                        <h2 style="font-size: 1.8rem; margin-bottom: 20px;">アクセスエラー</h2>
-                        <p style="font-size: 1.1rem;">このページは、特定の電子書籍をご購入いただいた方のみアクセス可能です。</p>
-                        <p style="font-size: 1.1rem;">URLに正しいアクセスコード（`code=`パラメータ）が含まれているかご確認ください。</p>
+    <!-- メインコンテンツ -->
+    <main id="anketo-section">
+        <div class="container site-content">
+            <div class="anketo-intro">
+                <h1>アンケート</h1>
+                <p>このページに、フォームや任意のコンテンツを自由に入れてください。</p>
+            </div>
+
+            <!-- ****** コンテンツ挿入エリア ****** -->
+            <div class="main-content-placeholder">
+                <p>ここにアンケートフォーム、またはその他のコンテンツが入ります。</p>
+                
+                <!-- サンプルフォームの例 -->
+                <form action="#" method="POST">
+                    <div class="form-group">
+                        <label for="name">お名前（ペンネーム可）</label>
+                        <input type="text" id="name" name="name" required>
                     </div>
 
-                    <!-- フォームを埋め込むコンテナ -->
-                    <iframe 
-                        id="google-form-iframe"
-                        src="" 
-                        width="100%" 
-                        height="1000" 
-                        frameborder="0" 
-                        marginheight="0" 
-                        marginwidth="0"
-                        style="display:none;"
-                    >読み込んでいます…</iframe>
-
-                    <div id="loading-message" style="text-align: center; padding: 40px; color: #fff;">
-                        <p>フォームを読み込み中...</p>
+                    <div class="form-group">
+                        <label for="email">メールアドレス（任意）</label>
+                        <input type="text" id="email" name="email">
                     </div>
-                </div>
 
-                <div class="form-notes fade-up">
-                    <p>※現地での混乱を避けるため、事前に必ずお申し込みをお願いいたします。</p>
-                    <p>※イベント当日は、設定した「合言葉」で本人確認を行います。</p>
-                </div>
+                    <div class="form-group">
+                        <label for="message">メッセージ・ご意見・ご感想</label>
+                        <textarea id="message" name="message" rows="8" required></textarea>
+                    </div>
+
+                    <button type="submit" class="submit-btn">送信する</button>
+                </form>
             </div>
-        </main>
+            <!-- ********************************** -->
 
-        <!-- フッターやその他のセクションは省略 -->
-    </div>
+        </div>
+    </main>
 
+    <!-- フッター -->
+    <footer>
+        <div class="container">
+            <p>&copy; [年] 海象計画. All Rights Reserved.</p>
+            <!-- 連絡先やSNSのリンクなどを追加 -->
+        </div>
+    </footer>
+
+    <!-- JavaScriptセクション -->
     <script>
-        const FORM_ACTION_URL = "https://docs.google.com/forms/u/0/d/e/【ここにGoogleフォームの action URLを挿入】/formResponse";
+        // Lenisやモーダルの関連コードは削除済みです。
+        // ここにこのページ固有のJavaScriptを追加してください。
         
-        // 質問1: 受け取り希望 (はい/いいえ)
-        // 質問2: イベント選択 (Zineフェス東京/今後いつかのイベント)
-        // 質問3: 合言葉 (短文入力)
-        // 質問4: 非表示フィールド (code=自動入力)
-        const ENTRY_IDS = {
-            receive: "【ここに質問1のentry.idを挿入】",
-            event: "【ここに質問2のentry.idを挿入】",
-            password: "【ここに質問3のentry.idを挿入】",
-            code: "【ここに質問4の非表示フィールドのentry.idを挿入】" 
-        };
-
-        const iframe = document.getElementById('google-form-iframe');
-        const accessDenied = document.getElementById('access-denied');
-        const loadingMessage = document.getElementById('loading-message');
-        
-        // URLのクエリパラメータを取得する関数
-        function getQueryParameter(name) {
-            const urlParams = new URLSearchParams(window.location.search);
-            return urlParams.get(name);
-        }
-
+        // ページのロード完了後に実行する処理
         document.addEventListener('DOMContentLoaded', () => {
-            const codeValue = getQueryParameter('code');
-
-            if (!codeValue) {
-                // code=パラメータがない場合、アクセス拒否メッセージを表示
-                loadingMessage.style.display = 'none';
-                iframe.style.display = 'none';
-                accessDenied.style.display = 'block';
-            } else {
-                // code=パラメータがある場合、フォームのURLを構築して表示
-                
-                // プリフィルURLを生成
-                // 質問4の非表示フィールドにcodeの値を自動入力し、
-                // フォームを編集不可（viewform）で埋め込むためのURLを作成
-                const prefilledUrl = FORM_ACTION_URL.replace("/formResponse", "/viewform") + 
-                                     `?usp=pp_url&entry.${ENTRY_IDS.code}=${encodeURIComponent(codeValue)}`;
-                
-                iframe.src = prefilledUrl;
-                
-                // 読み込みメッセージを非表示にし、iframeを表示
-                iframe.onload = () => {
-                    loadingMessage.style.display = 'none';
-                    iframe.style.display = 'block';
-                };
-            }
-
-            // 既存のCSSデザインにあるフェードアップアニメーションを起動
-            const fadeUpElements = document.querySelectorAll('.fade-up');
-            
-            // シンプルなIntersection Observerで可視化
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('visible');
-                        observer.unobserve(entry.target);
+            // 例: フォーム送信時の処理
+            const form = document.querySelector('form');
+            if (form) {
+                form.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    console.log('フォームが送信されました。実際の処理はここに追加してください。');
+                    // 実際には、フォームデータをサーバーに送信する処理（Fetch APIなど）が必要です。
+                    
+                    // 送信後のメッセージ表示など
+                    // alert('ご協力ありがとうございました！'); // ❌ alertは使用禁止です
+                    const placeholder = document.querySelector('.main-content-placeholder');
+                    if (placeholder) {
+                        placeholder.innerHTML = '<div style="text-align: center; padding: 50px;"><h2>送信完了！</h2><p>貴重なご意見・ご感想ありがとうございました。</p><p><a href="anke-to.html">もう一度記入する</a></p></div>';
                     }
                 });
-            }, {
-                rootMargin: '0px',
-                threshold: 0.1
-            });
-
-            fadeUpElements.forEach(el => observer.observe(el));
+            }
         });
+
     </script>
+
 </body>
 </html>
 
