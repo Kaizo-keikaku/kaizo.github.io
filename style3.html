@@ -1,0 +1,154 @@
+/* ------------------------------------- */
+/* 既存CSS（style.css）の基本構造を再現 */
+/* ------------------------------------- */
+
+:root {
+    /* 既存の変数名を流用・再定義 */
+    --bg-color-home: #f4f1ea; /* コンセプト: 海上 (このフォームではヘッダーに使用) */
+    --bg-color-works: #c0d6d1; /* 作品紹介: 浅い海 */
+    --bg-color-profile: #0f267f; /* プロフィール: 深海 (グラデーション中間点) */
+    --bg-color-event: #040a23; /* 参加イベント: 最深部 (フォームセクションの最下部) */
+    --text-color-light: #f4f1ea; /* 明るい文字色 */
+    --text-color-dark: #333333; /* 暗い文字色 */
+    --link-color-dark: #0f267f; /* リンク色 */
+}
+
+/* フォントとリセット */
+body {
+    margin: 0;
+    line-height: 1.6;
+    color: var(--text-color-dark);
+    /* anke-to.htmlの<style>タグでZen Old Mincho Subsetを適用 */
+}
+
+.fade-up {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94); /* 既存より滑らかに */
+}
+
+.fade-up.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* レイアウト */
+.container {
+    max-width: 900px; 
+    margin: auto;
+    padding: 0 20px;
+}
+
+.site-section {
+    padding-top: 80px; 
+    padding-bottom: 80px;
+    position: relative; 
+    z-index: 3;
+}
+
+/* Works -> Profile -> Eventへの三段階グラデーションをフォーム全体に適用 */
+#unified-ocean-container {
+    position: relative;
+    min-height: 100vh;
+    background: linear-gradient(to bottom, 
+        var(--bg-color-works) 0%, 
+        var(--bg-color-works) 10%, 
+        var(--bg-color-profile) 40%, 
+        var(--bg-color-event) 100%
+    ); 
+    overflow: hidden; 
+}
+
+/* フォームを海に潜るイメージに合わせる */
+#concept {
+    background-color: var(--bg-color-works);
+    color: var(--text-color-dark);
+    padding-top: 150px;
+    padding-bottom: 100px;
+    text-align: center;
+}
+
+#form-section {
+    background-color: transparent; /* グラデーションの続きとして透過 */
+    color: var(--text-color-light); /* 深海の色に合わせ文字を白く */
+    padding-top: 60px;
+    padding-bottom: 150px;
+}
+
+.main-title {
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+}
+
+.description {
+    font-size: 1.1rem;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* ------------------------------------- */
+/* Googleフォーム埋め込み専用のスタイリング */
+/* ------------------------------------- */
+
+#form-embed-wrapper {
+    position: relative;
+    /* 既存のWorks/Profileセクションのスタイルを模倣 */
+    background-color: rgba(255, 255, 255, 0.05); /* 半透明な深海オブジェクト */
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    padding: 10px; /* iframeの枠用 */
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    height: 1000px; /* 初期値。コンテンツに合わせて調整可能 */
+    margin-top: 40px;
+}
+
+#google-form-iframe {
+    /* フォーム自体の透明度を調整し、背後の色と合わせる */
+    background-color: transparent;
+    border-radius: 8px;
+    /* heightは親要素の#form-embed-wrapperに依存 */
+}
+
+/* フォームの下部にある注意書き */
+.form-notes {
+    margin-top: 40px;
+    font-size: 0.9rem;
+    line-height: 1.8;
+    color: rgba(255, 255, 255, 0.7);
+    text-align: center;
+}
+
+/* ------------------------------------- */
+/* レスポンシブ対応 */
+/* ------------------------------------- */
+
+@media (max-width: 768px) {
+    .main-title {
+        font-size: 2rem;
+    }
+    
+    .site-section {
+        padding-top: 60px;
+        padding-bottom: 60px;
+    }
+
+    #concept {
+        padding-top: 100px;
+    }
+
+    #form-embed-wrapper {
+        height: 800px; /* モバイルでは少し短く */
+    }
+}
+
+@media (max-width: 480px) {
+    .main-title {
+        font-size: 1.6rem;
+    }
+    .description {
+        font-size: 1rem;
+    }
+}
+
