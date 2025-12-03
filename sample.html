@@ -1,224 +1,264 @@
-/* ---------------------------------------------------- */
-/* 試し読みページ (sample.html) 専用スタイルシート */
-/* ---------------------------------------------------- */
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>海象 第1号 試し読み</title>
+    <!-- メインのスタイルシート (フォント設定など) -->
+    <link rel="stylesheet" href="style.css">
+    <!-- 試し読みページ専用の縦書き・全画面スタイルシート -->
+    <link rel="stylesheet" href="style2.css">
+</head>
+<body class="sample-page">
 
-/* 全画面表示とスクロールの無効化 */
-html, body {
-    height: 100%;
-    width: 100%;
-    margin: 0;
-    padding: 0;
-    overflow: hidden; /* 縦横のスクロールを無効化 */
-    box-sizing: border-box;
-}
+    <header class="sample-header">
+        <a href="index.html" class="back-link">
+            <span class="arrow">←</span> 
+            トップへ戻る
+        </a>
+        <h1>海象 第1号 試し読み</h1>
+        <p class="sample-spec" style="visibility: hidden;">ダミー</p> <!-- レイアウト調整用 -->
+    </header>
 
-:root {
-    --bg-color-home: #f4f1ea; /* 海上・紙の色 */
-    --text-color-dark: #040a23; /* 深海・文字色 */
-    --wave-color: rgba(69, 137, 185, 0.1); /* 薄い青の波 */
-}
+    <!-- ページングを制御するメインコンテナ -->
+    <div id="readingContainer" class="reading-container">
+        <!-- ページ分割されたコンテンツがここに追加されます -->
+    </div>
 
-/* 全体の背景と文字色 */
-.sample-page {
-    background-color: var(--bg-color-home);
-    color: var(--text-color-dark);
-    font-family: 'Zen Old Mincho Subset', serif;
-    transition: background-color 0.5s ease;
-}
+    <!-- ナビゲーションボタン -->
+    <div class="nav-buttons">
+        <!-- 縦書きなので右のボタンが「次へ」 -->
+        <button id="prevBtn" class="nav-button left-btn" disabled>
+            &#10094;
+        </button>
+        <button id="nextBtn" class="nav-button right-btn">
+            &#10095;
+        </button>
+    </div>
 
-/* ヘッダーセクション（ページ外に固定） */
-.sample-header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 60px; /* 高さ固定 */
-    z-index: 1000;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 30px;
-    background-color: rgba(244, 241, 234, 0.95); /* 半透明の紙の色 */
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-}
+    <!-- 元のテキストを保持する要素 (ページ分割後に削除または非表示) -->
+    <div id="rawText" style="display: none;">
+        <p class="author">著者名：潮見</p>
+        <h2 class="section-title">水面を叩くもの（抜粋）</h2>
 
-.sample-header h1 {
-    font-size: 1.2rem;
-    margin: 0;
-    text-align: center;
-    flex-grow: 1;
-}
+        <!-- テキストコンテンツ（約2000字程度の試し読みテキストをここに入力） -->
+        街はつい先刻まで、白い光の中に浮いていた。鏡張りの水面が生み出すもう一つの太陽と、ひとりでに煌めく化粧漆喰の壁たち。そこかしこに在る恒星が、輪郭の無い世界...
+        <!-- ここに添付ファイルから取得した約2000字のテキストを流し込みます -->
+        街はつい先刻まで、白い光の中に浮いていた。鏡張りの水面が生み出すもう一つの太陽と、ひとりでに煌めく化粧漆喰の壁たち。そこかしこに在る恒星が、輪郭の無い世界に散らばっている。その光の粒子が目に入り、私は幾度か目を細めた。しかし、それは決して不快な眩しさではなかった。むしろ、街全体が深い眠りに入り、その夢が結晶化して、透明な泡となって昇っていくのを、私自身が感じられるような心地よさがあった。
+        その時、街の空気が一変した。太陽が、本来あるべき位置へと静かに戻ったのだ。鏡像の太陽はゆっくりと水面に消え、化粧漆喰の壁の輝きも落ち着きを取り戻した。泡は弾け、深い眠りは覚めて、日常の喧騒が戻ってくる。私は、あの束の間の静寂の中で、まるで魂を抜き取られたような気分になっていた。
+        
+        この場所は、ヴェネツィアだった。私は映画祭のメインホールに座っていた。会場の照明がゆっくりと落ちていく。そして、私の魂は暗闇の中で、再びその肉体へと戻った。
+        
+        上映されたのは、巨匠・蔵前良一の遺作、『黒い波』だった。映画は、終映を迎えた。五秒、十秒...会場全体が息を潜めた後、息を、その場にいた全員が深く息を吸い込んだ。その反動からか、次の瞬間、暴風雨のようなアプローズが起こった。私はひとり、重力に逆らうことができずに、座席に沈んでいた。あのような熱狂を見上げることは、もうできないであろう。それが、蔵前良一の死が意味することだった。
+        だが、この世紀の傑作が公式に上映されたのは、一度きりだった。
+        「蔵前良一、ヴェネツィアで七分超のスタンディングオベーションを受ける」
+        この見出しこそ日本にも届いたが、次に話題を攫ったのは、この映画を「いかなる劇場においても公開しない」とする映倫、他当局の共同声明だった。「風紀の乱れを危惧しての事」と短く理由が添えられた。あれが、最後の作品になってしまった。偉大な監督の遺作だが、それを見ることができたのは、あの時メインホールに集まった一〇〇〇人強だけだった。
+        モネの描いた、燃えるような黄昏の中を帰るとき、私は幾度か道行く人に話しかけられた。その大半が日本人でも、映画祭の関係者でもなかった。励ます者、敬意を示す者、共に嘆こうとする者。彼らの表現は皆違っていたが、見知らぬ者に口を開いた、その原動力は同じなのだろう。水際から離れる方向に折れて、ようやく一人になった。矢先に見た眺めを「夕焼けが作り出す街の景色が悲しい」とはこんな感じだろうかと、思い出す。そんな風に言う人を知っているのだ。正確には、そんな風に書かれた文章を知っている。私は夕焼けが作り出す街の景色が悲しい、という言葉を知っている。
+        
+        それは、蔵前良一の映画を愛する人々が作り上げたウェブサイトの掲示板に、誰かが残した言葉だった。彼らのウェブサイトは、公式な声明が出た後、わずか数時間で閉鎖された。その理由も、誰にも知らされなかった。蔵前良一の死、映画の公開中止、そしてファンサイトの閉鎖。全てが同時に起こった。それは、まるで巨大な波が全てを飲み込んでいったかのようだった。
+        私は立ち止まり、運河のきらめきを見た。それは、最初に見た鏡像の太陽を思い出させた。そして、その光が私に一つの確信を与えた。蔵前良一は、この映画を通じて、私たちに何かを伝えようとしていた。それは、言葉や映像だけでは伝えられない、何か深い、海のような感情だった。
+        私は彼の映画を再び見たい。その思いが、私をこの旅へと駆り立てている。
+        
+        この街は、私にとって、蔵前良一の残した最後の痕跡だ。そして、私は、その痕跡を辿り、彼の魂の深海へと潜り込んでいく。
+        
+        私は、今、黒い波の岸辺に立っている。その波は、私をどこへ連れて行くのだろうか。
+        <!-- テキストここまで -->
+    </div>
 
-.back-link {
-    font-size: 0.9rem;
-    color: var(--text-color-dark);
-    text-decoration: none;
-    transition: opacity 0.3s;
-}
+    <script>
+        // DOM要素の取得
+        const readingContainer = document.getElementById('readingContainer');
+        const rawTextContainer = document.getElementById('rawText');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        let currentPage = 0;
+        let totalPages = 0;
 
-.back-link:hover { opacity: 0.7; }
+        /**
+         * 与えられた生のテキストを動的にページに分割し、DOMに挿入する
+         */
+        function paginateText() {
+            // 既存のページをクリア
+            readingContainer.innerHTML = '';
+            
+            // rawTextの内容を取得し、構造要素と純粋なテキストに分ける
+            // (今回はシンプルに全てのテキストノードを結合して処理します)
+            const rawHtml = rawTextContainer.innerHTML;
+            const fullText = rawTextContainer.textContent.trim();
+            let remainingText = fullText;
+            
+            const textNodes = [];
+            // <p class="author">著者名：潮見</p>
+            const authorTag = rawTextContainer.querySelector('.author');
+            if (authorTag) textNodes.push({ type: 'header', content: authorTag.outerHTML });
+            
+            // <h2 class="section-title">水面を叩くもの（抜粋）</h2>
+            const titleTag = rawTextContainer.querySelector('.section-title');
+            if (titleTag) textNodes.push({ type: 'header', content: titleTag.outerHTML });
 
-/* ページングコンテナ */
-.reading-container {
-    height: 100vh;
-    width: 100vw;
-    padding-top: 60px; /* ヘッダーの分だけ下げる */
-    /* 縦書き設定 */
-    writing-mode: vertical-rl;
-    /* 横方向のスクロールを有効にし、スクロールバーを非表示にする */
-    overflow-x: scroll; 
-    overflow-y: hidden;
-    
-    /* ページめくりをスムーズにするための設定 */
-    scroll-behavior: smooth;
-    /* ページ全体でスナップさせる */
-    scroll-snap-type: x mandatory; 
-}
+            // 段落ごとに分割
+            const rawParagraphs = fullText.split('\n').map(p => p.trim()).filter(p => p.length > 0);
+            rawParagraphs.forEach(p => textNodes.push({ type: 'paragraph', content: p }));
 
-/* スクロールバーの非表示（WebKit/Blink系ブラウザ） */
-.reading-container::-webkit-scrollbar {
-    display: none;
-}
+            let currentTextIndex = 0;
+            let pageIndex = 0;
 
-/* ページ要素 */
-.page {
-    /* ページの寸法をビューポートサイズに設定 */
-    height: calc(100vh - 60px); /* ヘッダーの高さを引く */
-    width: 100vw;
-    
-    /* 横書き要素を縦書き内で正しく配置 */
-    display: flex;
-    flex-shrink: 0; /* 縮小させない */
-    scroll-snap-align: start; /* スナップの開始位置 */
-    
-    /* ページ内の余白 (縦書きなので右と左に余白) */
-    padding: 30px 40px; 
+            // ページングを繰り返す
+            while (currentTextIndex < textNodes.length) {
+                const page = document.createElement('div');
+                page.classList.add('page');
+                
+                // ページ計測用に一時的に挿入
+                readingContainer.appendChild(page);
 
-    /* テキストスタイル */
-    font-size: 1.2rem;
-    line-height: 2.2; 
-    letter-spacing: 0.1em; 
+                // --- 1. ヘッダー情報の追加 ---
+                if (pageIndex === 0) {
+                    // 最初のページにのみタイトルと著者名を追加
+                    const headerContent = textNodes.filter(node => node.type === 'header').map(node => node.content).join('');
+                    page.innerHTML = headerContent;
+                    currentTextIndex = textNodes.findIndex(node => node.type === 'paragraph');
+                    if (currentTextIndex === -1) currentTextIndex = textNodes.length; // 段落がなければ終了
+                } else {
+                    // 2ページ目以降は段落から開始
+                    currentTextIndex = textNodes.findIndex(node => node.type === 'paragraph' && textNodes.indexOf(node) >= currentTextIndex);
+                    if (currentTextIndex === -1) break; // すでに全段落を処理済みなら終了
+                }
 
-    /* ページのインデントとタイトル位置調整 */
-    text-align: justify; /* 均等割付 */
-    text-justify: inter-ideograph;
-}
+                // --- 2. 段落ごとのテキストフロー処理 ---
+                let contentFits = true;
+                let currentContent = page.innerHTML; // 既にヘッダーがあれば保持
+                
+                // 段落が残っている限り処理
+                while (currentTextIndex < textNodes.length) {
+                    const node = textNodes[currentTextIndex];
+                    if (node.type !== 'paragraph') {
+                        currentTextIndex++;
+                        continue;
+                    }
+                    
+                    let pTag = `<p>${node.content}</p>`;
+                    
+                    // 新しい内容を試す
+                    page.innerHTML = currentContent + pTag;
 
-/* 段落 */
-.page p {
-    text-indent: 2.5em; /* 段落の字下げ */
-    margin: 0;
-    padding: 0;
-    /* 縦書き内での行間（margin-topは縦書きの行間相当） */
-    margin-top: 1.5rem; 
-}
+                    // オーバーフローチェック (縦書きでは scrollWidth > clientWidth でチェック)
+                    const isOverflowing = page.scrollWidth > page.clientWidth;
 
-/* タイトル・著者名など */
-.page .author, .page .section-title {
-    writing-mode: horizontal-tb; /* 縦書きの中で横書きに戻す */
-    text-indent: 0;
-    margin-top: 0;
-    margin-bottom: 2rem;
-    height: fit-content;
-    width: 100%;
-}
+                    if (!isOverflowing) {
+                        // 収まる場合：コンテンツを確定し、次の段落へ進む
+                        currentContent = page.innerHTML;
+                        currentTextIndex++; 
+                    } else {
+                        // 収まらない場合：この段落を文字単位で分割し、残りを次のページへ送る
+                        page.innerHTML = currentContent; // 収まったところまでを復元
 
-.page .section-title {
-    font-size: 1.6rem;
-    font-weight: bold;
-    border-right: 2px solid var(--text-color-dark);
-    padding-right: 15px;
-    margin-bottom: 3rem;
-    margin-top: 0;
-    text-align: right;
-}
+                        // 文字単位で収まるまで削るロジックをここで実行 (簡略化のため、この段落全体を次のページに送ります)
+                        // 厳密な文字分割は計算コストが高いため、ここでは「段落」を最小の分割単位とします。
+                        if (pageIndex === 0 && page.innerHTML === headerContent) {
+                            // ヘッダーしか入らない場合、最小の段落でも収まらない可能性があるが、ここでは段落単位で送る
+                        }
 
-.page .author {
-    font-size: 1.1rem;
-    color: #444;
-    text-align: right;
-}
+                        // この段落は次のページへ送るため、ループを抜けて次のページを作成
+                        contentFits = false;
+                        break; 
+                    }
+                }
 
-/* ナビゲーションボタン */
-.nav-buttons {
-    position: fixed;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    pointer-events: none; /* ボタン以外では操作できないように */
-    z-index: 1010;
-}
+                // ループが終了した場合、これが最後のページ
+                if (contentFits) {
+                    totalPages = pageIndex + 1;
+                    break;
+                }
+                
+                pageIndex++;
+            }
+            
+            // ページ分割後の最終チェックと読了メッセージの追加
+            if (totalPages > 0) {
+                // 読了メッセージ用のページを追加
+                const endPage = document.createElement('div');
+                endPage.classList.add('end-message');
+                endPage.innerHTML = '<h2>読了</h2><p>この続きは、海象 第1号でお楽しみください。</p><a href="index.html" class="back-link" style="margin-top: 20px; font-size: 1.2rem; opacity: 1;">トップページに戻る</a>';
+                readingContainer.appendChild(endPage);
+                totalPages++; // 読了ページも含む
 
-.nav-button {
-    pointer-events: auto; /* ボタン上での操作を有効化 */
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 3rem;
-    color: var(--text-color-dark);
-    opacity: 0.3;
-    transition: opacity 0.3s, transform 0.3s;
-    padding: 10px 20px;
-    user-select: none;
-}
+                // 初期状態をリセットして、ページネーションとボタンを更新
+                currentPage = 0;
+                updateNavigation();
+                // 最初のページにスクロール位置を設定
+                readingContainer.scrollLeft = readingContainer.scrollWidth;
+            }
+        }
 
-.nav-button:hover {
-    opacity: 0.8;
-    transform: scale(1.1);
-}
+        /**
+         * 現在のページとボタンの状態を更新する
+         */
+        function updateNavigation() {
+            // スクロール位置の更新
+            const pageOffset = currentPage * readingContainer.clientWidth;
+            // 縦書き（右から左）なので、最大スクロール位置から逆算してスクロール位置を決定
+            // scrollWidth - clientWidth が最大スクロール量
+            const scrollMax = readingContainer.scrollWidth - readingContainer.clientWidth;
+            const targetScrollLeft = scrollMax - pageOffset;
+            
+            // 'smooth' scroll-behavior は CSSで設定済み
+            readingContainer.scrollLeft = targetScrollLeft;
 
-.left-btn {
-    padding-left: 30px;
-}
+            // ボタンの有効/無効
+            prevBtn.disabled = currentPage === totalPages - 1; // 最後のページ（一番左）で無効
+            nextBtn.disabled = currentPage === 0;              // 最初のページ（一番右）で無効
+            
+            // 最終ページでメッセージ表示
+            if (currentPage === totalPages - 1) {
+                console.log("最終ページです。");
+            }
+        }
+        
+        /**
+         * 次のページへ進む（横書きでは左へスクロール）
+         */
+        function nextPage() {
+            if (currentPage < totalPages - 1) {
+                currentPage++;
+                updateNavigation();
+            }
+        }
 
-.right-btn {
-    padding-right: 30px;
-}
+        /**
+         * 前のページへ戻る（横書きでは右へスクロール）
+         */
+        function prevPage() {
+            if (currentPage > 0) {
+                currentPage--;
+                updateNavigation();
+            }
+        }
+        
+        // --- イベントリスナーの設定 ---
+        nextBtn.addEventListener('click', nextPage);
+        prevBtn.addEventListener('click', prevPage);
+        
+        // キーボード操作 (左右キーでページ送り)
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') { // 右キーで次ページ (縦書きでは右へ移動 = 前のページ)
+                prevPage(); 
+            } else if (e.key === 'ArrowLeft') { // 左キーで前ページ (縦書きでは左へ移動 = 次のページ)
+                nextPage(); 
+            }
+        });
 
-/* 読了時のメッセージ */
-.end-message {
-    writing-mode: horizontal-tb;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    height: calc(100vh - 60px);
-    width: 100vw;
-    text-align: center;
-    padding: 20px;
-    flex-shrink: 0;
-    scroll-snap-align: start;
-}
+        // 画面サイズ変更時の再ページ分割
+        window.addEventListener('resize', () => {
+            paginateText();
+        });
 
-.end-message h2 {
-    font-size: 2rem;
-    margin-bottom: 15px;
-}
+        // 初期化
+        window.onload = function() {
+            // テキスト分割と初期表示
+            paginateText();
+        }
 
-/* 波のアニメーションを模した背景効果 */
-/* ページの背景に薄い波の模様の繰り返しアニメーションを適用 */
-.reading-container {
-    position: relative;
-    background: 
-        repeating-linear-gradient(
-            -45deg,
-            var(--wave-color) 0%,
-            var(--wave-color) 1px,
-            transparent 1px,
-            transparent 10px
-        );
-    background-size: 200vw 200vh; /* アニメーションの範囲を広げる */
-    animation: waveFlow 60s linear infinite;
-}
-
-@keyframes waveFlow {
-    from {
-        background-position: 0 0;
-    }
-    to {
-        background-position: 200vw 200vh; /* 右下方向へ流れる */
-    }
-}
+    </script>
+</body>
+</html>
 
