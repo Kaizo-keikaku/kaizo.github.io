@@ -3,112 +3,631 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>アンケート | 海象計画</title>
-    <meta name="description" content="海象計画のアンケートページです。">
-    <meta property="og:title" content="アンケート | 海象計画">
-    <meta property="og:description" content="ご意見・ご感想をお待ちしております。">
-    <meta property="og:url" content="[ページのURLを挿入]">
-    <meta property="og:type" content="website">
+    <title>海象計画 - 紙本引換受付フォーム</title>
+    <meta name="description" content="文学同人ユニット「海象計画」の公式サイトです。">
+    <style>
+        /* --- 基本フォント・設定 --- */
+        @font-face {
+            font-family: 'Zen Old Mincho Subset';
+            font-style: normal;
+            font-weight: 700; 
+            font-display: swap;
+            src: url('subset-ZenOldMincho-Bold.woff2') format('woff2'); 
+        }
+        :root {
+            --bg-color-home: #f4f1ea;
+            --bg-color-works: #c0d6d1;
+            --bg-color-profile: #0f267f;
+            --bg-color-event: #040a23;
+            --text-color-light: #f4f1ea; 
+            --text-color-dark: #333333; 
+            --accent-color: #1d3a4e;
+            --link-color-dark: #5d7d9a;
+            --link-color-light: #b0c9f0;
+            --font-main: 'Zen Old Mincho', 'YuMincho', 'Hiragino Mincho ProN', 'MS PMincho', serif;
+            --header-height: 60px; 
+        }
+        * { box-sizing: border-box; }
+        html { scroll-padding-top: var(--header-height); }
+        html.lenis, html.lenis body { height: auto; }
+        
+        body {
+            margin: 0; padding: 0;
+            font-family: var(--font-main);
+            background: var(--bg-color-home); 
+            color: var(--text-color-dark);
+            line-height: 2;
+            overflow-x: hidden;
+        }
+        body.no-scroll { overflow: hidden; }
+        
+        /* ノイズレイヤー */
+        body::before {
+            content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 9999; opacity: 0.05;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+        
+        /* オープニング */
+        #opening-overlay {
+            position: fixed; inset: 0; background: #f4f1ea; display: flex; justify-content: center; align-items: center; z-index: 99999; opacity: 1; transition: opacity .6s ease-out;
+        }
+        #opening-overlay.fade-out { opacity: 0; pointer-events: none; }
+        #opening-text {
+            font-family: 'Zen Old Mincho Subset', serif; font-size: 3rem; font-weight: 700; color: #1d3a4e; white-space: nowrap; border-right: 0.1em solid #1d3a4e; animation: cursorBlink .7s infinite;
+        }
+        @keyframes cursorBlink { 0%,100% { border-color: transparent; } 50% { border-color: #1d3a4e; } }
 
-    <!-- 新しいスタイルシートを参照 -->
-    <link rel="stylesheet" href="style3.css"> 
+        /* 各セクション共通 */
+        #home {
+            height: 100vh; display: flex; justify-content: center; align-items: center; position: relative; text-align: center; background-color: var(--bg-color-home); 
+        }
+        .subtitle { font-size: 1.2rem; color: #666; margin-top: 5px; display: block; text-align: center; }
+        .concept-text { font-size: 1.1rem; margin-top: 30px; line-height: 1.8; text-align: center; }
+        .scroll-indicator {
+            position: absolute; left: 30px; bottom: 150px; font-size: 1.2rem; color: var(--accent-color); transform: rotate(90deg); transform-origin: left bottom; letter-spacing: 0.1em; opacity: 0.7;
+        }
+        .concept-content { max-width: 600px; padding-bottom: 100px; min-height: 400px; display: flex; flex-direction: column; justify-content: center; }
+        .site-title { font-size: 4rem; font-weight: 700; color: var(--accent-color); letter-spacing: 0.3em; margin: 0; line-height: 1.2; }
 
-    <!-- Google Fontsの読み込み（Zen Old MinchoとNoto Sans JP） -->
-    <!-- 実際には<link>タグが必要です。ここでは簡略化のため省略していますが、本番環境では追加してください -->
+        @media (max-width: 900px) { .site-title { font-size: 3rem; letter-spacing: 0.2em; } }
+        @media (max-width: 768px) {
+            #opening-text { font-size: 2rem; }
+            .site-title { font-size: 2.5rem; letter-spacing: 0.15em; }
+            .scroll-indicator { left: 20px; bottom: 150px; }
+        }
 
+        /* --- 完了画面（Section4）の初期状態 --- */
+        /* 最初は非表示にしておき、送信後にJSで active クラスを付与して表示します */
+        #section4 {
+            display: none; 
+            opacity: 0;
+            transition: opacity 1.5s ease;
+        }
+        #section4.active {
+            display: block;
+            opacity: 1;
+        }
+
+        /* ボタン無効化時のスタイル */
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+        /* --- アクセスエラー画面 --- */
+        #access-error {
+            display: none; /* 初期状態は非表示 */
+            height: 100vh;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+            opacity: 0;
+            transition: opacity 1s ease;
+        }
+        #access-error.visible {
+            opacity: 1;
+        }
+        .error-title {
+            font-size: 2rem;
+            color: var(--accent-color);
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+        .error-text {
+            font-size: 1.1rem;
+            margin-bottom: 40px;
+        }
+    </style>
+    <link rel="stylesheet" href="style3.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Old+Mincho:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script> 
+    <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.19/bundled/lenis.min.js" defer></script>
 </head>
+
 <body>
 
-    <!-- ヘッダー（ナビゲーション） -->
-    <header>
-        <div class="nav-container">
-            <div class="logo">
-                <a href="index.html">海象計画</a>
+    <div id="opening-overlay">
+        <div id="opening-text"></div>
+    </div>
+
+    <nav id="nav-bar">
+        <div class="container nav-content">
+            <a href="index.html" class="nav-title">海象計画</a>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
             </div>
-            <nav>
-                <ul>
-                    <li><a href="index.html#works">作品紹介</a></li>
-                    <li><a href="index.html#profile">プロフィール</a></li>
-                    <li><a href="index.html#event">参加イベント</a></li>
-                    <!-- このページ自身へのリンク（必要に応じて） -->
-                    <li><a href="anke-to.html">アンケート</a></li> 
-                </ul>
-            </nav>
         </div>
-    </header>
+    </nav>
 
-    <!-- メインコンテンツ -->
-    <main id="anketo-section">
-        <div class="container site-content">
-            <div class="anketo-intro">
-                <h1>アンケート</h1>
-                <p>このページに、フォームや任意のコンテンツを自由に入れてください。</p>
-            </div>
-
-            <!-- ****** コンテンツ挿入エリア ****** -->
-            <div class="main-content-placeholder">
-                <p>ここにアンケートフォーム、またはその他のコンテンツが入ります。</p>
-                
-                <!-- サンプルフォームの例 -->
-                <form action="#" method="POST">
-                    <div class="form-group">
-                        <label for="name">お名前（ペンネーム可）</label>
-                        <input type="text" id="name" name="name" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="email">メールアドレス（任意）</label>
-                        <input type="text" id="email" name="email">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="message">メッセージ・ご意見・ご感想</label>
-                        <textarea id="message" name="message" rows="8" required></textarea>
-                    </div>
-
-                    <button type="submit" class="submit-btn">送信する</button>
-                </form>
-            </div>
-            <!-- ********************************** -->
-
-        </div>
-    </main>
-
-    <!-- フッター -->
-    <footer>
+    <section id="access-error">
         <div class="container">
-            <p>&copy; [年] 海象計画. All Rights Reserved.</p>
-            <!-- 連絡先やSNSのリンクなどを追加 -->
+            <h2 class="error-title">Access Error</h2>
+            <p class="error-text">
+                このページは購入者専用です。<br>
+                BOOTHのメッセージ、またはダウンロードファイルに含まれる<br>
+                <strong>専用URL（code付き）</strong>からアクセスしてください。
+            </p>
+            <div class="btn-area">
+                <a href="index.html" class="btn">TOPページへ戻る</a>
+            </div>
         </div>
-    </footer>
+    </section>
 
-    <!-- JavaScriptセクション -->
-    <script>
-        // Lenisやモーダルの関連コードは削除済みです。
-        // ここにこのページ固有のJavaScriptを追加してください。
+    <section id="home" class="first-view">
+        <div class="concept-content fade-up">
+            <h1 class="site-title">登録フォーム</h1>
+            <p class="subtitle">Book Exchange Registration</p>
+            <p class="concept-text">
+                BOOTHにて電子書籍をご購入いただいた皆様へ。<br>
+                オフラインイベントにて紙本の『出血』の無料引換をご希望の方はこちらよりご登録ください。<br>
+                会場での本人確認に必要な"合言葉"を設定していただきます。<br>
+                （所要時間：約1分）
+            </p>
+            <div class="btn-area">
+                <a href="#section1" class="btn">引換登録開始</a>
+            </div>
+        </div>
+        <div class="scroll-indicator">scroll &rarr;</div>
+    </section>
+
+    <div id="unified-ocean-container">
         
-        // ページのロード完了後に実行する処理
-        document.addEventListener('DOMContentLoaded', () => {
-            // 例: フォーム送信時の処理
-            const form = document.querySelector('form');
-            if (form) {
-                form.addEventListener('submit', (e) => {
-                    e.preventDefault();
-                    console.log('フォームが送信されました。実際の処理はここに追加してください。');
-                    // 実際には、フォームデータをサーバーに送信する処理（Fetch APIなど）が必要です。
-                    
-                    // 送信後のメッセージ表示など
-                    // alert('ご協力ありがとうございました！'); // ❌ alertは使用禁止です
-                    const placeholder = document.querySelector('.main-content-placeholder');
-                    if (placeholder) {
-                        placeholder.innerHTML = '<div style="text-align: center; padding: 50px;"><h2>送信完了！</h2><p>貴重なご意見・ご感想ありがとうございました。</p><p><a href="anke-to.html">もう一度記入する</a></p></div>';
-                    }
-                });
-            }
-        });
+        <div class="bubbles-background" id="unified-bubbles-background"></div>
 
-    </script>
+        <div class="wave-separator">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
+                <path fill="#c0d6d1" fill-opacity="1" d="M0,192L48,208C96,224,192,256,288,256C384,256,480,224,576,224C672,224,768,256,864,266.7C960,277,1056,267,1152,250.7C1248,235,1344,213,1392,202.7L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+            </svg>
+        </div>
+
+        <section id="section1">
+            <div class="container site-content">
+                <h2 class="section-title fade-up">Q1. 引換希望について</h2>
+                <div class="question-form">
+                    <div class="question-group fade-up">
+                        <p class="question-text">Q1-1. オフラインイベントで紙本の受け取りを希望しますか？</p>
+                        <div class="radio-group">
+                            <label><input type="radio" name="exchange_hope" value="はい" required><span class="custom-radio"></span>はい</label>
+                            <label><input type="radio" name="exchange_hope" value="いいえ"><span class="custom-radio"></span>いいえ</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="btn-area fade-up">
+                    <a href="#section2" class="btn">次に進む(1/3)</a>
+                </div>
+            </div>
+        </section>
+        
+        <section id="section2">
+            <div class="container site-content">
+                <h2 class="section-title fade-up">Q2. 受取イベントについて</h2>
+                <div class="question-form">
+                    <div class="question-group fade-up">
+                        <p class="question-text">Q2-1. どのイベントで受け取りますか？</p>
+                        <div class="radio-group">
+                            <label><input type="radio" name="receive_event" value="ZINEフェス東京" required><span class="custom-radio"></span>ZINEフェス東京</label>
+                            <label><input type="radio" name="receive_event" value="その他"><span class="custom-radio"></span>その他</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="btn-area fade-up">
+                    <a href="#section3" class="btn">次に進む(2/3)</a>
+                </div>
+            </div>
+        </section>
+        
+        <section id="section3">
+            <div class="container site-content">
+                <h2 class="section-title fade-up">Q3. 合言葉の設定</h2>
+                
+                <div class="question-form">
+                    <div class="question-group fade-up">
+                        <p class="question-text">
+                            Q3-1. 会場での本人確認に必要な合言葉を設定してください。<br>
+                            （5文字以上）
+                        </p>
+                        <input type="text" id="passphrase" name="passphrase" 
+                               placeholder="5文字以上の合言葉を入力" required minlength="5">
+                        <p id="error-message" style="color: #ff9999; font-size: 0.9rem; display: none; margin-top: 10px;">
+                            </p>
+                    </div>
+                    
+                    <div class="btn-area fade-up">
+                        <button type="button" id="final-submit-btn" class="btn">登録を完了する</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="section4">
+            <div class="container site-content">
+                <h2 class="section-title fade-up">登録完了</h2>
+                <p class="fade-up" style="max-width: 600px; margin: 0 auto; text-align: center;">
+                    ご登録いただき、ありがとうございます。<br>
+                    設定いただいた**合言葉**は、イベント会場での引換時に必要となります。<br>
+                    大切に保管してください。<br>
+                    <br>
+                    当日、会場にてお会いできるのを楽しみにしています。
+                </p>
+                
+                <div class="btn-area fade-up">
+                    <a href="index.html" class="btn">地上へ戻る (TOPへ)</a>
+                </div>
+            </div>
+            
+            <footer class="fade-up" style="margin-top: 50px;">
+                &copy; 2024 Kaizo Keikaku
+            </footer>
+            <div id="bioluminescence-container"></div>
+        </section>
+        
+    </div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    
+    // ==========================================
+    // 【設定エリア】ここに取得したIDを貼り付けてください
+    // ==========================================
+    const GOOGLE_FORM_CONFIG = {
+        // 💡 修正点: URLからログインセッションを示す `/u/0/` を削除
+        actionUrl: "https://docs.google.com/forms/d/e/1FAIpQLSenRSd7gNnlB0hqXe8uWrELNvrq1Ti0V3B1owV9ogISTO5Bpg/formResponse",
+        
+        // 各質問の entry.xxxxxx ID
+        ids: {
+            exchange_hope: "entry.187432404", // Q1. 引換希望 (はい/いいえ)
+            receive_event: "entry.595917821", // Q2. イベント
+            passphrase:    "entry.526670925", // Q3. 合言葉
+            user_code:     "entry.249561107"  // User Code (code=xxx)
+        }
+    };
+    // ==========================================
+
+    // --- User Code の自動取得 ---
+    // 既存のコード取得部分を以下のように修正・拡張します
+    let currentUserCode = "";
+    const urlParams = new URLSearchParams(window.location.search);
+    const codeParam = urlParams.get('code');
+    
+    // バリデーション: コードが存在し、かつ8桁の英数字であるかチェック
+    const codeRegex = /^[a-zA-Z0-9]{8}$/;
+    let isValidAccess = false;
+
+    if (codeParam && codeRegex.test(codeParam)) {
+        currentUserCode = codeParam;
+        isValidAccess = true;
+    }
+
+    // --- 送信ボタンの制御 (JSで手動送信) ---
+    const submitBtn = document.getElementById('final-submit-btn');
+    const errorMessage = document.getElementById('error-message');
+    const section3 = document.getElementById('section3');
+    const section4 = document.getElementById('section4');
+    
+    // 💡 jQueryが読み込まれていない場合のチェック
+    if (typeof jQuery === 'undefined') {
+        console.error("jQueryが読み込まれていません。Google Formsの送信にはjQueryが必要です。HTMLの<head>タグでjQueryのCDNを読み込んでください。");
+    }
+
+    // 処理成功時の共通ロジックを関数化
+    function handleSuccess() {
+        // CORSエラーにより、コンソールにはエラー（statusCode 0/200の成功）が表示されますが、フォーム送信が機能していればOKです
+        console.log("Google Forms送信処理完了 (statusCode: 0または200)");
+        
+        // 入力画面(Section3)を非表示にする
+        section3.style.display = 'none';
+        
+        // 完了画面(Section4)を表示する
+        section4.classList.add('active');
+
+        // スムーズに完了画面へスクロール位置を調整
+        const section4El = document.getElementById('section4');
+        lenis.scrollTo(section4El, { offset: -60, duration: 2 });
+
+        // 発光アニメーション開始 (深海演出)
+        initializeBioluminescence();
+    }
+
+
+    if (submitBtn) {
+        submitBtn.addEventListener('click', () => { 
+            if (typeof jQuery === 'undefined') {
+                 errorMessage.style.display = 'block';
+                 errorMessage.textContent = "※送信エラー: jQueryライブラリが読み込まれていません。";
+                 return;
+            }
+            
+            // 1. バリデーション（入力チェック）
+            const q1 = document.querySelector('input[name="exchange_hope"]:checked');
+            const q2 = document.querySelector('input[name="receive_event"]:checked');
+            const q3 = document.getElementById('passphrase');
+
+            if (!q1 || !q2 || !q3.value || q3.value.length < 5) {
+                errorMessage.style.display = 'block';
+                errorMessage.textContent = "※すべての項目を選択し、合言葉を5文字以上入力してください。";
+                return; // ここで処理を中断（送信しない）
+            }
+
+            // 2. 送信準備（ボタンを押したことをユーザーに伝える）
+            errorMessage.style.display = 'none';
+            submitBtn.textContent = "送信中..."; 
+            submitBtn.disabled = true; 
+
+            // 3. フォームデータの作成 (jQuery.ajax用)
+            // Google Formsは 'application/x-www-form-urlencoded' 形式のデータを期待します
+            const submitData = {};
+            submitData[GOOGLE_FORM_CONFIG.ids.exchange_hope] = q1.value;
+            submitData[GOOGLE_FORM_CONFIG.ids.receive_event] = q2.value;
+            submitData[GOOGLE_FORM_CONFIG.ids.passphrase]    = q3.value;
+            submitData[GOOGLE_FORM_CONFIG.ids.user_code]     = currentUserCode;
+            
+            // 💡 修正点: 400 Bad Requestエラー回避のため、pageHistoryフィールドを追加
+            submitData['pageHistory'] = '0';
+
+            // ==========================================
+            // 【💡デバッグ用コードの追加💡】
+            // 送信内容とURLパラメータをコンソールに出力します
+            // ==========================================
+            console.log("--- フォーム送信データ (jQuery Data) ---");
+            console.log(submitData);
+            console.log("-------------------------------------");
+            console.log(`現在のURLクエリパラメータ 'code': ${currentUserCode}`);
+            console.log("-------------------------------------");
+            // ==========================================
+
+            // 4. Googleフォームへ送信 (jQuery.ajax)
+            // dataType: "xml" とすることで、CORSエラーが発生しても送信自体は機能させます
+            $.ajax({
+                url: GOOGLE_FORM_CONFIG.actionUrl,
+                data: submitData,
+                type: "POST",
+                dataType: "xml", 
+                
+                // statusCode: 0 はCORSエラーによる応答なしを意味し、送信成功とみなします
+                statusCode: {
+                    0: function() {
+                        // 5. 送信成功後の演出（画面切り替え）
+                        handleSuccess();
+                    },
+                    200: function() {
+                        // 5. 送信成功後の演出（画面切り替え）
+                        handleSuccess();
+                    }
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    // statusCode 0/200 以外で通信エラーが起きた場合の最終的なエラーハンドリング
+                    if (textStatus !== 'abort') { 
+                        console.error("Submission error:", textStatus, errorThrown);
+                        // 400 Bad Requestもこのエラーに入る可能性があります
+                        errorMessage.style.display = 'block';
+                        errorMessage.textContent = "送信エラーが発生しました。時間を置いて再度お試しください。";
+                        submitBtn.textContent = "登録を完了する"; 
+                        submitBtn.disabled = false;
+                    }
+                }
+            });
+        });
+    }
+
+
+    // --- 以下、既存のスクロール演出やアニメーション（維持） ---
+    
+    let section1EndAbsolute = 0;
+    let section2EndAbsolute = 0;
+    let firstViewHeight = 0;
+    let oceanContainerTop = 0;
+    
+    const section1 = document.getElementById('section1');
+    const section2 = document.getElementById('section2');
+    const firstView = document.getElementById('home');
+    const oceanContainer = document.getElementById('unified-ocean-container');
+    
+    function cacheGeometry() {
+        if (section1 && section2) {
+            section1EndAbsolute = section1.offsetTop + section1.offsetHeight;
+            section2EndAbsolute = section2.offsetTop + section2.offsetHeight;
+        }
+        if (firstView) firstViewHeight = firstView.offsetHeight;
+        if (oceanContainer) oceanContainerTop = oceanContainer.offsetTop;
+    }
+
+    cacheGeometry(); 
+    window.addEventListener('resize', cacheGeometry);
+
+    function getScrollDuration(lenisScrollY) {
+        const scrollY = lenisScrollY;
+        if (scrollY < section1EndAbsolute) return 1.5; 
+        else if (scrollY < section2EndAbsolute) return 3.0; 
+        else return 6.0; 
+    }
+
+    const lenis = new Lenis({
+        duration: 3.0, 
+        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), 
+        direction: 'vertical', 
+        smooth: true, 
+    });
+
+    function raf(time) {
+        lenis.options.duration = getScrollDuration(lenis.scroll);
+        lenis.raf(time);
+        requestAnimationFrame(raf);
+    }
+    raf(0); 
+
+    // Opening
+    const openingText = document.getElementById("opening-text");
+    const openingOverlay = document.getElementById("opening-overlay");
+
+    lenis.stop(); 
+    document.body.classList.add("no-scroll");
+
+    const typingSequence = [
+        { text: "k", delay: 100 }, { text: "か", delay: 100 },
+        { text: "かい", delay: 100 }, { text: "かいz", delay: 100 },
+        { text: "かいぞ", delay: 100 }, { text: "かいぞう", delay: 100 },
+        { text: "改造", delay: 200 }, { text: "解像", delay: 200 },
+        { text: "海象", delay: 300 }, { text: "海象k", delay: 100 },
+        { text: "海象け", delay: 100 }, { text: "海象けい", delay: 100 },
+        { text: "海象けいk", delay: 100 }, { text: "海象けいか", delay: 100 },
+        { text: "海象けいかk", delay: 100 },
+        { text: "海象けいかく", delay: 100 },
+        { text: "海象計画", delay: 500 }
+    ];
+
+    let i = 0;
+    function typeText() {
+        if (i < typingSequence.length) {
+            openingText.textContent = typingSequence[i].text;
+            setTimeout(typeText, typingSequence[i].delay);
+            i++;
+        } else {
+            setTimeout(() => {
+                openingOverlay.classList.add("fade-out");
+                setTimeout(() => {
+                    openingOverlay.style.display = "none";
+                    document.body.classList.remove("no-scroll"); 
+                    lenis.start(); 
+                    startScrollFadeIn();
+                }, 700);
+            }, 500);
+        }
+    }
+    typeText();
+
+    function startScrollFadeIn() {
+        const targets = document.querySelectorAll(".fade-up");
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add("visible");
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { rootMargin: '0px 0px -100px 0px' }); 
+        targets.forEach(el => observer.observe(el));
+    }
+    
+    // Bubbles
+    let lastScrollY = 0;
+    const unifiedBubbles = document.getElementById('unified-bubbles-background');
+    
+    function getRandom(min, max) { return Math.random() * (max - min) + min; }
+    
+    function createBubble(container, initialY, offsetCompensation = 0) { 
+        if (!container || !section1 || !section2) return; 
+        const bubble = document.createElement('div');
+        bubble.classList.add('bubble');
+        const size = getRandom(10, 25);
+        const x = getRandom(0, 100); 
+        bubble.style.width = `${size}px`;
+        bubble.style.height = `${size}px`;
+        bubble.style.left = `${x}%`;
+        let relativeTop = initialY - oceanContainerTop + offsetCompensation;
+        bubble.style.top = `${relativeTop - getRandom(0, size * 2)}px`; 
+        
+        if (initialY < section1EndAbsolute) bubble.classList.add('bubble-works-color');
+        else bubble.classList.add('bubble-profile-color');
+        
+        setTimeout(() => bubble.style.opacity = getRandom(0.4, 1), getRandom(0, 500));
+        container.appendChild(bubble);
+    }
+    
+    function initializeBubbles(container) {
+        if (!container) return;
+        container.innerHTML = '';
+        const initialRange = window.innerHeight * 3; 
+        for (let i = 0; i < 20; i++) { 
+            const initialY = oceanContainerTop + getRandom(0, initialRange);
+            createBubble(container, initialY, 0); 
+        }
+    }
+    
+    function removeOldBubbles(container, moveY) {
+        if (!container) return;
+        const bubbles = container.querySelectorAll('.bubble');
+        bubbles.forEach(bubble => {
+            if (parseFloat(bubble.style.top) + moveY < -window.innerHeight * 2) bubble.remove();
+        });
+    }
+    
+    let lastGenerateScroll = 0; 
+    function updateBubblePosition() {
+        const currentScrollY = window.scrollY; 
+        if (currentScrollY >= lastScrollY) {
+            const moveY = -(currentScrollY * 0.65); 
+            if (unifiedBubbles) unifiedBubbles.style.transform = `translateY(${moveY}px)`;
+            
+            if (currentScrollY - lastGenerateScroll >= 80) {
+                createBubble(unifiedBubbles, currentScrollY + window.innerHeight + 50, -moveY); 
+                removeOldBubbles(unifiedBubbles, moveY);
+                lastGenerateScroll = currentScrollY;
+            }
+        } 
+        lastScrollY = currentScrollY;
+        requestAnimationFrame(updateBubblePosition);
+    }
+
+    // Bioluminescence (Triggered after Submit)
+    const bioluminescenceContainer = document.getElementById('bioluminescence-container');
+    function createLightParticle() {
+        if (!bioluminescenceContainer) return;
+        const particle = document.createElement('div');
+        particle.classList.add('biolum-particle');
+        const y = getRandom(0, bioluminescenceContainer.offsetHeight);
+        const x = getRandom(0, 100); 
+        particle.style.top = `${y}px`;
+        particle.style.left = `${x}%`;
+        const size = getRandom(4, 12);
+        particle.style.width = `${size}px`;
+        particle.style.height = `${size}px`;
+        bioluminescenceContainer.appendChild(particle);
+        const lifeDuration = getRandom(1, 5); 
+        particle.style.animation = `biolum-float 2s ease-out forwards, slowFadeFlash ${lifeDuration}s ease-in-out forwards`;
+        setTimeout(() => particle.remove(), lifeDuration * 1000); 
+    }
+    
+    function initializeBioluminescence() {
+        if (!bioluminescenceContainer) return;
+        // 既存のsetIntervalをクリアし、多重起動を防ぐ処理は含めず、シンプルに維持します
+        setInterval(createLightParticle, 1500);
+    }
+    
+    function handleScrollOptimized() {
+        const nav = document.getElementById('nav-bar');
+        if (window.scrollY >= firstViewHeight) nav.classList.add('fixed');
+        else nav.classList.remove('fixed');
+    }
+
+    window.addEventListener('load', () => {
+        cacheGeometry(); 
+        if (oceanContainer) {
+            initializeBubbles(unifiedBubbles);
+            requestAnimationFrame(updateBubblePosition);
+        }
+    });
+    
+    window.addEventListener('scroll', handleScrollOptimized);
+    
+    // Anchor Links
+    document.querySelectorAll('#nav-bar a, .btn-area a').forEach(link => {
+        if (link.hash && link.hash.startsWith('#section')) {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.hash;
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    lenis.scrollTo(targetElement, { offset: -60, duration: 6.0 });
+                }
+            });
+        }
+    });
+});
+</script>
 
 </body>
 </html>
-
