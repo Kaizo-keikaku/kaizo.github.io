@@ -59,7 +59,7 @@
 
         /* 各セクション共通 */
         #home {
-            height: 100vh; display: flex; justify-content: center; align-items: center; position: relative; text-align: center; background-color: var(--bg-color-home); 
+            height: 100vh; display: flex; justify-content: center; align-items: center; position: relative; text-align: center; background-color: var(--bg-color-home);padding-top: var(--header-height); 
         }
         .subtitle { font-size: 1.2rem; color: #666; margin-top: 5px; display: block; text-align: center; }
         .concept-text { font-size: 1.1rem; margin-top: 30px; line-height: 1.8; text-align: center; }
@@ -189,7 +189,7 @@
                 <h2 class="section-title fade-up">Q1. 引換希望について</h2>
                 <div class="question-form">
                     <div class="question-group fade-up">
-                        <p class="question-text">Q1-1. オフラインイベントで紙本の『出血』の受け取りを希望しますか？</p>
+                        <p class="question-text">オフラインイベントで紙本の『出血』の受け取りを希望しますか？</p>
                         <div class="radio-group">
                             <label><input type="radio" name="exchange_hope" value="はい" required><span class="custom-radio"></span>はい</label>
                             <label><input type="radio" name="exchange_hope" value="いいえ"><span class="custom-radio"></span>いいえ</label>
@@ -207,7 +207,7 @@
                 <h2 class="section-title fade-up">Q2. 受取イベントについて</h2>
                 <div class="question-form">
                     <div class="question-group fade-up">
-                        <p class="question-text">Q2-1. どのイベントで受け取りますか？</p>
+                        <p class="question-text">どのイベントで受け取りますか？</p>
                         <div class="radio-group">
                             <label><input type="radio" name="receive_event" value="ZINEフェス東京" required><span class="custom-radio"></span>ZINEフェス東京</label>
                             <label><input type="radio" name="receive_event" value="その他"><span class="custom-radio"></span>その他</label>
@@ -227,8 +227,8 @@
                 <div class="question-form">
                     <div class="question-group fade-up">
                         <p class="question-text">
-                            Q3-1. 最後に、会場での本人確認に必要な合言葉を設定します。<br>
-                            好きな詩を、その作者と共に教えてください。
+                            最後に、会場での本人確認に必要な合言葉を設定します。<br>
+                            好きな詩を、その作者名と共に教えてください。
                         </p>
                         <input type="text" id="passphrase" name="passphrase" 
                                placeholder="例）黒田三郎『賭け』" required minlength="5">
@@ -237,7 +237,7 @@
                     </div>
                     
                     <div class="btn-area">
-                        <button type="button" id="final-submit-btn" class="btn">登録を完了する</button>
+                        <button type="button" id="final-submit-btn" class="btn">登録</button>
                     </div>
                 </div>
             </div>
