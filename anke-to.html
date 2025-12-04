@@ -202,19 +202,22 @@
         
         <section id="section2">
             <div class="container site-content">
-                <h2 class="section-title fade-up">Q2. 受取イベントについて</h2>
-                <div class="question-form">
-                    <div class="question-group fade-up">
-                        <p class="question-text">どのイベントで受け取りますか？</p>
-                        <div class="radio-group">
-                            <label><input type="radio" name="receive_event" value="ZINEフェス東京" required><span class="custom-radio"></span>ZINEフェス東京</label>
-                            <label><input type="radio" name="receive_event" value="その他"><span class="custom-radio"></span>その他</label>
-                        </div>
-                    </div>
+                <div class="radio-group">
+                    <label>
+                        <input type="radio" name="receive_event" value="ZINEフェス東京" required>
+                        <span class="custom-radio"></span>ZINEフェス東京(2026/1/10)
+                    </label>
+                    <label id="other-event-label">
+                        <input type="radio" name="receive_event" value="" id="radio-other-event">
+                        <span class="custom-radio"></span>その他（上記以外のイベントへの参加は未定です。もしよろしければ、あなたが来場されるご予定のイベントを入力してください）
+                    </label>
                 </div>
-                <div class="btn-area fade-up">
-                    <a href="#section3" class="btn">次に進む(2/3)</a>
-                </div>
+                <textarea id="other-event-input" 
+                          name="other_event_text" 
+                          placeholder="例）文学フリマ東京43" 
+                          rows="2" 
+                          style="display: none; margin-top: 20px;"></textarea>
+                
             </div>
         </section>
         
@@ -246,7 +249,7 @@
                 <h2 class="section-title fade-up">登録完了</h2>
                 <p class="fade-up" style="max-width: 600px; margin: 0 auto; text-align: center;">
                     ご登録いただき、ありがとうございます。<br>
-                    "合言葉"は、イベント会場での引換時に必要となります。<br>
+                    "合言葉"は、イベント会場での受け取りの際に必要となります。<br>
                     大切に保管してください。<br>
                     <br>
                     当日、会場にてお会いできるのを楽しみにしています。
@@ -278,15 +281,17 @@ document.addEventListener("DOMContentLoaded", () => {
         // 各質問の entry.xxxxxx ID
         ids: {
             exchange_hope: "entry.187432404", // Q1. 引換希望 (はい/いいえ)
-            receive_event: "entry.595917821", // Q2. イベント
+            receive_event: "entry.595917821", // Q2. イベント (選択肢のID)
             passphrase:    "entry.526670925", // Q3. 合言葉
-            user_code:     "entry.249561107"  // User Code (code=xxx)
+            user_code:     "entry.249561107",  // User Code (code=xxx)
+            
+            // ✅ 修正済み: Q2. 「その他」入力欄の entry.id
+            receive_event_other: "entry.595917821.other_option_response" 
         }
     };
     // ==========================================
 
     // --- User Code の自動取得 ---
-    // 既存のコード取得部分を以下のように修正・拡張します
     let currentUserCode = "";
     const urlParams = new URLSearchParams(window.location.search);
     const codeParam = urlParams.get('code');
@@ -326,20 +331,41 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     // ==========================================
 
+    // 💡 【維持】Q2の入力制御ロジック
+    const radioOtherEvent = document.getElementById('radio-other-event');
+    const otherEventInput = document.getElementById('other-event-input');
+    const receiveEventRadios = document.querySelectorAll('input[name="receive_event"]');
+
+    if (radioOtherEvent && otherEventInput) {
+        receiveEventRadios.forEach(radio => {
+            radio.addEventListener('change', () => {
+                if (radio.id === 'radio-other-event' && radio.checked) {
+                    otherEventInput.style.display = 'block';
+                    otherEventInput.setAttribute('required', 'required');
+                    otherEventInput.focus();
+                } else {
+                    otherEventInput.style.display = 'none';
+                    otherEventInput.removeAttribute('required');
+                    otherEventInput.value = ''; 
+                }
+            });
+        });
+        
+        if (!radioOtherEvent.checked) {
+            otherEventInput.style.display = 'none';
+        }
+    }
+    // 💡 【/維持】Q2の入力制御ロジック
+
     // --- 送信ボタンの制御 (JSで手動送信) ---
     const submitBtn = document.getElementById('final-submit-btn');
     const errorMessage = document.getElementById('error-message');
     const section3 = document.getElementById('section3');
     const section4 = document.getElementById('section4');
     
-    // 💡 jQueryが読み込まれていない場合のチェック
-    if (typeof jQuery === 'undefined') {
-        console.error("jQueryが読み込まれていません。Google Formsの送信にはjQueryが必要です。HTMLの<head>タグでjQueryのCDNを読み込んでください。");
-    }
-
     // 処理成功時の共通ロジックを関数化
     function handleSuccess() {
-        // CORSエラーにより、コンソールにはエラー（statusCode 0/200の成功）が表示されますが、フォーム送信が機能していればOKです
+        // CORSエラーにより、コンソールにはエラー（statusCode 0/200の成功）が表示されることがありますが、フォーム送信が機能していればOKです
         console.log("Google Forms送信処理完了 (statusCode: 0または200)");
         
         // 入力画面(Section3)を非表示にする
@@ -356,21 +382,48 @@ document.addEventListener("DOMContentLoaded", () => {
         initializeBioluminescence();
     }
 
-
-    if (submitBtn) {
+if (submitBtn) {
         submitBtn.addEventListener('click', () => { 
+            // 処理を始める前にjQueryが存在するか確認
             if (typeof jQuery === 'undefined') {
-                 errorMessage.style.display = 'block';
-                 errorMessage.textContent = "※送信エラー: jQueryライブラリが読み込まれていません。";
+                const errorMessage = document.getElementById('error-message');
+                errorMessage.style.display = 'block';
+                errorMessage.textContent = "※送信エラー: ページのロード中に問題が発生しました。時間をおいて再度お試しください。";
                  return;
             }
             
+            const errorMessage = document.getElementById('error-message');
+
             // 1. バリデーション（入力チェック）
             const q1 = document.querySelector('input[name="exchange_hope"]:checked');
-            const q2 = document.querySelector('input[name="receive_event"]:checked');
+            const q2Radio = document.querySelector('input[name="receive_event"]:checked');
             const q3 = document.getElementById('passphrase');
-
-            if (!q1 || !q2 || !q3.value || q3.value.length < 5) {
+            const otherEventInput = document.getElementById('other-event-input');
+            
+            // Q2の回答値の初期設定
+            let q2ValueForSelect = q2Radio ? q2Radio.value : null; // Q2のラジオボタンの選択値
+            let q2ValueForOther = null; // 「その他」入力欄の値
+            
+            // 【✅ 修正箇所: 「その他」選択時の処理】
+            if (q2Radio && q2Radio.value === '') { 
+                // カスタム入力欄が空でないかチェック
+                if (!otherEventInput || !otherEventInput.value.trim() || otherEventInput.value.trim().length < 1) { 
+                    errorMessage.style.display = 'block';
+                    errorMessage.textContent = "※すべての項目を選択し、合言葉とその他イベント名を正しく入力してください。";
+                    return; 
+                }
+                
+                // 💡 選択肢のIDに渡す固定値
+                q2ValueForSelect = '__other_option__'; 
+                // 💡 自由記述のIDに渡す入力内容
+                q2ValueForOther = otherEventInput.value.trim(); 
+            } else {
+                q2ValueForOther = undefined;
+            }
+            // 【✅ 修正箇所: 終了】
+            
+            // メインのバリデーション
+            if (!q1 || !q2Radio || !q3.value || q3.value.length < 5) {
                 errorMessage.style.display = 'block';
                 errorMessage.textContent = "※すべての項目を選択し、合言葉を5文字以上入力してください。";
                 return; // ここで処理を中断（送信しない）
@@ -382,56 +435,50 @@ document.addEventListener("DOMContentLoaded", () => {
             submitBtn.disabled = true; 
 
             // 3. フォームデータの作成 (jQuery.ajax用)
-            // Google Formsは 'application/x-www-form-urlencoded' 形式のデータを期待します
             const submitData = {};
             submitData[GOOGLE_FORM_CONFIG.ids.exchange_hope] = q1.value;
-            submitData[GOOGLE_FORM_CONFIG.ids.receive_event] = q2.value;
+            
+            // 【✅ 修正箇所: Q2のデータを設定】
+            submitData[GOOGLE_FORM_CONFIG.ids.receive_event] = q2ValueForSelect; // 選択肢のIDに値を設定
+            
+            // 💡 自由記述の内容が存在する場合のみ、その entry.id を追加
+            if (q2ValueForOther) {
+                // receive_event_other に、新しいIDを適用
+                submitData[GOOGLE_FORM_CONFIG.ids.receive_event_other] = q2ValueForOther;
+            }
+            // 【✅ 修正箇所: 終了】
+            
             submitData[GOOGLE_FORM_CONFIG.ids.passphrase]    = q3.value;
             submitData[GOOGLE_FORM_CONFIG.ids.user_code]     = currentUserCode;
             
-            // 💡 修正点: 400 Bad Requestエラー回避のため、pageHistoryフィールドを追加
-            submitData['pageHistory'] = '0';
-
-            // ==========================================
-            // 【💡デバッグ用コードの追加💡】
-            // 送信内容とURLパラメータをコンソールに出力します
-            // ==========================================
+            // 400 Bad Requestエラー回避のため、pageHistoryフィールドを追加
+            submitData['pageHistory'] = '0'; 
+            
             console.log("--- フォーム送信データ (jQuery Data) ---");
             console.log(submitData);
             console.log("-------------------------------------");
-            console.log(`現在のURLクエリパラメータ 'code': ${currentUserCode}`);
-            console.log("-------------------------------------");
-            // ==========================================
 
             // 4. Googleフォームへ送信 (jQuery.ajax)
-            // dataType: "xml" とすることで、CORSエラーが発生しても送信自体は機能させます
-            $.ajax({
-                url: GOOGLE_FORM_CONFIG.actionUrl,
+            jQuery.ajax({
+                url: GOOGLE_FORM_CONFIG.actionUrl, // actionUrlを使用
                 data: submitData,
                 type: "POST",
-                dataType: "xml", 
-                
-                // statusCode: 0 はCORSエラーによる応答なしを意味し、送信成功とみなします
+                dataType: "xml",
                 statusCode: {
                     0: function() {
-                        // 5. 送信成功後の演出（画面切り替え）
-                        handleSuccess();
+                        handleSuccess(); 
                     },
                     200: function() {
-                        // 5. 送信成功後の演出（画面切り替え）
-                        handleSuccess();
+                        handleSuccess(); 
                     }
                 },
-                error: function(jqXHR, textStatus, errorThrown) {
-                    // statusCode 0/200 以外で通信エラーが起きた場合の最終的なエラーハンドリング
-                    if (textStatus !== 'abort') { 
-                        console.error("Submission error:", textStatus, errorThrown);
-                        // 400 Bad Requestもこのエラーに入る可能性があります
-                        errorMessage.style.display = 'block';
-                        errorMessage.textContent = "送信エラーが発生しました。時間を置いて再度お試しください。";
-                        submitBtn.textContent = "登録を完了する"; 
-                        submitBtn.disabled = false;
-                    }
+                error: function(xhr, status, error) {
+                    console.error("Submission error:", status, error);
+                    // エラーメッセージの表示
+                    errorMessage.style.display = 'block';
+                    errorMessage.textContent = "※送信エラーが発生しました。時間をおいて再度お試しください。";
+                    submitBtn.textContent = "登録";
+                    submitBtn.disabled = false;
                 }
             });
         });
