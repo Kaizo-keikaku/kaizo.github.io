@@ -275,6 +275,7 @@ p { margin-bottom: 20px; text-align: justify; }
 #section2 .btn, #section3 .btn, #section4 .btn ,#final-submit-btn{
     color: var(--text-color-light);
     border-color: var(--text-color-light);
+    background-color: transparent;
 }
 
 #section2 .btn:hover, #section3 .btn:hover, #section4 .btn:hover {

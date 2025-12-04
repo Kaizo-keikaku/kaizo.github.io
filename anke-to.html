@@ -168,7 +168,7 @@
                 （所要時間：約1分）
             </p>
             <div class="btn-area">
-                <a href="#section1" class="btn">引換登録開始</a>
+                <a href="#section1" class="btn">登録開始</a>
             </div>
         </div>
         <div class="scroll-indicator">scroll &rarr;</div>
@@ -189,7 +189,7 @@
                 <h2 class="section-title fade-up">Q1. 引換希望について</h2>
                 <div class="question-form">
                     <div class="question-group fade-up">
-                        <p class="question-text">Q1-1. オフラインイベントで紙本の受け取りを希望しますか？</p>
+                        <p class="question-text">Q1-1. オフラインイベントで紙本の『出血』の受け取りを希望しますか？</p>
                         <div class="radio-group">
                             <label><input type="radio" name="exchange_hope" value="はい" required><span class="custom-radio"></span>はい</label>
                             <label><input type="radio" name="exchange_hope" value="いいえ"><span class="custom-radio"></span>いいえ</label>
@@ -227,16 +227,16 @@
                 <div class="question-form">
                     <div class="question-group fade-up">
                         <p class="question-text">
-                            Q3-1. 会場での本人確認に必要な合言葉を設定してください。<br>
-                            （5文字以上）
+                            Q3-1. 最後に、会場での本人確認に必要な合言葉を設定します。<br>
+                            好きな詩を、その作者と共に教えてください。
                         </p>
                         <input type="text" id="passphrase" name="passphrase" 
-                               placeholder="5文字以上の合言葉を入力" required minlength="5">
+                               placeholder="例）黒田三郎『賭け』" required minlength="5">
                         <p id="error-message" style="color: #ff9999; font-size: 0.9rem; display: none; margin-top: 10px;">
                             </p>
                     </div>
                     
-                    <div class="btn-area fade-up">
+                    <div class="btn-area">
                         <button type="button" id="final-submit-btn" class="btn">登録を完了する</button>
                     </div>
                 </div>
@@ -248,7 +248,7 @@
                 <h2 class="section-title fade-up">登録完了</h2>
                 <p class="fade-up" style="max-width: 600px; margin: 0 auto; text-align: center;">
                     ご登録いただき、ありがとうございます。<br>
-                    設定いただいた**合言葉**は、イベント会場での引換時に必要となります。<br>
+                    設定いただいた"合言葉"は、イベント会場での引換時に必要となります。<br>
                     大切に保管してください。<br>
                     <br>
                     当日、会場にてお会いできるのを楽しみにしています。
@@ -301,6 +301,32 @@ document.addEventListener("DOMContentLoaded", () => {
         currentUserCode = codeParam;
         isValidAccess = true;
     }
+    // ==========================================
+    // 💡 修正・追加ロジック: アクセス制御 
+    // ==========================================
+    const accessErrorSection = document.getElementById('access-error');
+    const homeSection = document.getElementById('home');
+    const unifiedOceanContainer = document.getElementById('unified-ocean-container');
+    const navBar = document.getElementById('nav-bar');
+
+    if (!isValidAccess) {
+        // アクセスが不正な場合
+        accessErrorSection.style.display = 'flex'; // エラー画面を表示
+        accessErrorSection.classList.add('visible'); // フェードインアニメーション用
+
+        // メインコンテンツを非表示にする
+        homeSection.style.display = 'none';
+        unifiedOceanContainer.style.display = 'none';
+        
+        // ナビゲーションバーの色をエラー画面に合わせる（任意）
+        navBar.style.backgroundColor = 'var(--bg-color-home)'; 
+        navBar.classList.remove('fixed'); // 固定ナビを解除（不要な場合）
+
+        // 以降のフォーム送信やスクロールアニメーション処理を全て中断するため return
+        console.log("Access Denied: Invalid or missing 'code' parameter.");
+        return; 
+    }
+    // ==========================================
 
     // --- 送信ボタンの制御 (JSで手動送信) ---
     const submitBtn = document.getElementById('final-submit-btn');
