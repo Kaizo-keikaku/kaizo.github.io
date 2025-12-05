@@ -1,2 +1,3 @@
 User-agent: *
 Disallow:
+Sitemap: https://kaizo-keikaku.github.io/kaizo.github.io/sitemap.xml
