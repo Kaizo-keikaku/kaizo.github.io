@@ -16,10 +16,27 @@
     <meta name="twitter:card" content="summary_large_image"> 
     <meta name="twitter:site" content="@katsupan_hanto">
     <!-- Google Tag Manager -->
-     <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-NRNC954P');</script>
+     <script>
+        function loadGTM() {
+    if (window.gtmLoaded) return; // 既に実行済みの場合は終了
+    window.gtmLoaded = true;
+
+    (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-NRNC954P');
+
+    // GTMのnoscriptタグも、bodyの先頭から移動させます。
+    const noscriptGTM = document.getElementById('gtm-noscript-container');
+    if(noscriptGTM) noscriptGTM.innerHTML = `<iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NRNC954P" height="0" width="0" style="display:none;visibility:hidden"></iframe>`;
+}
+
+// ユーザー操作やアイドル時に読み込みを開始
+['touchstart', 'mousemove', 'scroll', 'click'].forEach(event => 
+    document.addEventListener(event, loadGTM, { once: true, passive: true })
+);
+window.addEventListener('load', () => setTimeout(loadGTM, 3000)); // 3秒後にも保険で実行
+     </script>
 <!-- End Google Tag Manager -->
     <style>
         @font-face {
