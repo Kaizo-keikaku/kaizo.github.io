@@ -168,6 +168,7 @@ a:not(.btn):hover {
     padding-left: 20px;
     border-left: 3px solid #ddd;
     margin-bottom: 20px;
+    list-style-type: none;
 }
 
 #event .event-date, #event .event-detail {
