@@ -3,186 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>海象 第1号 試し読み</title>
-    <!-- メインスタイル（フォントや色変数の継承用） -->
-    <link rel="stylesheet" href="style.css">
-    <!-- 試し読み専用スタイル -->
+    <title>作品試し読み | 文学サークル公式サイト</title>
     <link rel="stylesheet" href="style2.css">
-    <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.19/bundled/lenis.min.js" defer></script>
 </head>
-<body class="sample-page">
-
-    <!-- 波のアニメーション用オーバーレイ -->
-    <div id="wave-overlay">
-        <svg class="wave-shape" viewBox="0 0 100 100" preserveAspectRatio="none">
-            <path id="wave-path" d="M100,0 V100 H0 V0 Z" fill="#1d3a4e" />
-        </svg>
-    </div>
-
-    <!-- 本のビューポート -->
-    <div id="book-viewport">
-        <!-- コンテンツコンテナ（ページ送りで移動する要素） -->
-        <div id="book-content">
-            
-            <!-- 本文開始 -->
-            <div class="text-body">
-                <h1 class="in-text-title">水面を叩くもの（抜粋）</h1>
-                <p class="in-text-author">潮見</p>
-
-                <p>　街はつい先刻まで、白い光の中に浮いていた。鏡張りの水面が生み出すもう一つの太陽と、ひとりでに煌めく化粧漆喰の壁たち。そこかしこに在る恒星が、輪郭の無い世界を創り出して、遊んでいた。例え頭上の太陽が、別格の威厳を以ってこの瞳を刺そうとも、私にはその眺めだけが真実だった。光は終着点を失い、やがて空気中に溶け出す。そして、街全体がぼんやりと浮き上がる。八月のヴェネツィアとは、そんな所だ。薄目を開けて実際に空を見上げたら、眼窩の奥まで眩しさがじんと沁みて、少しだけ叱られたような気分になった。</p>
-                <p>　二〇〇三年八月二六日、日暮は唐突だった。まだ先月の話である。私は雑誌記事の取材の為、前の晩遅く、ヴェネツィアに来ていた。翌日には映画祭が幕を開けようとしていた。陽が隠れきってもいないのに、ひどく眠かったのを憶えている。経線の引かれた地球儀が目蓋によぎり、それもそうか、と宿に戻ることにした。日本は丑三つ時に差し掛かろうかという頃だった。</p>
-                <p>「日本人ですか」</p>
-                <p>　宿に戻る途中、水路沿いの細い路地を駆けには違いないので、素直に答えを返した。男は「ああ、よかった」と呟いて上体を起こすと、ぐっと私の両肩を掴んで、</p>
-                <p>「蔵前監督が亡くなりましたよ」</p>
-                <p>　と言い、またヴェネツィアの街へ駆け出した。殆ど叱るような強さだった。だが、不思議に馴れ馴れしくは感じなかった。</p>
-                <p>　蔵前良一。ここヴェネツィアでも、映画監督にとって最高の栄誉である金獅子を獲得した巨匠である。彼は長年に亘って日本映画界を牽引してきた。金獅子を獲ったのも、一七年前のことだった。そうか、蔵前良一は死んだのか。亡くなって嘆くような年齢でもないし、新作を期待していた訳でもない。それでも、祭典が始まろうという折での訃報には驚いた。それも、二年前と同じ、この水の都で。あれが最後か、とも思った。私はしばらくその場に座り込んで、対岸を走る先程の男を目で追いかけていた。離れて見ると、男は喜劇俳優のように滑稽な身振りをしていた。</p>
-                <p>　二年前、蔵前の遺作となる「涜職」は、ここヴェネツィアで上映された。私は、観客の一人としてそこにいた。上映が終わった後、息を、その場にいた全員が深く息を吸い込んだ。その反動からか、次の瞬間、暴風雨のようなアプローズが起こった。私はひとり、重力に逆らうことができずに、座席に沈んでいた。あのような熱狂を見上げることは、もうできないであろう。それが、蔵前良一の死が意味することだった。</p>
-                <p>　だが、この世紀の傑作が公式に上映されたのは、一度きりだった。</p>
-                <p>「蔵前良一、ヴェネツィアで七分超のスタンディングオベーションを受ける」</p>
-                <p>　この見出しこそ日本にも届いたが、次に話題を攫ったのは、この映画を「いかなる劇場においても公開しない」とする映倫、他当局の共同声明だった。「風紀の乱れを危惧しての事」と短く理由が添えられた。あれが、最後の作品になってしまった。偉大な監督の遺作だが、それを見ることができたのは、あの時メインホールに集まった一〇〇〇人強だけだった。</p>
-                <p>　モネの描いた、燃えるような黄昏の中を帰るとき、私は幾度か道行く人に話しかけられた。その大半が日本人でも、映画祭の関係者でもなかった。励ます者、敬意を示す者、共に嘆こうとする者。彼らの表現は皆違っていたが、見知らぬ者に口を開いた、その原動力は同じなのだろう。水際から離れる方向に折れて、ようやく一人になった。矢先に見た眺めを「夕焼けが作り出す街の景色が悲しい」とはこんな感じだろうかと、思い出す。そんな風に言う人を知っているのだ。正確には、そんな風に書かれた文章を知っている。私は夕焼けに浸る街並みを愛おしく思うが、その人は悲しすぎるから嫌いだと言っていた。今は、それが分かる気がする。鋭い光を放っていたさっきの白壁が嘘のように、今はただ赤い陽光を受けている。ひとつひとつの住居や物が、くっきりと輪郭を取り戻して、整然と在るべき所へ片付けられていくような悲しさを感じる。</p>
-                <p>　宿に着いて、すぐにベッドに潜り込んだが、眠気はどこかに消えていた。昂る神経は、二年前の出来事を追いはじめていた。「涜職」が上映された後、映画記者としてのあらゆるコネを辿り、公開を停止するよう勧告したのは、他ならぬ私なのである。今でも、あれが公開されるべきだとは思わない。だが、映画界にとっての宝をひとつ、観客から奪ってしまったことに、何も思わないわけにもいかない。蔵前の死を前にして、私は何か、自身の知りえる全てを開示する義務があるのではないかという気持ちに囚われていた。</p>
-                <p>　シネフィルの間では、銃撃シーンで映る屍の山に、蔵前の指示で本物の死体を使用したという噂が定説となりつつあった。都市伝説好きは、助演を務めた大場正志が映画の完成を見ずに亡くなってしまったことを取り上げ、呪われた映画だという主張が盛んにした。どちらも、当たらずとも遠からず、である。その晩は、私にのしかかる真相の重みを抱きながら、眠りに落ちてしまった。</p>
-                
-                <div class="end-mark">
-                    <p>***</p>
-                    <p>（続きは本誌にて）</p>
-                    <a href="index.html" class="back-btn">トップに戻る</a>
-                </div>
-            </div>
-        </div>
-
-        <!-- ページ送りのヒント -->
-        <div class="nav-hint hint-prev">← 次のページ</div>
-        <div class="nav-hint hint-next">前のページ →</div>
-        <div class="page-number"><span id="current-page">1</span> / <span id="total-pages">1</span></div>
+<body>
+<div class="viewer">
+        <article class="content" id="main-content">
+            <p>読み込み中...</p>
+        </article>
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const viewport = document.getElementById('book-viewport');
-            const content = document.getElementById('book-content');
-            const waveOverlay = document.getElementById('wave-overlay');
-            const wavePath = document.getElementById('wave-path');
-            const pageNumEl = document.getElementById('current-page');
-            const totalNumEl = document.getElementById('total-pages');
-            
-            // 縦書き（右から左）なので、インデックスが増える＝左へ移動（translateXがプラスになる想定）
-            // ※CSSで column-width: 100vw を指定し、縦書きにすると、
-            // コンテンツは右端を基準に左へ伸びていきます（座標的にはマイナス方向）。
-            // したがって、ページを進める（左のページを見る）には、コンテナを「右」へ移動させる必要があります。
-            
-            let currentPage = 0;
-            let totalPages = 1;
-            let pageWidth = window.innerWidth;
-            let isAnimating = false;
+        const viewer = document.querySelector('.viewer');
+        const contentArea = document.getElementById('main-content');
 
-            // 初期化とリサイズ対応
-            function initLayout() {
-                pageWidth = window.innerWidth;
-                // スクロール幅から総ページ数を計算
-                // 縦書き(vertical-rl)の場合、scrollWidthは全体の横幅
-                const totalWidth = content.scrollWidth;
-                totalPages = Math.ceil(totalWidth / pageWidth);
-                totalNumEl.textContent = totalPages;
-                updatePosition(false);
+        // 1. マウスホイール制御（逆方向：上スクロールで左へ、下スクロールで右へ）
+        viewer.addEventListener('wheel', (e) => {
+            if (e.deltaY !== 0) {
+                e.preventDefault();
+                viewer.scrollBy({
+                    left: -e.deltaY, 
+                    behavior: 'auto'
+                });
+            }
+        }, { passive: false });
+
+        // 2. クエリパラメータによるファイル読み込み
+        async function loadText() {
+            const params = new URLSearchParams(window.location.search);
+            const workId = params.get('work'); // "1" や "2" を取得
+
+            if (!workId) {
+                contentArea.innerHTML = '<h2>エラー</h2><p>作品が指定されていません。</p>';
+                return;
             }
 
-            // ページ位置の更新
-            function updatePosition(animate = true) {
-                // vertical-rlの場合、通常は右端が0、左へ行くほどマイナス座標（ブラウザによるが、transformで制御するのが確実）
-                // ページ1 (index 0): 0px
-                // ページ2 (index 1): 100vw 右へずらす (左にあるコンテンツを画面に入れるため)
-                const offset = currentPage * pageWidth;
+            // IDを2桁の形式に整形（1 -> 01, 2 -> 02）
+            const formattedId = workId.padStart(2, '0');
+            const fileName = `work_${formattedId}.txt`;
+
+            try {
+                const response = await fetch(fileName);
+                if (!response.ok) throw new Error('File not found');
                 
-                if (animate) {
-                    // アニメーション中はJS側ではtransformせず、波のアニメーション完了に合わせてDOMを操作する手もあるが
-                    // ここでは波が画面を覆っている間に瞬時に切り替える
-                    setTimeout(() => {
-                        content.style.transform = `translateX(${offset}px)`;
-                        pageNumEl.textContent = currentPage + 1;
-                    }, 400); // 波が画面を覆うタイミング（CSSのアニメーション速度に合わせる）
-                } else {
-                    content.style.transform = `translateX(${offset}px)`;
-                    pageNumEl.textContent = currentPage + 1;
-                }
+                const text = await response.text();
+
+                // テキストを整形して流し込む
+                // 改行（\n）で分割し、空行を除いてそれぞれを <p> タグで包む
+                const paragraphs = text.split(/\n+/).map(line => {
+                    return `<p>${line.trim()}</p>`;
+                }).join('');
+
+                contentArea.innerHTML = paragraphs;
+
+            } catch (error) {
+                contentArea.innerHTML = `<h2>エラー</h2><p>ファイル（${fileName}）が見つからないか、読み込めませんでした。</p>`;
             }
+        }
 
-            // 波のアニメーション処理
-            function triggerWave(direction) {
-                if (isAnimating) return;
-                isAnimating = true;
-                
-                // 波のクラスを付与してCSSアニメーション開始
-                waveOverlay.classList.remove('animate-next', 'animate-prev');
-                
-                // 強制リフロー（アニメーション再点火用）
-                void waveOverlay.offsetWidth;
-
-                if (direction === 'next') {
-                    waveOverlay.classList.add('animate-next');
-                } else {
-                    waveOverlay.classList.add('animate-prev');
-                }
-
-                // アニメーション終了後にクリーンアップ
-                setTimeout(() => {
-                    isAnimating = false;
-                    waveOverlay.classList.remove('animate-next', 'animate-prev');
-                }, 1000); // CSSのtransition時間と合わせる
-            }
-
-            // クリック/タップ判定
-            viewport.addEventListener('click', (e) => {
-                // ボタンなどのクリックは無視
-                if (e.target.closest('a')) return;
-
-                const clickX = e.clientX;
-                const center = window.innerWidth / 2;
-
-                // 縦書きの本なので、左側クリック＝次のページ（ページをめくる）、右側クリック＝前のページ
-                if (clickX < center) {
-                    // 次のページへ
-                    if (currentPage < totalPages - 1) {
-                        triggerWave('next');
-                        currentPage++;
-                        updatePosition(true);
-                    }
-                } else {
-                    // 前のページへ
-                    if (currentPage > 0) {
-                        triggerWave('prev');
-                        currentPage--;
-                        updatePosition(true);
-                    }
-                }
-            });
-
-            // キーボード操作
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'ArrowLeft') {
-                    if (currentPage < totalPages - 1) {
-                        triggerWave('next');
-                        currentPage++;
-                        updatePosition(true);
-                    }
-                } else if (e.key === 'ArrowRight') {
-                    if (currentPage > 0) {
-                        triggerWave('prev');
-                        currentPage--;
-                        updatePosition(true);
-                    }
-                }
-            });
-
-            // 初期化実行
-            window.addEventListener('load', initLayout);
-            window.addEventListener('resize', () => {
-                // リサイズ時はアニメーションなしで再計算
-                initLayout();
-            });
-        });
+        loadText();
     </script>
 </body>
 </html>
 
+</body>
+</html>

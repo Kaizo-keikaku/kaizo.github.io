@@ -1,228 +1,62 @@
-@charset "UTF-8";
-
-/* --- 基本設定 --- */
-.sample-page {
+/* 全体のリセット */
+* {
     margin: 0;
     padding: 0;
-    width: 100vw;
-    height: 100vh;
-    overflow: hidden; /* スクロール禁止 */
-    background-color: var(--bg-color-home, #f4f1ea);
-    color: var(--text-color-dark, #040a23);
-    font-family: 'Zen Old Mincho Subset', serif;
-    position: relative;
-}
-
-/* --- ビューポートとコンテンツ --- */
-#book-viewport {
-    width: 100%;
-    height: 100%;
-    position: relative;
-    overflow: hidden;
-    cursor: pointer; /* クリック可能であることを示す */
-}
-
-#book-content {
-    /* 縦書き設定 */
-    writing-mode: vertical-rl;
-    text-orientation: mixed;
-    
-    /* コンテナの高さは画面いっぱい */
-    height: 100vh;
-    width: auto; /* 横幅は中身に応じて広がる */
-    
-    /* ページネーションのキモ：CSS Columns */
-    /* 画面幅（100vw）ごとにカラムを切ることで、擬似的なページを作る */
-    column-width: 100vw;
-    column-gap: 0;
-    column-fill: auto;
-    
-    /* 配置 */
-    position: absolute;
-    top: 0;
-    right: 0; /* 右端（1ページ目）基準 */
-    
-    /* アニメーション用（波の裏で動くので瞬時でよいが、念のためなめらかに） */
-    transition: transform 0s; 
-    
-    /* 余白設定：ここで文字の詰まり具合を調整 */
-    padding-top: 5vh;
-    padding-bottom: 5vh;
-    /* 左右パディングはカラム幅に含まれるため、box-sizingに注意 */
     box-sizing: border-box;
+    font-size: 20px;
 }
 
-/* --- テキストスタイル --- */
-.text-body {
-    /* カラム内でテキストが途切れるのを許容しつつ、美しく見せる */
-    font-size: 1.1rem; /* 少し大きめで読みやすく */
-    line-height: 2.2;  /* 行間ゆったり */
-    letter-spacing: 0.1em;
-    height: 90vh; /* 上下のパディングを考慮した高さ */
-    margin: 0;
+body {
+    background-color: #f4f1e9; /* 紙のような淡い色 */
+    color: #333;
+    font-family: "BIZ UDPMincho", "Hiragino Mincho ProN", "MS Mincho", serif;
+    line-height: 1.8;
+    overflow: hidden; /* 画面全体のスクロールを防ぐ */
 }
 
-/* 段落設定 */
-.text-body p {
-    margin: 0 0 0 1em; /* 縦書きなのでmargin-leftが行間になる */
-    text-indent: 1em;
-}
-
-/* タイトルと著者 */
-.in-text-title {
-    font-size: 1.8rem;
-    font-weight: 700;
-    margin: 0 0 0 2em; /* タイトル後の余白 */
-    letter-spacing: 0.2em;
-}
-
-.in-text-author {
-    font-size: 1.2rem;
-    margin: 0 0 0 3em; /* 著者名後の余白 */
-    text-align: right; /* 縦書きでは下寄せになる */
-    margin-top: auto; /* 親がflexでないので効きにくいが、念のため */
-}
-
-/* 最後のマーク */
-.end-mark {
-    display: inline-block;
-    margin: 0 2em;
-    text-align: center;
-    writing-mode: horizontal-tb; /* ここだけ横書きに戻すか、縦のまま中央配置 */
-    /* デザインに合わせて調整：今回は縦書きの流れの中で表示 */
-    writing-mode: vertical-rl; 
-}
-
-.back-btn {
-    display: inline-block;
-    margin-right: 1em;
-    padding: 10px 20px;
-    border: 1px solid currentColor;
-    color: var(--link-color-dark, #0f267f);
-    text-decoration: none;
-    font-size: 0.9rem;
-    transition: all 0.3s;
-    writing-mode: horizontal-tb; /* ボタンは横書きで見やすく */
-}
-
-.back-btn:hover {
-    background: var(--accent-color, #1d3a4e);
-    color: #fff;
-}
-
-/* --- ページ番号 --- */
-.page-number {
-    position: absolute;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 0.9rem;
-    color: #888;
-    pointer-events: none;
-    font-family: sans-serif; /* 数字は見やすく */
-}
-
-/* --- ナビゲーションヒント（マウスオーバーで表示など） --- */
-.nav-hint {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 2rem;
-    color: rgba(0,0,0,0.1);
-    pointer-events: none;
-    transition: opacity 0.3s;
-    font-family: serif;
-}
-
-.hint-prev { left: 20px; }
-.hint-next { right: 20px; }
-
-#book-viewport:hover .nav-hint {
-    opacity: 0.4;
-}
-
-/* --- 波のアニメーションオーバーレイ --- */
-#wave-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
+/* ビューワーの外枠（窓の役割） */
+.viewer {
     height: 100vh;
-    z-index: 100; /* コンテンツより上 */
-    pointer-events: none; /* 通常時はクリックを通す */
-    visibility: hidden; /* 通常時は見えない */
+    display: flex;
+    overflow-x: auto;
+    overflow-y: hidden; /* 縦方向の溢れを確実に隠す */
+    direction: rtl;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
 }
 
-.wave-shape {
-    width: 100%;
+/* 本文を流し込むエリア */
+.content {
+    writing-mode: vertical-rl; /* 縦書き設定 */
     height: 100%;
-    display: block;
+    padding: 6vh 5vw;          /* 上下左右の余白（画面比率で指定） */
+
+    direction: ltr;
 }
 
-#wave-path {
-    fill: var(--accent-color, #1d3a4e);
-    opacity: 0.9;
+/* 見出しの装飾 */
+h2 {
+    font-size: 1.5rem;
+    margin-left: 1em;          /* 縦書きなので左（下方向）に余白 */
+    border-left: 1px solid #999;
+    padding-left: 0.5em;
+    color: #555;
 }
 
-/* 次のページへ（左へめくる）ときのアニメーション */
-/* 波が右から左へ押し寄せる */
-@keyframes wave-next {
-    0% {
-        clip-path: polygon(100% 0, 100% 0, 100% 100%, 100% 100%);
-        visibility: visible;
-    }
-    40% {
-        clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); /* 全画面を覆う */
-    }
-    60% {
-        clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); /* 一瞬留まる */
-    }
-    100% {
-        clip-path: polygon(0 0, 0 0, 0 100%, 0 100%); /* 左へ消える */
-        visibility: hidden;
-    }
+/* 段落の調整 */
+p {
+    margin-left: 1.5em;        /* 段落間の余白 */
+    text-align: justify;       /* 文字の端を揃える */
 }
 
-/* 前のページへ（右へ戻る）ときのアニメーション */
-/* 波が左から右へ押し寄せる（逆再生的な動き） */
-@keyframes wave-prev {
-    0% {
-        clip-path: polygon(0 0, 0 0, 0 100%, 0 100%);
-        visibility: visible;
-    }
-    40% {
-        clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
-    }
-    60% {
-        clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
-    }
-    100% {
-        clip-path: polygon(100% 0, 100% 0, 100% 100%, 100% 100%);
-        visibility: hidden;
-    }
+/* PCでマウス操作する場合のスクロールバーを薄く表示（お好みで） */
+.viewer::-webkit-scrollbar {
+    height: 8px;
 }
-
-/* アニメーションクラス適用時 */
-#wave-overlay.animate-next {
-    animation: wave-next 1s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+.viewer::-webkit-scrollbar-track {
+    background: #e0ddd5;
 }
-
-#wave-overlay.animate-prev {
-    animation: wave-prev 1s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+.viewer::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 4px;
 }
-
-/* スマホ対応調整 */
-@media (max-width: 768px) {
-    .text-body {
-        font-size: 1rem;
-        padding-top: 3vh;
-        padding-bottom: 8vh; /* ページ番号とかぶらないように */
-    }
-    .in-text-title {
-        font-size: 1.5rem;
-    }
-    .nav-hint {
-        display: none; /* スマホでは邪魔なので消す */
-    }
-}
-
