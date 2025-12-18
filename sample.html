@@ -3,11 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>作品試し読み | 文学サークル公式サイト</title>
+    <title>作品試し読み | 海象計画</title>
     <link rel="stylesheet" href="style2.css">
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Old+Mincho:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
-<div class="viewer">
+    <a href="index.html" class="back-home">← 戻る</a>
+    
+    <div class="viewer">
+        <div id="bubble-container"></div>
         <article class="content" id="main-content">
             <p>読み込み中...</p>
         </article>
@@ -16,69 +20,90 @@
     <script>
         const viewer = document.querySelector('.viewer');
         const contentArea = document.getElementById('main-content');
+        const bubbleContainer = document.getElementById('bubble-container');
         
-        // 1. マウスホイール制御（上スクロールで左へ、下スクロールで右へ）
+        // 1. マウスホイール制御（縦スクロールで横に移動）
         viewer.addEventListener('wheel', (e) => {
             if (e.deltaY !== 0) {
                 e.preventDefault();
                 viewer.scrollBy({
-                    left: -e.deltaY, 
+                    left: -e.deltaY * 1.5, // 少し加速
                     behavior: 'auto'
                 });
             }
         }, { passive: false });
+
+        // 2. 泡の生成
+        function createBubbles() {
+            // コンテンツの幅に合わせて泡を散らす
+            const width = Math.max(viewer.scrollWidth, window.innerWidth);
+            for (let i = 0; i < 50; i++) {
+                const bubble = document.createElement('div');
+                bubble.className = 'bubble';
+                const size = Math.random() * 15 + 5 + 'px';
+                bubble.style.width = size;
+                bubble.style.height = size;
+                bubble.style.left = Math.random() * width + 'px';
+                bubble.style.animationDelay = Math.random() * 10 + 's';
+                bubble.style.opacity = Math.random() * 0.5;
+                bubbleContainer.appendChild(bubble);
+            }
+        }
         
-        // 2. クエリパラメータによるファイル読み込みとタグの振り分け
+        // 3. テキスト読み込みと色制御
         async function loadText() {
             const params = new URLSearchParams(window.location.search);
             const workId = params.get('work');
-        
             if (!workId) {
                 contentArea.innerHTML = '<h2>エラー</h2><p>作品が指定されていません。</p>';
                 return;
             }
-        
             const formattedId = workId.padStart(2, '0');
             const fileName = `work_${formattedId}.txt`;
         
             try {
                 const response = await fetch(fileName);
                 if (!response.ok) throw new Error('File not found');
-                
                 const text = await response.text();
         
-                // 改行で分割し、1行ずつ処理
                 const lines = text.split(/\r?\n/);
                 const htmlElements = lines.map(line => {
                     const trimmedLine = line.trim();
-                    
-                    // 空行はスキップ
                     if (!trimmedLine) return '';
-        
-                    // 「＜＜」と「＞＞」で囲まれているか判定
-                    // 正規表現で先頭の＜＜と末尾の＞＞をチェック
                     const titleMatch = trimmedLine.match(/^＜＜(.+)＞＞$/);
-        
                     if (titleMatch) {
-                        // 囲み記号を取り除いた中身を h2 にする
                         return `<h2>${titleMatch[1]}</h2>`;
                     } else {
-                        // それ以外は p タグにする
                         return `<p>${trimmedLine}</p>`;
                     }
                 }).join('');
         
                 contentArea.innerHTML = htmlElements;
-        
+
+                // テキストの色を位置によって変える（深海対策）
+                // スクロール位置を監視して、ある程度左にいったらクラスを付与
+                viewer.addEventListener('scroll', () => {
+                    const scrollLeft = Math.abs(viewer.scrollLeft);
+                    if (scrollLeft > window.innerWidth * 0.5) {
+                        contentArea.classList.add('deep-sea-text');
+                        document.querySelector('.back-home').style.color = '#f4f1ea';
+                        document.querySelector('.back-home').style.borderColor = '#f4f1ea';
+                    } else {
+                        contentArea.classList.remove('deep-sea-text');
+                        document.querySelector('.back-home').style.color = '#333';
+                        document.querySelector('.back-home').style.borderColor = '#333';
+                    }
+                });
+
+                // 読み込み完了後に泡を再生成（幅が変わるため）
+                setTimeout(createBubbles, 100);
+
             } catch (error) {
-                contentArea.innerHTML = `<h2>エラー</h2><p>ファイル（${fileName}）が見つかりません。</p>`;
+                contentArea.innerHTML = `<h2>エラー</h2><p>作品が見つかりませんでした。</p>`;
             }
         }
         
         loadText();
     </script>
-</body>
-</html>
-
 </body>
 </html>

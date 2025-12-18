@@ -1,62 +1,135 @@
-/* 全体のリセット */
+/* 変数の定義（index.htmlと統一） */
+:root {
+    --bg-color-surface: #f4f1ea;
+    --bg-color-works: #c0d6d1;
+    --bg-color-profile: #0f267f;
+    --bg-color-event: #040a23;
+    --text-color-dark: #333333;
+    --text-color-light: #f4f1ea;
+    --font-main: 'Zen Old Mincho', 'YuMincho', 'Hiragino Mincho ProN', 'MS PMincho', serif;
+}
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-size: 20px;
 }
 
 body {
-    background-color: #f4f1e9; /* 紙のような淡い色 */
-    color: #333;
-    font-family: "BIZ UDPMincho", "Hiragino Mincho ProN", "MS Mincho", serif;
-    line-height: 1.8;
-    overflow: hidden; /* 画面全体のスクロールを防ぐ */
+    background-color: var(--bg-color-surface);
+    font-family: var(--font-main);
+    overflow: hidden;
+    position: relative;
 }
 
-/* ビューワーの外枠（窓の役割） */
+/* ノイズレイヤー */
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.05;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
+/* ビューワーの外枠（右から左へ潜るグラデーション） */
 .viewer {
     height: 100vh;
     display: flex;
     overflow-x: auto;
-    overflow-y: hidden; /* 縦方向の溢れを確実に隠す */
-    direction: rtl;
-    scroll-snap-type: x mandatory;
-    -webkit-overflow-scrolling: touch;
+    overflow-y: hidden;
+    direction: rtl; /* 右から左へのスクロール */
+    /* 背景を非常に幅広くし、右から左へ深くする */
+    background: linear-gradient(to left, 
+        var(--bg-color-surface) 0%, 
+        var(--bg-color-works) 20%, 
+        var(--bg-color-profile) 60%, 
+        var(--bg-color-event) 100%
+    );
+    background-attachment: local; /* スクロールに合わせて背景も動く */
 }
 
-/* 本文を流し込むエリア */
+/* 本文エリア */
 .content {
-    writing-mode: vertical-rl; /* 縦書き設定 */
+    writing-mode: vertical-rl;
     height: 100%;
-    padding: 6vh 5vw;          /* 上下左右の余白（画面比率で指定） */
-
+    padding: 8vh 5vw;
     direction: ltr;
+    position: relative;
+    z-index: 2;
+    min-width: 100vw;
 }
 
-/* 見出しの装飾 */
+/* 文字色の調整（背景が暗くなるので白系に固定、または自動調整） 
+   読みやすさを考慮し、少し発光させるような色に */
+.content h2, .content p {
+    color: var(--text-color-dark);
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+    transition: color 0.5s;
+}
+
+/* 左側（深海）に進むにつれて文字を白くするためのクラス（JSで制御も可能ですが、まずは基本色を） */
+.deep-sea-text {
+    color: var(--text-color-light) !important;
+}
+
 h2 {
-    font-size: 1.5rem;
-    margin-left: 1em;          /* 縦書きなので左（下方向）に余白 */
-    border-left: 1px solid #999;
+    font-size: 2rem;
+    margin-left: 2em;
+    border-left: 1px solid currentColor;
     padding-left: 0.5em;
-    color: #555;
+    font-weight: 700;
 }
 
-/* 段落の調整 */
 p {
-    margin-left: 1.5em;        /* 段落間の余白 */
-    text-align: justify;       /* 文字の端を揃える */
+    margin-left: 2em;
+    text-align: justify;
+    font-size: 1.1rem;
+    letter-spacing: 0.05em;
 }
 
-/* PCでマウス操作する場合のスクロールバーを薄く表示（お好みで） */
-.viewer::-webkit-scrollbar {
-    height: 8px;
+/* 泡の演出用 */
+#bubble-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    pointer-events: none;
+    z-index: 1;
 }
-.viewer::-webkit-scrollbar-track {
-    background: #e0ddd5;
+
+.bubble {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    box-shadow: 0 0 5px rgba(255, 255, 255, 0.2);
+    animation: floatUp 10s infinite ease-in;
 }
-.viewer::-webkit-scrollbar-thumb {
-    background: #ccc;
-    border-radius: 4px;
+
+@keyframes floatUp {
+    0% { transform: translateY(110vh); opacity: 0; }
+    50% { opacity: 0.5; }
+    100% { transform: translateY(-10vh); opacity: 0; }
 }
+
+/* 戻るボタン */
+.back-home {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 10000;
+    color: var(--text-color-dark);
+    text-decoration: none;
+    font-size: 0.9rem;
+    border: 1px solid var(--text-color-dark);
+    padding: 5px 15px;
+    background: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(5px);
+}
+
+/* スクロールバー */
+.viewer::-webkit-scrollbar { height: 6px; }
+.viewer::-webkit-scrollbar-track { background: transparent; }
+.viewer::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.2); border-radius: 3px; }
