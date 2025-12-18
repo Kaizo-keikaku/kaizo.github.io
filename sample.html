@@ -82,33 +82,20 @@ async function loadText() {
         contentArea.innerHTML = htmlElements;
 
 // --- 文字色切り替えロジック ---
-// --- 文字色切り替えロジック ---
         const backBtn = document.querySelector('.back-home');
         
         viewer.addEventListener('scroll', () => {
-            const scrollWidth = viewer.scrollWidth;
-            const clientWidth = viewer.clientWidth;
-            const scrollLeft = viewer.scrollLeft;
+            // RTL環境でのスクロール移動量（絶対値）
+            const scrollPos = Math.abs(viewer.scrollLeft);
             
-            // スクロール可能な最大量
-            const maxScroll = scrollWidth - clientWidth;
+            // 【変更箇所】コンテンツ全体の幅を取得
+            const totalContentWidth = viewer.scrollWidth;
             
-            // 【修正】ブラウザごとのRTL挙動の差を正規化して「右端からの移動距離」を計算
-            let distanceFromRight;
+            // 【変更箇所】コンテンツ全体の30%を閾値に設定
+            const threshold = totalContentWidth * 0.3;
             
-            if (scrollLeft > 0) {
-                // Safari系: 初期値が maxScroll で、左にスクロールすると 0 に向かう
-                distanceFromRight = maxScroll - scrollLeft;
-            } else {
-                // Chrome系: 初期値が 0 で、左にスクロールするとマイナスに向かう
-                distanceFromRight = Math.abs(scrollLeft);
-            }
-            
-            // コンテンツ全体の30%を閾値に設定
-            const threshold = scrollWidth * 0.3;
-            
-            // 判定
-            if (distanceFromRight > threshold) {
+            // スクロール量がコンテンツ全幅の 30% を超えたら「深海モード」へ
+            if (scrollPos > threshold) {
                 contentArea.classList.add('deep-sea-text');
                 backBtn.classList.add('white-mode');
             } else {
