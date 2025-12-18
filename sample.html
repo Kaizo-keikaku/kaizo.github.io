@@ -11,7 +11,6 @@
     <a href="index.html" class="back-home">← 戻る</a>
     
     <div class="viewer">
-        <div id="bubble-container"></div>
         <article class="content" id="main-content">
             <p>読み込み中...</p>
         </article>
@@ -20,7 +19,6 @@
     <script>
         const viewer = document.querySelector('.viewer');
         const contentArea = document.getElementById('main-content');
-        const bubbleContainer = document.getElementById('bubble-container');
         
         // 1. マウスホイール制御（縦スクロールで横に移動）
         viewer.addEventListener('wheel', (e) => {
@@ -33,22 +31,6 @@
             }
         }, { passive: false });
 
-        // 2. 泡の生成
-        function createBubbles() {
-            // コンテンツの幅に合わせて泡を散らす
-            const width = Math.max(viewer.scrollWidth, window.innerWidth);
-            for (let i = 0; i < 50; i++) {
-                const bubble = document.createElement('div');
-                bubble.className = 'bubble';
-                const size = Math.random() * 15 + 5 + 'px';
-                bubble.style.width = size;
-                bubble.style.height = size;
-                bubble.style.left = Math.random() * width + 'px';
-                bubble.style.animationDelay = Math.random() * 10 + 's';
-                bubble.style.opacity = Math.random() * 0.5;
-                bubbleContainer.appendChild(bubble);
-            }
-        }
         /* --- sample.html の <script> 内を以下に差し替え --- */
 
 // 3. テキスト読み込みと色制御
