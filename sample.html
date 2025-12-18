@@ -16,8 +16,8 @@
     <script>
         const viewer = document.querySelector('.viewer');
         const contentArea = document.getElementById('main-content');
-
-        // 1. マウスホイール制御（逆方向：上スクロールで左へ、下スクロールで右へ）
+        
+        // 1. マウスホイール制御（上スクロールで左へ、下スクロールで右へ）
         viewer.addEventListener('wheel', (e) => {
             if (e.deltaY !== 0) {
                 e.preventDefault();
@@ -27,40 +27,54 @@
                 });
             }
         }, { passive: false });
-
-        // 2. クエリパラメータによるファイル読み込み
+        
+        // 2. クエリパラメータによるファイル読み込みとタグの振り分け
         async function loadText() {
             const params = new URLSearchParams(window.location.search);
-            const workId = params.get('work'); // "1" や "2" を取得
-
+            const workId = params.get('work');
+        
             if (!workId) {
                 contentArea.innerHTML = '<h2>エラー</h2><p>作品が指定されていません。</p>';
                 return;
             }
-
-            // IDを2桁の形式に整形（1 -> 01, 2 -> 02）
+        
             const formattedId = workId.padStart(2, '0');
             const fileName = `work_${formattedId}.txt`;
-
+        
             try {
                 const response = await fetch(fileName);
                 if (!response.ok) throw new Error('File not found');
                 
                 const text = await response.text();
-
-                // テキストを整形して流し込む
-                // 改行（\n）で分割し、空行を除いてそれぞれを <p> タグで包む
-                const paragraphs = text.split(/\n+/).map(line => {
-                    return `<p>${line.trim()}</p>`;
+        
+                // 改行で分割し、1行ずつ処理
+                const lines = text.split(/\r?\n/);
+                const htmlElements = lines.map(line => {
+                    const trimmedLine = line.trim();
+                    
+                    // 空行はスキップ
+                    if (!trimmedLine) return '';
+        
+                    // 「＜＜」と「＞＞」で囲まれているか判定
+                    // 正規表現で先頭の＜＜と末尾の＞＞をチェック
+                    const titleMatch = trimmedLine.match(/^＜＜(.+)＞＞$/);
+        
+                    if (titleMatch) {
+                        // 囲み記号を取り除いた中身を h2 にする
+                        return `<h2>${titleMatch[1]}</h2>`;
+                    } else {
+                        // それ以外は p タグにする
+                        return `<p>${trimmedLine}</p>`;
+                    }
                 }).join('');
-
-                contentArea.innerHTML = paragraphs;
-
+        
+                contentArea.innerHTML = htmlElements;
+        
             } catch (error) {
-                contentArea.innerHTML = `<h2>エラー</h2><p>ファイル（${fileName}）が見つからないか、読み込めませんでした。</p>`;
+                contentArea.innerHTML = `<h2>エラー</h2><p>ファイル（${fileName}）が見つかりません。</p>`;
             }
         }
-
+        
         loadText();
     </script>
 </body>
