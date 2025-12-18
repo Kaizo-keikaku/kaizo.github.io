@@ -136,23 +136,26 @@ p {
 
 /* --- style2.css 修正箇所 --- */
 
-/* 元々の文字色設定 */
-.content h2, .content p {
-    color: var(--text-color-dark);
-    text-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
-    transition: color 0.8s ease; /* 色の変化を滑らかに */
+/* --- style2.css 修正・追記 --- */
+
+/* 通常時の文字色（浅瀬） */
+.content h2, 
+.content p {
+    color: var(--text-color-dark) !important; /* 初期色を固定 */
+    transition: color 1.0s ease, text-shadow 1.0s ease;
 }
 
-/* 深海（左側）に入った時の文字色設定：詳細度を上げて確実に上書きする */
+/* 深海モード（30%以上スクロール時） */
+/* .contentにクラスがついた時、中のh2とpを白くする */
 .content.deep-sea-text h2, 
 .content.deep-sea-text p {
     color: var(--text-color-light) !important;
-    text-shadow: 0 0 15px rgba(255, 255, 255, 0.4); /* 暗い場所で少し光らせる */
+    text-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
 }
 
-/* 戻るボタンも背景色に合わせて色を変える */
+/* 戻るボタンの切り替え用クラス */
 .back-home.white-mode {
-    color: var(--text-color-light);
-    border-color: var(--text-color-light);
+    color: var(--text-color-light) !important;
+    border-color: var(--text-color-light) !important;
     background: rgba(0, 0, 0, 0.3);
 }

@@ -52,6 +52,8 @@
         /* --- sample.html の <script> 内を以下に差し替え --- */
 
 // 3. テキスト読み込みと色制御
+/* --- sample.html の <script> 部分を修正 --- */
+
 async function loadText() {
     const params = new URLSearchParams(window.location.search);
     const workId = params.get('work');
@@ -79,35 +81,44 @@ async function loadText() {
             }
         }).join('');
 
+        // 1. コンテンツを挿入
         contentArea.innerHTML = htmlElements;
 
-        // --- 文字色切り替えロジック ---
+        // 2. 挿入後のコンテンツサイズに基づいた判定ロジック
         const backBtn = document.querySelector('.back-home');
         
-        viewer.addEventListener('scroll', () => {
-            // RTL環境では scrollLeft が 0 からマイナスになる場合があるため絶対値をとる
-            const scrollPos = Math.abs(viewer.scrollLeft);
-            const windowWidth = window.innerWidth;
+        // 判定用の関数
+        const updateColorMode = () => {
+            // コンテンツ全体の横幅 (scrollWidth)
+            const totalContentWidth = viewer.scrollWidth;
+            // スクロールした量 (RTLなので絶対値をとる)
+            const currentScroll = Math.abs(viewer.scrollLeft);
             
-            // スクロール量が画面幅の 40% を超えたら「深海モード」へ
-            // (背景グラデーションの color-stop に合わせて調整)
-            if (scrollPos > windowWidth * 0.4) {
+            // 全体の30%を超えたかどうか
+            const threshold = totalContentWidth * 0.3;
+
+            if (currentScroll > threshold) {
                 contentArea.classList.add('deep-sea-text');
                 backBtn.classList.add('white-mode');
             } else {
                 contentArea.classList.remove('deep-sea-text');
                 backBtn.classList.remove('white-mode');
             }
-        });
+        };
 
+        // スクロール時に実行
+        viewer.addEventListener('scroll', updateColorMode);
+        
+        // 初回実行（念のため）
+        updateColorMode();
+
+        // 泡の再生成
         setTimeout(createBubbles, 100);
 
     } catch (error) {
         contentArea.innerHTML = `<h2>エラー</h2><p>作品が見つかりませんでした。</p>`;
     }
 }
-
-loadText();
     </script>
 </body>
 </html>
