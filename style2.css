@@ -1,4 +1,4 @@
-/* 変数の定義（index.htmlと統一） */
+/* 変数の定義 */
 :root {
     --bg-color-surface: #f4f1ea;
     --bg-color-works: #c0d6d1;
@@ -16,7 +16,8 @@
 }
 
 body {
-    background-color: var(--bg-color-surface);
+    /* 背景色を --bg-color-works に統一 */
+    background-color: var(--bg-color-works);
     font-family: var(--font-main);
     overflow: hidden;
     position: relative;
@@ -33,21 +34,14 @@ body::before {
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
 }
 
-/* ビューワーの外枠（右から左へ潜るグラデーション） */
+/* ビューワーの外枠 */
 .viewer {
     height: 100vh;
     display: flex;
     overflow-x: auto;
     overflow-y: hidden;
     direction: rtl; /* 右から左へのスクロール */
-    /* 背景を非常に幅広くし、右から左へ深くする */
-    background: linear-gradient(to left, 
-        var(--bg-color-surface) 0%, 
-        var(--bg-color-works) 20%, 
-        var(--bg-color-profile) 60%, 
-        var(--bg-color-event) 100%
-    );
-    background-attachment: local; /* スクロールに合わせて背景も動く */
+    background-color: var(--bg-color-works);
 }
 
 /* 本文エリア */
@@ -61,17 +55,11 @@ body::before {
     min-width: 100vw;
 }
 
-/* 文字色の調整（背景が暗くなるので白系に固定、または自動調整） 
-   読みやすさを考慮し、少し発光させるような色に */
-.content h2, .content p {
+/* 文字色（背景が明るい水色なのでダークカラーに固定） */
+.content h2, 
+.content p {
     color: var(--text-color-dark);
-    text-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
-    transition: color 0.5s;
-}
-
-/* 左側（深海）に進むにつれて文字を白くするためのクラス（JSで制御も可能ですが、まずは基本色を） */
-.deep-sea-text {
-    color: var(--text-color-light) !important;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
 }
 
 h2 {
@@ -87,6 +75,7 @@ p {
     text-align: justify;
     font-size: 1.1rem;
     letter-spacing: 0.05em;
+    line-height: 2;
 }
 
 /* 泡の演出用 */
@@ -102,7 +91,7 @@ p {
 
 .bubble {
     position: absolute;
-    background: rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.4);
     border-radius: 50%;
     box-shadow: 0 0 5px rgba(255, 255, 255, 0.2);
     animation: floatUp 10s infinite ease-in;
@@ -110,7 +99,7 @@ p {
 
 @keyframes floatUp {
     0% { transform: translateY(110vh); opacity: 0; }
-    50% { opacity: 0.5; }
+    50% { opacity: 0.6; }
     100% { transform: translateY(-10vh); opacity: 0; }
 }
 
@@ -125,37 +114,16 @@ p {
     font-size: 0.9rem;
     border: 1px solid var(--text-color-dark);
     padding: 5px 15px;
-    background: rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.4);
     backdrop-filter: blur(5px);
+    transition: all 0.3s;
+}
+
+.back-home:hover {
+    background: rgba(255, 255, 255, 0.8);
 }
 
 /* スクロールバー */
 .viewer::-webkit-scrollbar { height: 6px; }
 .viewer::-webkit-scrollbar-track { background: transparent; }
-.viewer::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.2); border-radius: 3px; }
-
-/* --- style2.css 修正箇所 --- */
-
-/* --- style2.css 修正・追記 --- */
-
-/* 通常時の文字色（浅瀬） */
-.content h2, 
-.content p {
-    color: var(--text-color-dark) !important; /* 初期色を固定 */
-    transition: color 1.0s ease, text-shadow 1.0s ease;
-}
-
-/* 深海モード（30%以上スクロール時） */
-/* .contentにクラスがついた時、中のh2とpを白くする */
-.content.deep-sea-text h2, 
-.content.deep-sea-text p {
-    color: var(--text-color-light) !important;
-    text-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
-}
-
-/* 戻るボタンの切り替え用クラス */
-.back-home.white-mode {
-    color: var(--text-color-light) !important;
-    border-color: var(--text-color-light) !important;
-    background: rgba(0, 0, 0, 0.3);
-}
+.viewer::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 3px; }
