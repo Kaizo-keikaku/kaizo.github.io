@@ -49,61 +49,65 @@
                 bubbleContainer.appendChild(bubble);
             }
         }
-        
-        // 3. テキスト読み込みと色制御
-        async function loadText() {
-            const params = new URLSearchParams(window.location.search);
-            const workId = params.get('work');
-            if (!workId) {
-                contentArea.innerHTML = '<h2>エラー</h2><p>作品が指定されていません。</p>';
-                return;
+        /* --- sample.html の <script> 内を以下に差し替え --- */
+
+// 3. テキスト読み込みと色制御
+async function loadText() {
+    const params = new URLSearchParams(window.location.search);
+    const workId = params.get('work');
+    if (!workId) {
+        contentArea.innerHTML = '<h2>エラー</h2><p>作品が指定されていません。</p>';
+        return;
+    }
+    const formattedId = workId.padStart(2, '0');
+    const fileName = `work_${formattedId}.txt`;
+
+    try {
+        const response = await fetch(fileName);
+        if (!response.ok) throw new Error('File not found');
+        const text = await response.text();
+
+        const lines = text.split(/\r?\n/);
+        const htmlElements = lines.map(line => {
+            const trimmedLine = line.trim();
+            if (!trimmedLine) return '';
+            const titleMatch = trimmedLine.match(/^＜＜(.+)＞＞$/);
+            if (titleMatch) {
+                return `<h2>${titleMatch[1]}</h2>`;
+            } else {
+                return `<p>${trimmedLine}</p>`;
             }
-            const formattedId = workId.padStart(2, '0');
-            const fileName = `work_${formattedId}.txt`;
-        
-            try {
-                const response = await fetch(fileName);
-                if (!response.ok) throw new Error('File not found');
-                const text = await response.text();
-        
-                const lines = text.split(/\r?\n/);
-                const htmlElements = lines.map(line => {
-                    const trimmedLine = line.trim();
-                    if (!trimmedLine) return '';
-                    const titleMatch = trimmedLine.match(/^＜＜(.+)＞＞$/);
-                    if (titleMatch) {
-                        return `<h2>${titleMatch[1]}</h2>`;
-                    } else {
-                        return `<p>${trimmedLine}</p>`;
-                    }
-                }).join('');
-        
-                contentArea.innerHTML = htmlElements;
+        }).join('');
 
-                // テキストの色を位置によって変える（深海対策）
-                // スクロール位置を監視して、ある程度左にいったらクラスを付与
-                viewer.addEventListener('scroll', () => {
-                    const scrollLeft = Math.abs(viewer.scrollLeft);
-                    if (scrollLeft > window.innerWidth * 0.5) {
-                        contentArea.classList.add('deep-sea-text');
-                        document.querySelector('.back-home').style.color = '#f4f1ea';
-                        document.querySelector('.back-home').style.borderColor = '#f4f1ea';
-                    } else {
-                        contentArea.classList.remove('deep-sea-text');
-                        document.querySelector('.back-home').style.color = '#333';
-                        document.querySelector('.back-home').style.borderColor = '#333';
-                    }
-                });
+        contentArea.innerHTML = htmlElements;
 
-                // 読み込み完了後に泡を再生成（幅が変わるため）
-                setTimeout(createBubbles, 100);
-
-            } catch (error) {
-                contentArea.innerHTML = `<h2>エラー</h2><p>作品が見つかりませんでした。</p>`;
+        // --- 文字色切り替えロジック ---
+        const backBtn = document.querySelector('.back-home');
+        
+        viewer.addEventListener('scroll', () => {
+            // RTL環境では scrollLeft が 0 からマイナスになる場合があるため絶対値をとる
+            const scrollPos = Math.abs(viewer.scrollLeft);
+            const windowWidth = window.innerWidth;
+            
+            // スクロール量が画面幅の 40% を超えたら「深海モード」へ
+            // (背景グラデーションの color-stop に合わせて調整)
+            if (scrollPos > windowWidth * 0.4) {
+                contentArea.classList.add('deep-sea-text');
+                backBtn.classList.add('white-mode');
+            } else {
+                contentArea.classList.remove('deep-sea-text');
+                backBtn.classList.remove('white-mode');
             }
-        }
-        
-        loadText();
+        });
+
+        setTimeout(createBubbles, 100);
+
+    } catch (error) {
+        contentArea.innerHTML = `<h2>エラー</h2><p>作品が見つかりませんでした。</p>`;
+    }
+}
+
+loadText();
     </script>
 </body>
 </html>
