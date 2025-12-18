@@ -398,7 +398,7 @@ p { margin-bottom: 20px; text-align: justify; }
     opacity: 1; 
 }
 
-.btn-small {
+.btn-small,.btn-small1 {
     padding: 8px 20px;
     font-size: 0.9rem;
     line-height: 1;
