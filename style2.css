@@ -1,10 +1,10 @@
 /* 変数の定義 */
 :root {
     --bg-color-surface: #f4f1ea;
-    --bg-color-works: #c0d6d1;
+    --bg-color-works: #0f267f;
     --bg-color-profile: #0f267f;
     --bg-color-event: #040a23;
-    --text-color-dark: #333333;
+    --text-color-dark: #f4f1ea;
     --text-color-light: #f4f1ea;
     --font-main: 'Zen Old Mincho', 'YuMincho', 'Hiragino Mincho ProN', 'MS PMincho', serif;
 }
