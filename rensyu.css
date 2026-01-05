@@ -1,0 +1,400 @@
+/* ベーススタイル */
+body {
+    font-family: 'Noto Sans JP', sans-serif;
+    margin: 0;
+    line-height: 1.8;
+    color: #364F6B; /* ミッドナイトブルー */
+    background-color: #F8F8F8;
+    scroll-behavior: smooth;
+}
+
+h1, h2, h3 {
+    font-family: 'Noto Serif JP', serif;
+    color: #364F6B;
+}
+
+h1 { font-size: 3.5rem; margin-bottom: 20px; }
+h2 { font-size: 2.5rem; text-align: center; margin-bottom: 60px; position: relative; }
+h2::after {
+    content: '';
+    display: block;
+    width: 60px;
+    height: 3px;
+    background-color: #D0E0E3; /* ペールブルー */
+    margin: 15px auto 0;
+}
+h3 { font-size: 1.8rem; }
+
+a {
+    text-decoration: none;
+    color: #364F6B;
+    transition: color 0.3s ease;
+}
+a:hover {
+    color: #FFC0CB; /* 淡いピンク */
+}
+
+.container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 80px 20px;
+}
+
+/* ヘッダー */
+.header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 15px 0;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    z-index: 100;
+}
+
+.nav-list {
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    padding: 0;
+    margin: 0;
+}
+
+.nav-list li {
+    margin: 0 25px;
+}
+
+.nav-list a {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    padding: 5px 0;
+    position: relative;
+}
+.nav-list a::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 2px;
+    background-color: #FFC0CB;
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+}
+.nav-list a:hover::after {
+    transform: scaleX(1);
+}
+
+/* ヒーローセクション */
+.hero-section {
+    position: relative;
+    height: 80vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    background-color: #364F6B; /* ミッドナイトブルー */
+    color: #E0FFFF; /* 明るい水色 */
+    text-align: center;
+    padding-top: 80px; /* ヘッダーの高さ分 */
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+    text-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+}
+
+.logo {
+    font-family: 'Noto Serif JP', serif;
+    font-weight: 700;
+    font-size: 5rem;
+    color: #E0FFFF;
+    line-height: 1.2;
+    writing-mode: vertical-rl; /* 縦書き */
+    letter-spacing: 0.1em;
+    padding: 0 20px;
+    border-right: 3px solid #FFC0CB; /* 淡いピンクのボーダー */
+}
+
+.catchphrase {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 1.5rem;
+    margin-top: 30px;
+    color: #D0E0E3; /* ペールブルー */
+    position: relative;
+    left: 40px; /* ロゴの縦書きに合わせて調整 */
+}
+
+.wave-bg {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 150px; /* 波の高さ */
+    background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 1440 320" xmlns="http://www.w3.org/2000/svg"><path fill="%23D0E0E3" fill-opacity="1" d="M0,192L48,181.3C96,171,192,149,288,160C384,171,480,213,576,213.3C672,213,768,171,864,165.3C960,160,1056,192,1152,197.3C1248,203,1344,181,1392,170.7L1440,160L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>') no-repeat center bottom;
+    background-size: cover;
+    z-index: 1;
+    animation: waveAnimation 15s ease-in-out infinite alternate;
+}
+
+@keyframes waveAnimation {
+    from { transform: translateX(-10%); }
+    to { transform: translateX(10%); }
+}
+
+/* 各セクションの背景色 */
+.section-bg-pale-blue {
+    background-color: #D0E0E3; /* ペールブルー */
+}
+
+.section-bg-dark-blue {
+    background-color: #364F6B; /* ミッドナイトブルー */
+    color: #E0FFFF;
+}
+.section-bg-dark-blue h2, .section-bg-dark-blue h3 {
+    color: #E0FFFF;
+}
+.section-bg-dark-blue h2::after {
+    background-color: #FFC0CB; /* 淡いピンク */
+}
+
+/* テーマセクション */
+.theme-section {
+    padding: 100px 0;
+}
+.theme-text {
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: center;
+    font-size: 1.1rem;
+}
+.theme-text p {
+    margin-bottom: 25px;
+}
+.spiral-icon {
+    font-size: 2rem;
+    color: #FFC0CB;
+    margin-top: 40px;
+    display: inline-block;
+    transform: rotate(90deg); /* 渦巻きっぽく見せる */
+}
+
+/* 作品紹介セクション */
+.works-section {
+    background-color: #FFFAF0; /* クリーム色 */
+    padding: 100px 0;
+    position: relative;
+    /* 海藻とサンゴのボーダー */
+    border-top: 3px solid #D0E0E3; /* 上部に波の境目 */
+    border-bottom: 3px solid #FFC0CB; /* 下部に波の境目 */
+}
+.works-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 40px;
+    margin-top: 50px;
+}
+
+.work-card {
+    background-color: #fff;
+    border-radius: 15px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    text-align: center;
+    padding-bottom: 30px;
+    position: relative;
+}
+.work-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+}
+
+.card-image {
+    width: 100%;
+    height: 400px; /* 固定の高さ */
+    overflow: hidden;
+    position: relative;
+    margin-bottom: 20px;
+}
+.card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.3s ease;
+}
+.work-card:hover .card-image img {
+    transform: scale(1.05);
+}
+/* ホバー時のフィルター */
+.card-image::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(208, 224, 227, 0.4); /* ペールブルーの半透明 */
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 1;
+}
+.work-card:hover .card-image::before {
+    opacity: 1;
+}
+
+
+.work-card h3 {
+    margin-top: 0;
+    font-size: 1.5rem;
+    color: #364F6B;
+}
+.work-card .author {
+    font-size: 0.9rem;
+    color: #607D8B;
+    margin-bottom: 15px;
+}
+.work-card .description {
+    font-size: 0.95rem;
+    color: #555;
+    padding: 0 25px;
+    margin-bottom: 25px;
+}
+
+.read-more {
+    display: inline-block;
+    background-color: #FFC0CB; /* 淡いピンク */
+    color: #fff;
+    padding: 12px 25px;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+.read-more:hover {
+    background-color: #FF99AA;
+    color: #fff;
+}
+
+/* プロフィールセクション */
+.profile-section {
+    padding: 100px 0;
+}
+.profile-members {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 50px;
+    margin-top: 50px;
+}
+.member-card {
+    text-align: center;
+    color: #E0FFFF;
+}
+.member-card h3 {
+    color: #FFC0CB; /* 淡いピンク */
+    margin-top: 25px;
+    font-size: 1.6rem;
+}
+.member-card p {
+    font-size: 1rem;
+    line-height: 1.6;
+    max-width: 300px;
+    margin: 15px auto 0;
+    color: #D0E0E3;
+}
+.member-icon {
+    width: 120px;
+    height: 120px;
+    background-color: #D0E0E3; /* ペールブルー */
+    border-radius: 50%;
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 3rem;
+    color: #364F6B;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    position: relative;
+}
+/* ここにメンバーのアイコンやイニシャルなどを入れる想定 */
+.member-icon::before {
+    content: '👤'; /* 仮のアイコン */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 3rem;
+    color: #364F6B;
+}
+
+/* イベントセクション */
+.events-section {
+    padding: 100px 0;
+    background-color: #F8F8F8;
+}
+.event-list {
+    list-style: none;
+    padding: 0;
+    max-width: 800px;
+    margin: 50px auto 0;
+}
+.event-list li {
+    background-color: #fff;
+    border-left: 5px solid #FFC0CB; /* 淡いピンク */
+    padding: 25px 30px;
+    margin-bottom: 25px;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s ease;
+}
+.event-list li:hover {
+    transform: translateX(5px);
+}
+
+.event-date {
+    font-weight: bold;
+    color: #607D8B;
+    margin-bottom: 8px;
+    font-size: 0.95rem;
+}
+.event-name {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #364F6B;
+    margin-bottom: 8px;
+}
+.event-detail {
+    font-size: 1rem;
+    color: #555;
+}
+
+/* フッター */
+.footer {
+    background-color: #2C3E50; /* 少し暗い紺色 */
+    color: #D0E0E3;
+    text-align: center;
+    padding: 50px 0 20px;
+    position: relative;
+    overflow: hidden;
+}
+
+.footer-decor {
+    position: absolute;
+    top: -50px; /* 波の位置調整 */
+    left: 0;
+    width: 100%;
+    height: 100px; /* 波の高さ */
+    background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 1440 320" xmlns="http://www.w3.org/2000/svg"><path fill="%23364F6B" fill-opacity="1" d="M0,256L48,240C96,224,192,192,288,181.3C384,171,480,181,576,197.3C672,213,768,235,864,229.3C960,224,1056,192,1152,176C1248,160,1344,160,1392,160L1440,160L1440,0L1392,0C1344,0,1248,0,1152,0C1056,0,960,0,864,0C768,0,672,0,576,0C480,0,384,0,288,0C192,0,96,0,48,0L0,0Z"></path></svg>') no-repeat center top;
+    background-size: cover;
+    z-index: 1;
+}
+
+.footer .container {
+    position: relative;
+    z-index: 2;
+    padding-top: 0;
+}
