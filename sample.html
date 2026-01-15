@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,9 +8,32 @@
     <link rel="stylesheet" href="style2.css">
     <link href="https://fonts.googleapis.com/css2?family=Zen+Old+Mincho:wght@400;700&display=swap" rel="stylesheet">
 </head>
+<script>
+    function loadGTM() {
+        if (window.gtmLoaded) return; // 既に実行済みの場合は終了
+        window.gtmLoaded = true;
+
+        (function (w, d, s, l, i) {
+            w[l] = w[l] || []; w[l].push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' }); var f = d.getElementsByTagName(s)[0],
+                j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : ''; j.async = true; j.src =
+                    'https://www.googletagmanager.com/gtm.js?id=' + i + dl; f.parentNode.insertBefore(j, f);
+        })(window, document, 'script', 'dataLayer', 'GTM-NRNC954P');
+
+        // GTMのnoscriptタグも、bodyの先頭から移動させます。
+        const noscriptGTM = document.getElementById('gtm-noscript-container');
+        if (noscriptGTM) noscriptGTM.innerHTML = `<iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NRNC954P" height="0" width="0" style="display:none;visibility:hidden"></iframe>`;
+    }
+
+    // ユーザー操作やアイドル時に読み込みを開始
+    ['touchstart', 'mousemove', 'scroll', 'click'].forEach(event =>
+        document.addEventListener(event, loadGTM, { once: true, passive: true })
+    );
+    window.addEventListener('load', () => setTimeout(loadGTM, 3000)); // 3秒後にも保険で実行
+</script>
+
 <body>
     <a href="index.html" class="back-home">← 戻る</a>
-    
+
     <div class="viewer">
         <div id="bubble-container"></div>
         <article class="content" id="main-content">
@@ -21,7 +45,7 @@
         const viewer = document.querySelector('.viewer');
         const contentArea = document.getElementById('main-content');
         const bubbleContainer = document.getElementById('bubble-container');
-        
+
         // 1. マウスホイール制御（縦スクロールで横に移動）
         viewer.addEventListener('wheel', (e) => {
             if (e.deltaY !== 0) {
@@ -78,7 +102,7 @@
                 }).join('');
 
                 contentArea.innerHTML = htmlElements;
-                
+
                 // 泡の生成を実行
                 setTimeout(createBubbles, 100);
 
@@ -90,4 +114,5 @@
         loadText();
     </script>
 </body>
+
 </html>
